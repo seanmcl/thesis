@@ -1,0 +1,92 @@
+
+\clearpage
+
+\vspace*{2in}
+\begin{quote}
+  \begin{center}
+    ``O Imogen, Safe mayst thou wander, safe return again!'' \\
+    \hspace{3em}  --- William Shakespeare, (\textit{Cymbeline}, Act III, Scene 5)
+  \end{center}
+\end{quote}
+\vspace*{\fill}
+
+"I don't dislike him, I just don't like him. Which is quite
+ different." (Episode 2.06) -- Violet Crawley, Dowager Countess of Grantham
+
+
+
+
+
+
+There is an important non-analytic rule that is sometimes added to
+tableau systems, the cut rule. It says, at any point in a tableau
+construction we can split the end of a branch, labeling the two new
+branch nodes with T X and F X, for an arbitrary formula X. Since X can
+be any formula, obviously analyticity is violated. There is a more
+restricted version of the rule, in which X is required to be a
+subformula of the formula being proved—this is called analytic cut.
+
+...
+
+Why consider analytic cut? For one thing, it can shorten proofs, and
+does not violate the subformula principle, so proof search procedures
+can incorporate it in a reasonable way. It has sometimes been included
+in tableau implementations for this reason. The reader cannot fail to
+have noticed that while nine representative modal logics were
+intro-duced in Table 1, tableau systems were given for only six of
+them. Tableau systems for the other three are missing, though if
+analytic cut is allowed, destructive tableau systems can be created,
+[33]
+
+Propositional dynamic logic is, perhaps, the original example, see
+[35] for a thorough treatment. In this multi-modal logic, modal
+operators correspond to computer programs. The semantical treatment of
+the while operator requires a fixpoint construction. From early on
+there was a tableau system for the logic, [51]. It is, however, of a
+specialized nature that so far has not lent itself well to treatment
+by the general methodologies of this chapter. Propositional dynamic
+logic was extended to the propositional μ-calculus in [41], with modal
+operators in the language corresponding directly to fixpoint
+constructions. I do not know how to bring tableau methods to bear.
+
+
+section .5.5 handbook of modal logic
+
+-----------
+
+. . there is no one fundamental logical no-tion of necessity, nor
+consequently of possi-bility. If this conclusion is valid, the subject
+of modality ought to be banished from logic, since propositions are
+simply true or false . . . [Russell, 1905]
+
+, 1905] Bertrand Russell. Necessity and possibility, 1905. Paper read
+to the Oxford Philosophical Society on 22 October 1905. Published in
+The Collected Papers of Bertrand Russell, Volume 4, pages 507–520,
+Routledge, 1994.
+
+
+-----------------
+
+The scenario for managing permissions in these cases varies by
+service. Here are some examples of how permissions are handled for
+different services:
+
+In Auto Scaling, users must have permission to use Auto Scaling, but
+don't need to be explicitly granted permission to manage Amazon EC2
+instances.
+
+In AWS Data Pipeline, an IAM role determines what a pipeline can do;
+users need permission to assume the role. (For details, see Granting
+Permissions to Pipelines with IAM in the AWS Data Pipeline Developer
+Guide.)
+
+For details about how to configure permissions properly so that an AWS
+service is able to accomplish the tasks you intend, refer to the
+documentation for the service you are calling.
+
+-- http://docs.aws.amazon.com/IAM/latest/UserGuide/policies_permissions.html
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "thesis"
+%%% End:

@@ -1,0 +1,170 @@
+
+\newcommand{\CBInit}{
+  \Infer[$Init$]
+  {\CSeq{\Psi}{p}{p'}}
+  {\Psi \models p \doteq p'}
+}
+
+\newcommand{\CBDomR}{
+  \Infer[$dom-R$]
+  {\CSeq{\Psi}{\Gamma}{e}}
+  {\Psi \models e}
+}
+
+\newcommand{\CBDomL}{
+  \Infer[$dom-L$]
+  {\CSeq{\Psi}{\Gamma, e}{C}}
+  {\CSeq{\Psi \And e}{\Gamma}{C}}
+}
+
+\newcommand{\CBExR}{
+  \Infer[\Ex$-R$]
+  {\CSeq{\Psi}{\Gamma}{\Ex x.~A(x)}}
+  {\CSeq{\Psi}{\Gamma}{A(t)}}
+}
+
+\newcommand{\CBExL}{
+  \Infer[\Ex$-L$^a]
+  {\CSeq{\Psi}{\Gamma, \Ex x.~A(x)}{\gamma}}
+  {\CSeq{\Psi}{\Gamma, A(a)}{\gamma}}
+}
+
+\newcommand{\CBAllR}{
+  \Infer[\All$-R$^a]
+  {\CSeq{\Psi}{\Gamma}{\All x.~A(x)}}
+  {\CSeq{\Psi}{\Gamma}{A(a)}}
+}
+
+\newcommand{\CBAllL}{
+  \Infer[\All$-L$]
+  {\CSeq{\Psi}{\Gamma, \All x.~A(x)}{\gamma}}
+  {\CSeq{\Psi}{\Gamma, \All x.~A(x), A(t)}{\gamma}}
+}
+
+\newcommand{\CBAndR}{
+  \Infer[\And$-R$]
+  {\CSeq{\Psi}{\Gamma}{A_1\And A_2}}
+  { \CSeq{\Psi}{\Gamma}{A_1} & \CSeq{\Psi}{\Gamma}{A_2} }
+}
+
+\newcommand{\CBAndL}{
+  \Infer[\And$-L$]
+  {\CSeq{\Psi}{A_1 \And A_2}{\cdot}}
+  {\CSeq{\Psi}{A_1, A_2}{\cdot}}
+}
+
+\newcommand{\CBImpR}{
+  \Infer[\Imp$-R$]
+  {\CSeq{\Psi}{\cdot}{A_1 \Imp A_2}}
+  {\CSeq{\Psi}{A_1}{A_2}}
+}
+
+\newcommand{\CBImpL}{
+  \Infer[\Imp$-L$]
+  {\CSeq{\Psi}{A_1\Imp A_2}{\cdot}}
+  {\CSeq{\Psi}{A_1\Imp A_2}{A_1} & \CSeq{\Psi}{A_2}{\cdot}}
+}
+
+\newcommand{\CBOrR}{
+  \Infer[\Or$-R$_i]
+  {\CSeq{\Psi}{\cdot}{A_1 \Or A_2}}
+  {\CSeq{\Psi}{\cdot}{A_i}}
+}
+
+\newcommand{\CBOrL}{
+  \infer[\Or$-L$]
+  {\CSeq{\Psi}{A_1 \Or A_2}{\cdot}}
+  {\CSeq{\Psi}{A_1}{\cdot} & \CSeq{\Psi}{\Gamma, A_2}{\cdot}}
+}
+
+\newcommand{\CBTopR}{
+  \infer[\Top$-R$]
+  {\CSeq{\Psi}{\cdot}{\Top}}
+  {}
+}
+
+\newcommand{\CBTopL}{\mbox{No rule for $\Top$-L}}
+
+\newcommand{\CBBotL}{
+  \infer[\Bot$-L$]
+  {\CSeq{\Psi}{\Bot}{\cdot}}
+  {}
+}
+
+\newcommand{\CBBotR}{\mbox{No rule for $\Bot$-R}}
+
+\begin{figure}
+  \begin{center}
+    {\small
+      \fbox{
+        \begin{tabular}{c}
+          \begin{tabular}{ccc}
+            \CBInit
+            &
+            \hspace{2em}
+            \CBDomR
+            &
+            \hspace{2em}
+            \CBDomL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \CBExR
+            &
+            \hspace{2em}
+            \CBExL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \CBAllR
+            &
+            \hspace{2em}
+            \CBAllL
+          \end{tabular}
+        \\[2em]
+        \begin{tabular}{cc}
+          \CBAndR
+          &
+          \hspace{2em}
+          \CBAndL
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{cc}
+          \CBOrR
+          &
+          \hspace{2em}
+          \CBOrL
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{cc}
+          \CBImpR
+          &
+          \hspace{2em}
+          \CBImpL
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{cc}
+          \CBTopR
+          &
+          \hspace{2em}
+          \CBTopL
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{cc}
+          \CBBotR
+          &
+          \hspace{2em}
+          \CBBotL
+        \end{tabular}
+      \end{tabular}
+      }
+    }
+  \end{center}
+  \caption{The backward calculus.}
+  \label{constr.backward}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

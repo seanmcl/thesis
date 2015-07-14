@@ -1,0 +1,4 @@
+
+godel-dummit inverse method
+kuroda logic
+construct countermodels

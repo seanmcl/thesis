@@ -1,0 +1,17 @@
+
+\newcommand{\CBAndR}{
+  \Infer[\And$-R$]
+  {\CSeq{\Psi}{\cdot}{A_1 \And A_2}}
+  {\CSeq{\Psi}{\cdot}{A_1} & \CSeq{\Psi}{\cdot}{A_2}}
+}
+
+\newcommand{\CBAndL}{
+  \Infer[\And$-L$]
+  {\CSeq{\Psi}{A_1 \And A_2}{\cdot}}
+  {\CSeq{\Psi}{A_1, A_2}{\cdot}}
+}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

@@ -1,0 +1,825 @@
+
+\chapter{Constraints}\label{chapter.constraints}
+
+\section{Motivation}
+
+\subsection{Equality}
+
+In Chapter~\ref{chapter.fol}, terms are only considered equal if they
+are syntactically equal.  The question arises,
+how can we reason in axiomatic theories. The most natural example
+is first-order logic with equality, axiomitized by the following
+equations
+
+\[
+\begin{array}{l}
+  \All x.~x = x
+  \\
+  \All x~y.~x = y \Imp y = x
+  \\
+  \All x~y~z.~x = y \Imp y = z\Imp x = z
+  \\
+  \All \vec{x}~\vec{y}.~
+  x_1=y_1'\And \ldots\And x_n=y_n'\Imp f(x_1,\ldots,x_n) = f(y_1,\ldots,y_n)
+\end{array}
+\]
+
+\noindent
+One approach is to add the axioms as premeses to a sequent, and prove the
+sequent under the additional assumptions.  This approach, however, may not lead
+to a very efficient theorem prover.  In the classical literature, many
+specialized reasoning techniques, such as paramodulation, have been engineered
+to be far more effective than adding axioms.  Like resolution, paramodulation is
+fundamentally classical, and investigating other strategies is of some interest.
+Voronkov showed~\cite{Voronkov.1996.CADE} that intuitionistic logic with
+equality can be reduced to simultaneous rigid E-unification, which Degtyarev and
+Voronkov showed~\cite{Degtyarev.1996.TCS} undecidable.
+
+\subsection{Unification}
+
+The reduction from intuitionistic logic with equality to simultaneous rigid
+E-unification depends on equalities being explicit atomic formulas, in
+particular allowing negated equalities to occur as premeses.  We
+call interpreted atomic formulas \emph{extrinsic} constraints.
+In one sense, equality is already a part of backward proof search,
+in the form of unification.
+This view is detailed, e.g., in Pfenning's notes on automated
+deduction~\cite[Section 4.3-4.4]{Pfenning.2004.TheoremProvingLectureNotes}.
+The backward rules are modified to account for unification variables.
+
+\[
+\begin{tabular}{cc}
+  \textbf{Ground} & \textbf{Unification}
+  \\
+  \Infer[$Init$]
+  {\CSeq{\Gamma, p}{p}}
+  {}
+  &
+  \hspace{2em}
+  \Infer[$Init$]
+  {\CSeq{\Phi}{\Gamma, p}{q}}
+  {\Entails p\Ueq q}
+  \\[2em]
+  \Infer[\All$-R$_a]
+  {\CSeq{\Gamma}{\All x.~A(x)}}
+  {\CSeq{\Gamma}{A(a)}}
+  &
+  \hspace{2em}
+  \Infer[\All$-R$_a]
+  {\CSeq{\Phi}{\Gamma}{\All x.~A(x)}}
+  {\CSeq{\Phi,a}{\Gamma}{A(a)}}
+  \\[2em]
+  \Infer[\All$-L$]
+  {\CSeq{\Gamma, \All x.~A(x)}{C}}
+  {\CSeq{\Gamma,A(t)}{C}}
+  &
+  \hspace{2em}
+  \Infer[\All$-L$]
+  {\CSeq{\Phi}{\Gamma, \All x.~A(x)}{C}}
+  {\CSeq{\Phi}{\Gamma,A(X_{\Phi})}{C}}
+\end{tabular}
+\]
+
+\noindent
+where in the $\All$-L rule, the variable $X_\Phi$ is a unification
+variable that is allowed to depend on the parameters in $\Phi$.
+A proof, then, is a derivation where the side-conditions on all
+the initial sequents hold simultaneously.  While formalizing
+backward search in this way is beyond the scope of this thesis,
+there are two lessons relevant for our work.
+The first is that it is possible to defer computations
+(here the choice of existential instantiations).  The second is
+that finding the solutions can take place in a totally different
+logic than the one in which we are searching for proofs
+(here encoded in the $\Entails$ relation).
+
+\subsection{Most-general unifiers}
+
+Backward proof search mainly works because the unification problem in the free
+term algebra is particularly simple.  In particular, the existence of most
+general unifiers means that we never have to reconsider a choice of unifiers;
+there is always a best choice!  Adding interpreted function symbols to the term
+language will in general break this property.  We don't need to look far for
+examples.  Reasoning about a symmetric operator $\oplus$ with the axiom $\All
+x~y.~x\oplus y=y\oplus x$ already lacks mgus;  $\Set{x\to s,y\to
+t}$ and $\Set{x\to t, y\to s}$ both unify $x\oplus y$ and $s\oplus t$ (assuming
+$x,y\not\in\Vars s,t)$, but
+neither is more general than the other.  It is not necessary to allow equality
+as an atomic predicate; we should certainly be able to prove the sequent
+$\CSeq{p(c\oplus d)}{p(d\oplus c)}$.
+
+\section{Natural deduction}
+
+\input{constr/nd}
+
+\begin{example}
+  Let $\xi=(\All x.~p(x)\Imp p(f(x)))\Imp c=d\Imp p(c)\Imp p(f(d))$.
+  The following are both proof terms for $\xi$:
+  \[
+  \begin{array}{cc}
+    \Lam H_1:(\All x.~p(x)\Imp p(f(x))).~
+    \Lam H_2:(c=d).~
+    \Lam H_3:(p(c)).~
+    H_1~c~H_3 : p(f(d))
+    \\
+    \Lam H_1:(\All x.~p(x)\Imp p(f(x))).~
+    \Lam H_2:(c=d).~
+    \Lam H_3:(p(c)).~
+    H_1~d~(H_3 : p(d))
+  \end{array}
+  \]
+\end{example}
+
+\section{Constraint Domains}
+
+\begin{definition}[Constraint domain]
+  A \emph{constraint domain} is a tuple
+  $\ConDom = \ASet{\UFunc_{\ConDom},\UAtom_{\ConDom},\Entails_{\ConDom}}$
+  where $\UFunc_{\ConDom}\subseteq\UFunc$ is a set of function symbols and
+  $\UAtom_{\ConDom}\subseteq\UAtom$ is a subset of atomic formulas.
+  Constraint formulas are built from the following grammar.
+  \[
+  \mbox{Constraints } \Psi ::= t_1\Ueq t_2 \Sep p \Sep A \And A \Sep \Top \Sep A \Imp A \Sep \Bot
+  \]
+  where $\Funcs(t_i)\subseteq\UFunc_{\ConDom}, p\in\cA_\ConDom$.
+  Finally, $\Psi_1\Entails_{\ConDom}\Psi_2$ is a relation where
+  $\Psi_1$ and $\Psi_2$ are constraint formulas.  If $p\not\in\UAtom_{\ConDom}$ then
+  the expression
+  $p(t_1,\ldots,t_n)\Ueq p(s_1,\ldots,s_n)$ is shorthand for the formula
+  Write $\Psi\CEquiv\Psi'$ if $\Psi\Entails\Psi'$ and $\Psi'\Entails\Psi$.
+  The entailment relation must satisfy the following properties.
+  \begin{enumerate}
+  \item
+    $\Psi\Entails\Psi$
+  \item
+    $\Psi\Entails\Top$
+  \item
+    If $\Psi_1\Entails\Psi_2$ and $\Psi_2\Entails\Psi_3$ then
+    $\Psi_1\Entails\Psi_3$.
+  \item
+    If $\Psi\Entails \Psi_1\And\Psi_2$ then $\Psi\Entails \Psi_1$ and $\Psi\Entails \Psi_2$.
+  \item
+    If $\Psi\Entails \Psi_1$ and $\Psi\Entails\Psi_2$ then
+    $\Psi\Entails \Psi_1\And\Psi_2$
+  \item
+    If $\Psi\Entails \All x.~\Psi'(x)$ then for any $t$, $\Psi\Entails\Psi'(t)$.
+  \item
+    If $\Psi\Entails \Ex x.~\Psi'(x)$ then for some $t$, $\Psi\Entails\Psi'(t)$.
+  \item
+    If $\Psi\Entails \Psi(x)$ and $x\not\in\Psi$ then $\Psi\Entails\All x.~\Psi(x)$.
+  \item
+    If $\Psi_1\Entails \Psi_1'$ and $\Psi_2\Entails \Psi_2'$
+    then $\Psi_1'\Imp\Psi_2\Entails \Psi_1\Imp\Psi_2'$.
+  \item\label{constr.def.equiv} $x = t\And \Psi \CEquiv \Psi\cdot\Set{x\to t}$
+  \end{enumerate}
+
+  \noindent
+  Rule~\ref{constr.def.equiv} ensures that entailment respects substitution.
+  We use the phrase ``by entailment reasoning'' to indicate reasoning from these
+  rules.
+\end{definition}
+
+\begin{theorem}
+  Some easy consequences of the entailment relaton are:
+  \begin{itemize}
+  \item[]
+  \item $\Psi_1\And\Psi_2 \CEquiv \Psi_2\And\Psi_1$
+  \item $(\Psi_1\And\Psi_2)\And\Psi_3 \CEquiv \Psi_1\And(\Psi_2\And\Psi_3)$
+  \end{itemize}
+\end{theorem}
+
+\section{Backward calculus}
+
+\begin{definition}[Constraint sequents]
+  A sequent is a pair $\ASet{\Psi, \sigma}$
+  where $\Psi$ is a constraint formula and $\sigma$ is a first-order sequent.
+  We write backward sequents as $\CSeq{\Psi}{\Delta}{\delta}$ and
+  forward sequents as $\CFSeq{\Psi}{\Delta}{\delta}$.
+  $\Psi$ is called the \emph{constraint context}.
+\end{definition}
+
+\begin{definition}[Subsumption]
+  $\CSeq{\Psi}{\Delta}{\delta}$ \emph{subsumes}
+  $\CSeq{\Psi'}{\Delta'}{\delta'}$ if
+  $\Delta \subseteq \Delta'$, $\delta \subseteq \delta'$, and $\Psi'\Entails\Psi$.
+\end{definition}
+
+\noindent
+The constraints on the subsuming sequent must be weaker than that of the
+subsumed sequent.  This is natural, since a sequent with $\Psi=\Bot$ is
+trivial, so subsuming it should be easy.
+
+\begin{definition}[Backward inference rules]
+  An inference rule is a tuple $\ASet{\psi, \cH, \cC}$ where
+  $\cH = \ASet{H_1,\ldots,H_n}$, the hypotheses, are first-order sequents,
+  $\cC$ is a first-order sequent, and $\psi~:~\cF\to\ASet{\cF}_n$.
+  We write
+  % \[
+  % \Infer{\cC}{\}
+  % \]
+\end{definition}
+
+
+\begin{definition}[Unification equations]
+  For formulas $A,B$, define
+  \[
+  A\Ueq B=
+  \begin{cases}
+    p\Ueq q & A=p,~B=q,~p,q\in\cA_{\ConDom}\\
+    t_1\Ueq t_1'\And\cdots\And t_n\Ueq t_n' & A = p(t_1,\ldots,t_n),~B=p(t_1',\ldots,t_n'),~ p\in\cA\\
+    (A_1\Ueq B_1) \And (A_2\Ueq B_2) & A=A_1*A_2,~B=B_1*B_2,~*\in\Set{\And,\Or,\Imp}\\
+    A'(c)\Ueq B'(c) & A=\All x.~A'(x),~B=\All y.~B'(y) \\
+    A'(c)\Ueq B'(c) & A=\Ex x.~A'(x),~B=\Ex y.~B'(y) \\
+    \Bot & \mbox{otherwise}\\
+  \end{cases}
+  \]
+  The first case is to allow unification of atomic formulas from the constraint
+  domain to be determined by the domain.  For example, it should be possible to
+  unify $a < b$ and $b > a$ in an arithmetic theory, even though the predicates
+  are not syntactically equal.
+  The unification equations of quantified formulas should not be affected by
+  the bound variable.  Using a constant symbol in place of the variable captures
+  this independence.
+\end{definition}
+
+\begin{theorem}[Strengthening]
+  \label{constr.thm.strengthen}
+  \begin{itemize}
+  \item[]
+  \item If $\CSeq{\Psi}{\Delta}{\delta}$ and $\Psi'\Entails\Psi$ then
+    $\CSeq{\Psi'}{\Delta}{\delta}$.
+  \item If $\CSeq{\Psi,a=b}{\Delta}{\delta}$ and $a\not\in\Delta,\delta$ then
+    $\CSeq{\Psi}{\Delta}{\delta}$
+  \end{itemize}
+\end{theorem}
+
+\begin{proof}
+  TODO
+\end{proof}
+
+\begin{theorem}[Substitution]
+  \label{constr.thm.subst}
+  \begin{itemize}
+  \item[]
+  \item
+    If there is a derivation of $\CSeq{\Psi}{\Gamma}{\gamma}$ and $\theta$
+    is a valid substitution then
+    there is a derivation of $(\CSeq{\Psi}{\Gamma}{\gamma})\theta$.
+  \item
+    If there is a derivation of $\CFSeq{\Psi}{\Gamma}{\gamma}$ and $\theta$
+    is a valid substitution then
+    there is a derivation of $(\CFSeq{\Psi}{\Gamma}{\gamma})\theta$.
+  \end{itemize}
+\end{theorem}
+
+\begin{proof}
+  Induction on the derivation, using the validity of the
+  substitution to avoid variable capture.
+\end{proof}
+
+\begin{theorem}[Weakening]
+  \begin{itemize}
+  \item[]
+  \item
+    If $\CSeq{\Psi}{\Delta}{\delta}$ then $\CSeq{\Psi}{\Delta,A}{\delta}$.
+  \item
+    If $\CSeq{\Psi}{\Delta}{\cdot}$ then $\CSeq{\Psi}{\Delta}{A}$.
+  \end{itemize}
+\end{theorem}
+\begin{proof} Induction. \end{proof}
+
+\begin{proof} The leaves of any deduction are valid initial sequents. \end{proof}
+
+\begin{definition}[Forward inference rules]
+  A forward inference rule is a triple $\ASet{\psi,\Delta,\delta}$
+  where $\psi~:~\ASet{\cF}_n\to\cF$.
+\end{definition}
+
+\begin{definition}[Backward matching]
+
+\end{definition}
+
+\begin{definition}[Forward matching]
+
+\end{definition}
+
+\input{constr/backward}
+
+\begin{theorem}[Soundness]
+  If $\CSeq{\Psi}{\Gamma}{\gamma}$ then $\CNd{\Psi,\Gamma}{\gamma}$.
+\end{theorem}
+\begin{proof}
+
+\end{proof}
+
+\begin{theorem}[Completeness]
+  If $\CNd{\Gamma}{\gamma}$ then $\CSeq{\Psi}{\Gamma}{\gamma}$
+\end{theorem}
+\begin{proof}
+
+\end{proof}
+
+\section{Forward calculus}
+
+\input{constr/forward}
+
+\subsection{Soundness and completeness}
+
+\begin{lemma}[Inversion lemma]
+  \begin{itemize}
+  \item[]
+  \item If $\CSeq{\Psi}{\Delta,A\And B}{\delta}$ then
+    $\CSeq{\Psi}{\Delta,A, B}{\delta}$.
+  \item If $\CSeq{\Psi}{\Delta,\Ex x.\ A(x)}{\delta}$ then
+    $\CSeq{\Psi}{\Delta,A(a)}{\delta}$ where $a\not\in\Psi,\Delta,\delta$.
+  \end{itemize}
+\end{lemma}
+
+\begin{proof} Easy inductions. \end{proof}
+
+\begin{theorem}[Contraction]
+  \label{constr.thm.contract}
+  The rule
+  \[
+  \Infer[$Contract$]
+  {\CSeq{\Psi}{\Gamma,A}{\gamma}}
+  {\CSeq{\Psi}{\Gamma,A,A'}{\gamma} & \Psi\Entails A\Ueq A'}
+  \]
+  \noindent
+  is admissible in $\CB$.
+\end{theorem}
+
+\begin{definition}
+  We call a contraction step \emph{syntactic} if the formulas are
+  syntactically identical.  In that case, the rule
+  \[
+  \Infer[$Contract$]
+  {\CFSeq{\Psi}{\Gamma, A}{\gamma}}
+  {\CFSeq{\Psi}{\Gamma, A, A}{\gamma}}
+  \]
+  holds, since there are no nontrivial equations arising from
+  $A\Ueq A$.
+\end{definition}
+
+
+\begin{proof}
+  Induction on the derivation of $\CSeq{\Psi}{\Gamma,A,A'}{\gamma}$.
+  If $A$ is not principal in the last rule applied, then use the
+  induction hypotheses and the same rule.  Otherwise, $A$ is
+  principal.  We show some representative cases.
+  \begin{description}
+  \item[Case:]
+    \[
+    \Infer
+    {\CSeq{\Psi}{\Gamma,A_1\And A_2,A_1'\And A_2'}{\gamma}}
+    {\CSeq{\Psi}{\Gamma,A_1, A_2,A_1'\And A_2'}{\gamma}}
+    \]
+    where $\Psi\Entails A_1\And A_2\Ueq A_1'\And A_2'$.
+    By the definition of an entailment relation, we have that
+    $\Psi\Entails A_1\And A_2\Ueq A_1'\And A_2'$
+    By the inversion lemma we have a derivation of
+    $\CSeq{\Psi}{\Gamma,A_1, A_2,A_1', A_2'}{\gamma}$.
+    Then use the induction hypothesis (twice).  The side-conditions
+    are valid since if $\Psi\Entails A_1\And A_2$ then $\Psi\Entails A_i$
+    and the conjuncts of $A_1\Ueq A_1'$ are a subset of the conjuncts
+    of $A_1\And A_2\Ueq A_1'\And A_2'$.
+  \item[Case:]
+    \[
+    \Infer[\Ex$-L$_a]
+    {\CSeq{\Psi}{\Gamma,\Ex x.~A(x), B}{\gamma}}
+    {\CSeq{\Psi}{\Gamma, A(a), B}{\gamma}}
+    \]
+    where $\Psi\Entails\Ex x~.A(x)\Ueq B$ and $a\not\in B$.  If $B$ is not an
+    existential, then $\Psi\Entails\Bot$ so $\Psi\Entails A(a)\Ueq B$
+    and we can use the IH directly, giving a derivation of
+    $\CSeq{\Psi}{\Gamma, A(a)}{\gamma}$ and we can use $\Ex$-L.
+    Otherwise $B=\Ex x.~B'(x)$ and we can use the inversion lemma for a
+    derivation of ${\CSeq{\Psi}{\Gamma, A(a), B(b)}{\gamma}}$ where
+    $a\neq b$, $b\not\in\Psi,\Gamma,A(a),\gamma$.  Then we have
+    $\Psi\And a=b\Entails A(a)\Ueq B(b)$ and we have a derivation of
+    ${\CSeq{\Psi\And a=b}{\Gamma, A(a)}{\gamma}}$ from which we can again use
+    $\Ex$-L to derive ${\CSeq{\Psi\And a=b}{\Gamma, \Ex x.~A(x)}{\gamma}}$.
+    Theorem \ref{constr.thm.strengthen} gives us a derivation of
+    ${\CSeq{\Psi}{\Gamma, \Ex x.~A(x)}{\gamma}}$ since $a$ and $b$ do not
+    occur in $\Gamma, \Ex x.~A(x), \gamma$.
+  \end{description}
+\end{proof}
+
+\begin{lemma}
+  \label{constr.lem.exists}
+  If $\CSeq{\Psi(x)}{\Gamma}{\gamma}$ and $x\not\in\Gamma,\gamma$ then
+  $\CSeq{\Ex x.~\Psi(x)}{\Gamma}{\gamma}$.
+\end{lemma}
+\begin{proof}
+  This is an odd lemma, since in the rules currently given
+  for the backward calculus, no formulas ever enter the constraints,
+  and the proof is trivial.  We will of course need to revisit this
+  proof when we introduce rules that add formulas to the constraint context.
+\end{proof}
+
+\begin{theorem}[Soundness]
+  If there is a derivation of $\CFSeq{\Psi}{\Delta}{\delta}$ then there is
+  a derivation of any $\CSeq{\Psi'}{\Delta'}{\delta'}$ where
+  $(\CFSeq{\Psi}{\Delta}{\delta})\Subsumes (\CSeq{\Psi'}{\Delta'}{\delta'})$
+\end{theorem}
+
+\begin{proof}
+  We have $\Psi'\Entails\Psi$, $\Delta \subseteq\Delta'$ and $\delta \subseteq\delta'$.
+  We proceed by induction on the derivation.   We show some representative cases.
+  \begin{description}
+  \item[Case:]
+    \[
+    \Infer
+    {\CFSeq{p\Ueq p'}{p}{p'}}
+    {}
+    \]
+    Then $\Delta'=\Delta'', p$, $\delta=\delta'=p'$ and
+    $\Psi'\Entails p\Ueq p'$.  Then the Init rule gives a derivation
+    of $\CSeq{\Psi'}{\Delta'', p}{p'}$ as required.
+  \item[Case:]
+    \[
+    \Infer[\And$-R$]
+    {\CFSeq{\Psi_1\And\Psi_2}{\Gamma_1\Union\Gamma_2}{A_1\And A_2}}
+    { \CFSeq{\Psi_1}{\Gamma_1}{A_1} & \CSeq{\Psi_2}{\Gamma_2}{A_2} }
+    \]
+    We have that $\Gamma_1\Union\Gamma_2 \subseteq \Gamma$,
+    $\gamma_1\Union\gamma_2 \subseteq \gamma$ and
+    $\Phi\Entails\Phi_1\And\Phi_2$.  Using multiset and entailment
+    reasoning, we can use the IH to derive
+    $\CSeq{\Psi}{\Gamma}{A_1}$ and $\CSeq{\Psi}{\Gamma}{A_2}$.  Then
+    $\And$-R yields $\CSeq{\Psi}{\Gamma}{A_1\And A_2}$.
+  \item[Case:]
+    \[
+    \Infer[\All$-R$^x]
+    {\CFSeq{\All x.~\Psi(x)}{\Delta}{\All x.~A(x)}}
+    {\CFSeq{\Psi(x)}{\Delta}{A(x)}}
+    \]
+    Since $\Psi'\Entails\All x.~\Psi(x)$, $\Psi'\Entails\Psi(x)$,
+    so we can use the IH
+    to obtain $\CSeq{\Psi'}{\Delta}{A(x)}$.  Then
+
+    \[
+    \Infere[$Weaken$]
+    {\CSeq{\Psi'}{\Delta'}{\All x.~A(x)}}
+    {
+      \Infer[\All$-R$]
+      {\CSeq{\Psi'}{\Delta}{\All x.~A(x)}}
+      {\CSeq{\Psi'}{\Delta}{A(x)}}
+    }
+    \]
+  \item[Case:]
+    \[
+    \Infer[\All$-L$]
+    {\CFSeq{\Psi}{\Delta, \All x.~A(x)}{\delta}}
+    {\CFSeq{\Psi}{\Delta, A(t)}{\delta}}
+    \]
+    By IH we have a derivation of $\CSeq{\Psi'}{\Delta, A(t)}{\delta}$.
+    If $\All x.~A(x)\in\Delta$ then we can use
+    $\All$-L directly.  Otherwise weaken the derivation and use $\All$-L.
+  \item[Case:]
+    \[
+    \Infer[$Contract$]
+    {\CFSeq{\Psi \And A \doteq A'}{\Delta, A}{\delta}}
+    {\CFSeq{\Psi}{\Delta, A, A'}{\delta}}
+    \]
+    Since $\Psi'\Entails \Psi\And A\Ueq A'$, $\Psi'\Entails\Psi$.  We can thus use the IH
+    to derive $\CSeq{\Psi'}{\Delta, A, A'}{\delta}$.
+    Since $\Psi'\Entails A\Ueq A'$ and contraction is admissible
+    (Theorem~\ref{constr.thm.contract})
+    we have a derivation of $\CSeq{\Psi'}{\Delta, A}{\delta}$.  Weaken this
+    derivation to get $\CSeq{\Psi'}{\Delta', A}{\delta}$
+  \item[Case:]
+    \[
+    \Infer[\Ex$-C$]
+    {\CFSeq{\Ex x.~\Psi(x)}{\Delta}{\delta}}
+    {\CFSeq{\Psi(x)}{\Delta}{\delta} & x\not\in\Vars(\Delta,\delta)}
+    \]
+    Since $\Psi'\Entails \Ex x.~\Psi(x)$, there is some $t$ such that
+    $\Psi'\Entails \Psi(t)$.
+    By Theorem~\ref{constr.thm.subst} we have a derivation of
+    $(\CFSeq{\Psi(x)}{\Delta}{\delta})\Set{x\to t}$.  Since
+    $x\not\in\Vars(\Delta,\delta)$ this is also a derivation of
+    $\CFSeq{\Psi(t)}{\Delta}{\delta}$.  By IH, we have
+    $\CSeq{\Psi'}{\Delta}{\delta}$.  Weakening gives the final result.
+  \end{description}
+\end{proof}
+
+\begin{theorem}[Completeness]
+  If $\CSeq{\Psi}{\Delta}{\delta}$ then there exists $\Psi',\Delta',\delta'$ such
+  that $(\CFSeq{\Psi'}{\Delta'}{\delta'})\Subsumes (\CSeq{\Psi}{\Delta}{\delta})$.
+\end{theorem}
+
+\begin{proof}
+  Induction on the derivation.
+  \begin{description}
+  \item[Case:]
+    \[
+    \Infer[$Init$]
+    {\CSeq{\Psi}{p}{p'}}
+    {\Psi \models p \doteq p'}
+    \]
+    $(\CFSeq{p\Ueq p'}{p}{p'})\Subsumes (\CSeq{\Psi}{\Delta, p}{p'})$ since
+    $\Psi \models p \doteq p'$.
+  \item[Case:]
+    \[
+    \Infer[\And$-R$]
+    {\CSeq{\Psi}{\Gamma}{A_1\And A_2}}
+    { \CSeq{\Psi}{\Gamma}{A_1} & \CSeq{\Psi}{\Gamma}{A_2} }
+    \]
+    By IH, we have $q_1=\CFSeq{\Psi_1}{\Gamma_1}{\gamma_1}$ and
+    $q_2=\CFSeq{\Psi_2}{\Gamma_2}{\gamma_2}$ where $\Psi\Entails \Psi_1$ and
+    $\Psi\Entails \Psi_2$.  If $A_i\not\in\gamma_i$ then $q_i$ will do.  Otherwise
+    we use $\And$-R to get
+    $\CFSeq{\Psi_1\And\Psi_2}{\Gamma_1\Union\Gamma_2}{A_1\And A_2}$.  By entailment
+    reasoning, $\Psi\Entails\Psi_1\And\Psi_2$.  We may need to follow this
+    derivation by some number of syntatic contractions, yielding the result.
+  \item[Case:]
+    \[
+    \Infer[\All$-R$^a]
+    {\CSeq{\Psi}{\Gamma}{\All x.~A(x)}}
+    {\CSeq{\Psi}{\Gamma}{A(a)}}
+    \]
+    By IH, there is $q=(\CFSeq{\Psi'}{\Delta}{\delta})\Subsumes(\CSeq{\Psi}{\Gamma}{A(a)})$.
+    If $\delta=\emptyset$ then $q\Subsumes\CSeq{\Psi}{\Gamma}{\All x.~A(x)}$.
+    Otherwise we can use $\All$-R to yield
+    $\CFSeq{\All x.~\Psi'(x)}{\Delta}{\All x.~A(x)}$.  Since
+    $\Psi\Entails\Psi'(a)$,
+    $\Psi\Entails\All x.~\Psi'(x)$ as required.
+  \item[Case:]
+    \[
+    \Infer[\All$-L$]
+    {\CSeq{\Psi}{\Gamma, \All x.~A(x)}{\gamma}}
+    {\CSeq{\Psi}{\Gamma, \All x.~A(x), A(t)}{\gamma}}
+    \]
+    By IH, there is $q=\CFSeq{\Psi'}{\Gamma'}{\gamma'}$ such that
+    $q\Subsumes(\CSeq{\Psi}{\Gamma, \All x.~A(x), A(t)}{\gamma})$.
+    If $A(t)\not\in\Gamma'$, then $q$ will do.  Otherwise, use $\All$-L to
+    derive $\CFSeq{\Psi'}{\Gamma',\All x.~A(x)}{\gamma'}$.  If the number of
+    occurrances of $\All x.~A(x)$ in $\Gamma'$ is the same as that in
+    $\Gamma$, we need a syntactic contraction step.
+  \end{description}
+\end{proof}
+
+\section{Free-variable calculus}
+
+\input{constr/free}
+
+\begin{theorem}[Simplify]
+  If $\CFSeq{\Psi}{\Gamma}{\gamma}$ and $\Psi'\Entails\Psi$ then
+  $\CFSeq{\Psi'}{\Gamma}{\gamma}$.
+\end{theorem}
+
+\begin{example}
+
+  Let $\xi=(\All x.~p(x)\Imp p(f(x)))\Imp c=d\Imp p(c)\Imp p(f(d))$.
+
+  \begin{itemize}
+  \item[]
+  \item Label the subformulas
+    \[
+    \begin{array}{l@{\hspace{2em}}l@{\hspace{2em}}l}
+      l_1^-(x) : p(x)\Imp p(f(x))
+      &
+      l_2^- : \All x.~l_1(x)
+      &
+      l_3^+ : p(c)\Imp p(f(d))
+      \\
+      l_4^+ : c=d\Imp l_3
+      &
+      l_5^+ : l_2\Imp l_4
+    \end{array}
+    \]
+  \item Calculate the initial rules
+    \[
+    \begin{array}{c}
+      \begin{array}{ccc}
+        \Infer[r_1]
+        { \CFSeq{\Psi_1\And\Psi_2}{l_1(x)}{\cdot} }
+        { \CFSeq{\Psi_1}{p(f(x))}{\cdot} & \CFSeq{\Psi_2}{\cdot}{p(x)} }
+        &
+        \hspace{2em}
+        \Infer[r_2]
+        { \CFSeq{\Psi}{l_2}{\cdot} }
+        { \CFSeq{\Psi}{ l_1(x) }{\cdot} }
+        &
+        \hspace{2em}
+        \Infer[r_3]
+        { \CFSeq{\Psi}{\cdot}{l_3} }
+        { \CFSeq{\Psi}{ p(c) }{p(f(d))} }
+      \end{array}
+      \\[2em]
+      \begin{array}{ccc}
+        \Infer[r_4]
+        { \CFSeq{\Psi}{\cdot}{l_4} }
+        { \CFSeq{\Psi}{ c=d }{l_3} }
+        &
+        \hspace{2em}
+        \Infer[r_5]
+        { \CFSeq{\Psi}{\cdot}{l_5} }
+        { \CFSeq{\Psi}{ l_2 }{l_4} }
+        &
+        \hspace{2em}
+        \Infer[r_6]
+        { \CFSeq{\Psi\And c=d}{ c=d }{\cdot} }
+        { \CFSeq{\Psi}{\cdot}{\cdot} }
+      \end{array}
+    \end{array}
+    \]
+
+  \item The goal is $\CFSeq{\Top}{\cdot}{l_5}$
+  \item Saturate the database
+
+    \renewcommand{\Sa}{x_1\Ueq c\And x_2\Ueq c}
+    \renewcommand{\Qa}{\infer{\FSeq{p(x_1)}{p(x_2)}}{\Sa}}
+
+    \renewcommand{\Sb}{\Ex x_5.~x_3\Ueq f(x_5)\And x_4\Ueq f(x_5)}
+    \renewcommand{\Qb}{\infer{\FSeq{p(x_3)}{p(x_4)}}{\Sb}}
+
+    \renewcommand{\Sc}{x_3\Ueq f(y_1)\And x_2 \Ueq  y_1\And \Sa\And (\Sb)}
+    \renewcommand{\Qc}{\infer{\FSeq{p(x_1),l_1(y_1)}{p(x_4)}}{\Sc}}
+
+    \renewcommand{\Sd}{x_1\Ueq c\And y_1\Ueq c \And (\Ex x_5.~f(y_1)\Ueq f(x_5)\And x_4\Ueq f(x_5))}
+    \renewcommand{\Qd}{\Infer{\FSeq{p(x_1),l_1(y_1)}{p(x_4)}}{\Sd}}
+
+    \renewcommand{\Se}{x_1\Ueq c\And y_1\Ueq c \And (\Ex x_5.~f(c)\Ueq f(x_5)\And x_4\Ueq f(x_5))}
+    \renewcommand{\Qe}{\Infer{\FSeq{p(x_1),l_2}{p(x_4)}}{\Se}}
+
+    \renewcommand{\Sf}{\Ex y_1.~x_1\Ueq c\And y_1\Ueq c \And (\Ex x_5.~f(c)\Ueq f(x_5)\And x_4\Ueq f(x_5))}
+    \renewcommand{\Qf}{\Infer{\FSeq{p(x_1),l_2}{p(x_4)}}{\Sf}}
+
+    \renewcommand{\Sg}{x_1\Ueq c\And (\Ex x_5.~f(c)\Ueq f(x_5)\And x_4\Ueq f(x_5))}
+    \renewcommand{\Qg}{\Infer{\FSeq{p(x_1),l_2}{p(x_4)}}{\Sg}}
+
+    \renewcommand{\Sh}{x_1\Ueq c\And x_4\Ueq f(d)\And x_1\Ueq c\And (\Ex x_5.~f(c)\Ueq f(x_5)\And x_4\Ueq f(x_5))}
+    \renewcommand{\Qh}{\Infer{\FSeq{l_2}{l_3}}{\Sh}}
+
+    \renewcommand{\Si}{\Ex x_5.~f(c)\Ueq f(x_5)\And f(d)\Ueq f(x_5)}
+    \renewcommand{\Qi}{\Infer{\FSeq{l_2}{l_3}}{\Si}}
+
+    \renewcommand{\Sj}{c=d\And(\Ex x_5.~f(c)\Ueq f(x_5)\And f(d)\Ueq f(x_5))}
+    \renewcommand{\Qj}{\Infer{\FSeq{l_2,c=d}{l_3}}{\Sj}}
+
+    \renewcommand{\Sk}{c=d\And(\Ex x_5.~f(c)\Ueq f(x_5)\And f(d)\Ueq f(x_5))}
+    \renewcommand{\Qk}{\Infer{\FSeq{l_2}{l_4}}{\Sk}}
+
+    \renewcommand{\Sl}{c=d\And(\Ex x_5.~f(c)\Ueq f(x_5)\And f(d)\Ueq f(x_5))}
+    \renewcommand{\Ql}{\Infer{\FSeq{\cdot}{l_5}}{\Sl}}
+
+    \begin{tabbing}
+    $\Qa$ \` 1. Init\\[1em]
+    $\Qb$ \` 2. Init\\[1em]
+    $\Qc$ \` 3. $r_1[1, 2]$\\[1em]
+    $\Qd$ \` 4. $\Set{x_3\to f(y_1),x_2\to y_1}$\\[1em]
+    $\Qe$ \` 5. $r_2[4], \Set{y_1\to c}$\\[1em]
+    $\Qf$ \` 6. $\Ex$-C$[5]$\\[1em]
+    $\Qg$ \` 7. Simp.\\[1em]
+    $\Qh$ \` 8. $r_3[7]$\\[1em]
+    $\Qi$ \` 9. $\Set{x_1\to c,x_4\to f(d)}$\\[1em]
+    $\Qj$ \` 10. $r_6[9]$\\[1em]
+    $\Qk$ \` 11. $r_4[10]$\\[1em]
+    $\Ql$ \` 12. $r_5[11]$\\[1em]
+    \end{tabbing}
+  \end{itemize}
+
+  \noindent
+  The final sequent subsumes the goal because
+  $\Top\Entails c=d\And(\Ex x_5.~f(c)\Ueq f(x_5)\And f(d)\Ueq f(x_5))$
+  with $x_5\to d$.  (If $f$ is uninterpreted by the domain, we
+  could have simplified the constraint of sequent 4 to
+  $x_1\Ueq c\And y_1\Ueq c \And x_4\Ueq c$ making the remaining derivation
+  simpler.)
+
+\end{example}
+
+\section{Focused derivations}
+
+\begin{definition}[Formulas]
+  \[
+  \begin{array}{rrl}
+    \mbox{Sorts} &\sigma & ::= \SortI \Sep \ldots \\
+    \mbox{Domain Atoms} & e & ::= x < y \Sep x = y \Sep \ldots \\
+    \mbox{Positive Formulas} & A^+ & ::= e^+ \Sep p^+ \Sep A^+\AndP A^+\Sep \TopP \Sep A^+\Or A^+ \Sep \Down A^- \Sep \Ex x:\sigma.\ A^+ \\
+    \mbox{Negative Formulas} & A^- & ::= p^- \Sep A^-\AndN A^- \Sep \TopN \Sep A^+\Imp A^- \Sep \All x:\sigma.\ A^- \\
+  \end{array}
+  \]
+\end{definition}
+
+\begin{definition}[Erasure]
+  \[
+  \begin{array}{cc}
+    \begin{array}{rl}
+      \Erase{e^+}&=e^+\\
+      \Erase{p^+}&=p^+\\
+      \Erase{p^-}&=p^-\\
+      \Erase{A_1^+\AndP A_2^+} &= \Erase{A_1^+}\AndP\Erase{A_2^+} \\
+      \Erase{\TopP} &= \Top \\
+      \Erase{A_1^+\Or A_2^+} &= \Erase{A_1^+}\Or\Erase{A_2^+} \\
+      \Erase{\Ex x:\sigma.~A^+} &= \Ex x:\sigma.\Erase{A^+}\\
+      \Erase{A_1^-\AndN A_2^-} &= \Erase{A_1^-}\AndN\Erase{A_2^-} \\
+      \Erase{\TopN} &= \Top \\
+      \Erase{A_1^+\Imp A_2^-} &= \Erase{A_1^+}\Imp\Erase{A_2^-} \\
+      \Erase{\All x:\sigma.~A^-} &= \All x:\sigma.~\Erase{A^-}\\
+    \end{array}
+    &
+    \hspace{2em}
+    \begin{array}{rl}
+      \Erase{\CCSeq{\Psi}{\Gamma}{\gamma}}&=\CCSeq{\Psi}{\Erase{\Gamma}}{\Erase{\gamma}} \\
+      \Erase{\cdot}&=\cdot\\
+      \Erase{\Gamma,\gamma}&=\Erase{\Gamma},\Erase{\gamma}\\
+      \Erase{[A]}&=\Erase{A}\\
+      \Erase{\ASet{A}}&=\Erase{A}\\
+    \end{array}
+  \end{array}
+  \]
+\end{definition}
+
+\input{constr/focus}
+
+\begin{theorem}[Focal substitution]
+  \begin{itemize}
+  \item[]
+  \item If $\CCSeq{\Psi_1}{\Gamma_1}{[A^+]}$ and $\CCSeq{\Psi_2}{\Gamma_2,\ASet{A^+}}{\gamma}$
+    then $\CCSeq{\Psi_1\And\Psi_2}{\Gamma_1,\Gamma_2}{\gamma}$
+  \item If $\CCSeq{\Psi_1}{\Gamma_1}{\ASet{A^-}}$ and $\CCSeq{\Psi_2}{\Gamma_2,[A^-]}{\gamma}$
+    then $\CCSeq{\Psi_1\And\Psi_2}{\Gamma_1,\Gamma_2}{\gamma}$
+  \end{itemize}
+\end{theorem}
+
+\begin{proof}
+TODO
+\end{proof}
+
+\begin{theorem}[Cut admissibility]
+  \newcommand{\GammaF}{\PossFocus{\Gamma}}
+  \newcommand{\GammaI}{\PossInvert{\Gamma}}
+  \newcommand{\gammaF}{\PossFocus{\gamma}}
+  \newcommand{\gammaI}{\PossInvert{\gamma}}
+  \begin{enumerate}
+  \item[]
+  \item If $\CCSeq{\Psi}{\Gamma
+    }{[A^+]}$ and $\CCSeq{\Psi}{\GammaI,A^+}{\gammaI}$
+    then $\CCSeq{\Psi}{\Gamma}{\gamma}$.
+  \item If $\CCSeq{\Psi}{\Gamma}{A^-}$ and $\CCSeq{\Psi}{\Gamma,[A^-]}{\gamma}$
+    then $\CCSeq{\Psi}{\Gamma}{\gamma}$.
+  \item If $\CCSeq{\Psi}{\Gamma}{A^+}$ and $\CCSeq{\Psi}{\Gamma,A^+}{\gamma}$
+    then $\CCSeq{\Psi}{\Gamma}{\gamma}$.
+  \item If $\CCSeq{\Psi}{\Gamma}{A^-}$ and $\CCSeq{\Psi}{\Gamma,A^-}{\gamma}$
+    then $\CCSeq{\Psi}{\Gamma}{\gamma}$.
+  \end{enumerate}
+\end{theorem}
+
+\begin{theorem}[Identity expansion]
+  \begin{itemize}
+  \item[]
+  \item If $\CCSeq{\Psi}{\Gamma}{\ASet{A^-}}$ then $\CCSeq{\Psi_1}{\Gamma}{A^-}$.
+  \item If $\CCSeq{\Psi}{\Gamma, \ASet{A^+}}{\gamma}$ then
+    $\CCSeq{\Psi}{\Gamma,A^+}{\gamma}$
+  \end{itemize}
+\end{theorem}
+
+\begin{proof}
+TODO
+\end{proof}
+
+\section{Related Work}
+
+\section{Future Work}
+
+
+\subsection{Non-convex domains}
+
+DLO example
+
+\input{constr/nonconvex}
+
+\section{XXX Notes XXX}
+
+\begin{itemize}
+\item When we add rules that muck with $\Psi$ (e.g. in modal logic)
+  we must revisit all of the proofs to add the cases for the new
+  rules.
+\item Example: contracting $\CFSeq{\Top}{p(x), p(y)}{p(y)}$
+  gives $\CFSeq{\Top\And x=y}{p(y)}{p(y)}$ from which you
+  need $\CFSeq{\Ex x.~\Top\And x=y}{p(y)}{p(y)}$.
+\item Faced with a rule like
+  \Infer
+  {\CFSeq{\Psi}{x = y}{\cdot}}
+  {\CFSeq{x=y\Imp\Psi}{\cdot}{\cdot}}
+
+  we are in the position of repeatedly applying this rule.
+  It may be necessary of course (the situation is similar to
+  $\All$-L and $\Box$-L), but we should \emph{never
+    contract} two hypotheses arising this way.
+\end{itemize}
+
+\section{CURRENT}
+
+\subsection{The unfocused rules are admissible.}
+
+\input{constr/unfoc-admis}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "thesis"
+%%% End:

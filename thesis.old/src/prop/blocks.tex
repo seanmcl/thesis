@@ -1,0 +1,77 @@
+
+
+\newcommand{\nseq}[3]{{\color{blue}{\Nseq{#1}{#2}{#3}}}}
+\newcommand{\pseq}[3]{{\color{blue}{\Pseq{#1}{#2}{#3}}}}
+\newcommand{\rfoc}[2]{{\color{Fuchsia}{\Rfoc{#1}{#2}}}}
+\newcommand{\lfoc}[3]{{\color{Fuchsia}{\Lfoc{#1}{#2}{#3}}}}
+\newcommand{\stable}[2]{{\color{red}{\Seq{#1}{#2}}}}
+
+\renewcommand{\ab}{a \Lolli b}
+\renewcommand{\abc}{\Down (\ab) \Lolli c}
+
+\renewcommand{\qr}{\rfoc{\abc, \ab, a}{a}}
+\renewcommand{\rr}{\Infer[$Init-R$]{\qr}{}}
+
+\renewcommand{\qq}{\lfoc{\abc, \ab, a}{b}{b}}
+\renewcommand{\rq}{\Infer[$Init-L$]{\qq}{}}
+
+\renewcommand{\qp}{\lfoc{\abc, \ab, a}{\ab}{b}}
+\renewcommand{\rp}{\Infer[\Imp$-L$]{\qp}{\rq & \rr}}
+
+\renewcommand{\qo}{\stable{\abc, \ab, a}{b}}
+\renewcommand{\ro}{\Infer[$Focus-L$]{\qo}{\rp}}
+
+\renewcommand{\qn}{\pseq{\abc, \ab, a}{\cdot}{b}}
+\renewcommand{\rn}{\Infer[$Stable$]{\qn}{\ro}}
+
+\renewcommand{\qm}{\pseq{\abc, \ab}{a}{b}}
+\renewcommand{\rm}{\Infer[$Atom-L$]{\qm}{\rn}}
+
+\renewcommand{\ql}{\nseq{\abc, \ab}{a}{b}}
+\renewcommand{\rl}{\Infer[$Atom-R$]{\ql}{\rm}}
+
+\renewcommand{\qk}{\nseq{\abc, \ab}{\cdot}{\ab}}
+\renewcommand{\rk}{\Infer[\Imp$-R$]{\qk}{\rl}}
+
+\renewcommand{\qj}{\rfoc{\abc, \ab}{\Down (\ab)}}
+\renewcommand{\rj}{\Infer[\Down$-R$]{\qj}{\rk}}
+
+\renewcommand{\qi}{\lfoc{\abc, \ab}{c}{c}}
+\renewcommand{\ri}{\Infer[$Init-L$]{\qi}{}}
+
+\renewcommand{\qh}{\lfoc{\abc, \ab}{\abc}{c}}
+\renewcommand{\rh}{\Infer[\Imp$-L$]{\qh}{\ri & \rj}}
+
+\renewcommand{\qg}{\stable{\abc, \ab}{c}}
+\renewcommand{\rg}{\Infer[$Focus-L$]{\qg}{\rh}}
+
+\renewcommand{\qf}{\pseq{\abc, \ab}{\cdot}{c}}
+\renewcommand{\rf}{\Infer[$Stable$]{\qf}{\rg}}
+
+\renewcommand{\qe}{\pseq{\ab}{\Down(\abc)}{c}}
+\renewcommand{\re}{\Infer[\Down$-L$]{\qe}{\rf}}
+
+\renewcommand{\qd}{\pseq{\cdot}{\Down(\abc), \Down(\ab)}{c}}
+\renewcommand{\rd}{\Infer[\Down$-L$]{\qd}{\re}}
+
+\renewcommand{\qc}{\nseq{\cdot}{\Down(\abc), \Down(\ab)}{c}}
+\renewcommand{\rc}{\Infer[$Atom-R$]{\qc}{\rd}}
+
+\renewcommand{\qb}{\nseq{\cdot}{\Down(\abc)}{\Down(\ab) \Lolli c}}
+\renewcommand{\rb}{\Infer[\Lolli$-R$]{\qb}{\rc}}
+
+\renewcommand{\qa}{\nseq{\cdot}{\cdot}{\Down(\abc) \Lolli \Down(\ab) \Lolli c}}
+\renewcommand{\ra}{\Infer[\Lolli$-R$]{\qa}{\rb}}
+
+\begin{sidewaysfigure}
+{\small
+\[ \ra \]
+}
+\caption{Backward proof with $a^+$, $b^-$, $c^-$}
+\label{prop.blocks}
+\end{sidewaysfigure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

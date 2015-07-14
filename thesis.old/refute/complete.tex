@@ -1,0 +1,152 @@
+
+\newcommand{\CompleteLemmas}{
+  \begin{lemma}
+    \label{lem:lj-cut}
+    If $\Seq{\Gamma, A}{G}$ and $\Seq{\Gamma, B}{A}$ then
+    $\Seq{\Gamma, B}{G}$.
+  \end{lemma}
+  \begin{proof}
+    \
+    \begin{tabbing}
+      $\Seq{\Gamma, A}{G}$ \` Hyp. \\
+      $\Seq{\Gamma, B}{A}$ \` Hyp. \\
+      $\Seq{\Gamma, B, A}{G}$ \` Weaken. \\
+      $\Seq{\Gamma, B}{G}$ \` Cut. \\
+    \end{tabbing}
+  \end{proof}
+
+  \begin{lemma}
+    \label{lem:ljr-cut}
+    If $\Ref{\Gamma, A}{G}$ and $\Seq{\Gamma, A}{B}$ then
+    $\Ref{\Gamma, B}{G}$.
+  \end{lemma}
+  \begin{proof}
+    \
+    \begin{tabbing}
+      $\Ref{\Gamma, A}{G}$ \` Hyp. \\
+      $\Seq{\Gamma, A}{B}$ \` Hyp. \\
+      $\Ref{\Gamma, A, B}{G}$ \` Strengthen. \\
+      $\Ref{\Gamma, B}{G}$ \` Weak. \\
+    \end{tabbing}
+  \end{proof}
+
+  \begin{lemma}
+    \label{lem:lj-imp}
+    \
+    \begin{enumerate}[a.)]
+    \item $\Seq{(A \And B) \Imp C}{A \Imp (B \Imp C)}$
+    \item $\Seq{A \Imp (B \Imp C)}{(A \And B) \Imp C}$
+    \item $\Seq{(A \Or B) \Imp C}{(A \Imp C) \And (B \Imp C)}$
+    \item $\Seq{(A \Imp C) \And (B \Imp C)}{(A \Or B) \Imp C}$
+    \end{enumerate}
+  \end{lemma}
+  \begin{proof}
+    Trivial.
+  \end{proof}
+}
+
+\newcommand{\CompleteTheorem}{
+  \begin{theorem}[Completeness]
+    \label{thm:complete}
+    For any $\Gamma$ and $G$, either $\Seq{\Gamma}{G}$ or
+    $\Ref{\Gamma}{G}$.
+  \end{theorem}
+}
+
+\newcommand{\CompleteProof}{
+  \begin{proof}
+    By multiset induction. We show some representative cases.
+    \begin{description}
+
+    \item[Case:]
+      $G = A_1 \And A_2$.
+
+      By induction, either $\Seq{\Gamma}{A_1}$ or $\Ref{\Gamma}{A_1}$.
+      Similarly, either $\Seq{\Gamma}{A_2}$ or $\Ref{\Gamma}{A_2}$.
+      If $\Ref{\Gamma}{A_i}$ then use rule $\And$-R$_i$ of $\LJR$.
+      If both $\Seq{\Gamma}{A_i}$, use rule $\And$-R of $\LJ$.
+
+    \item[Case:]
+      $G = \Top$.
+
+      Use $\Top$-R of $\LJ$.
+
+    \item[Case:]
+      $G = A_1 \Or A_2$.
+
+      By induction, either $\Seq{\Gamma}{A_1}$ or $\Ref{\Gamma}{A_1}$.
+      Similarly, either $\Seq{\Gamma}{A_2}$ or $\Ref{\Gamma}{A_2}$.
+      If $\Seq{\Gamma}{A_i}$ then use rule $\Or$-R$_i$ of $\LJ$.
+      If both $\Ref{\Gamma}{A_i}$, use rule $\Or$-R of $\LJR$.
+
+    \item[Case:]
+      $G = A \Imp B$.
+
+      By induction, either $\Seq{\Gamma, A}{B}$ or $\Ref{\Gamma, A}{B}$.
+      In either case, use the rule $\Imp$-R of the relevant calculus.
+
+    \item[Case:]
+      $\Gamma = \Gamma', A_1 \And A_2$.
+
+      By induction, either $\Seq{\Gamma, A_1, A_2}{G}$ or
+      $\Ref{\Gamma, A_1, A_2}{G}$.
+      In either case, use the rule $\And$-L of the relevant calculus.
+
+    \item[Case:]
+      $\Gamma = \Gamma', A_1 \Or A_2$.
+
+      By induction, either $\Seq{\Gamma, A_1}{G}$ or
+      $\Ref{\Gamma, A_1}{G}$.
+      Similarly, either $\Seq{\Gamma, A_2}{G}$ or
+      $\Ref{\Gamma, A_2}{G}$.
+
+      If both $\Ref{\Gamma}{A_i}$ then use rule $\Or$-L$_i$ of $\LJR$.
+      If $\Seq{\Gamma}{A_i}$, use rule $\Or$-R of $\LJ$.
+
+    \item[Case:]
+      $\Gamma = \Gamma', A_1 \Or A_2$.
+
+      By induction, either $\Seq{\Gamma, A_1}{G}$ or
+      $\Ref{\Gamma, A_1}{G}$.
+      Similarly, either $\Seq{\Gamma, A_2}{G}$ or
+      $\Ref{\Gamma, A_2}{G}$.
+
+      If both $\Ref{\Gamma}{A_i}$ then use rule $\Or$-L$_i$ of $\LJR$.
+      If $\Seq{\Gamma}{A_i}$, use rule $\Or$-R of $\LJ$.
+
+    \item[Case:]
+      $\Gamma = \Gamma', (A \And B) \Imp C$.
+
+      By induction, either $\Seq{\Gamma', A \Imp (B \Imp C)}{G}$ or
+      $\Ref{\Gamma', A \Imp (B \Imp C)}{G}$.  Suppose
+      $\Seq{\Gamma', A \Imp (B \Imp C)}{G}$.  Now the
+      result follows by Lemma~\ref{lem:lj-cut} and
+      Lemma~\ref{lem:lj-imp}(a).  Suppose
+      $\Ref{\Gamma', A \Imp (B \Imp C)}{G}$.
+      Now the result follows by Lemma~\ref{lem:ljr-cut} and
+      Lemma~\ref{lem:lj-imp}(b).
+
+    \item[Case:]
+      $\Gamma = \Gamma', (A \Or B) \Imp C$.
+
+      By induction, either $\Seq{\Gamma', A \Imp C, B \Imp C}{G}$ or
+      $\Ref{\Gamma', A \Imp (B \Imp C)}{G}$.  Suppose
+      $\Seq{\Gamma', A \Imp C, B \Imp C}{G}$.  By the invertability
+      of $\And$-R, $\Seq{\Gamma', (A \Imp C) \And (B \Imp C)}{G}$.
+      Now the result follows from Lemma~\ref{lem:lj-cut} and
+      Lemma~\ref{lem:lj-imp}(c).
+      If $\Ref{\Gamma', A \Imp (B \Imp C)}{G}$,
+      the result follows from Lemma~\ref{lem:ljr-cut} and
+      Lemma~\ref{lem:lj-imp}(d).
+
+    \item[Case:]
+      $\Gamma = \Gamma', (A \Imp B) \Imp C$.
+
+    \end{description}
+  \end{proof}
+}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "refute"
+%%% End:

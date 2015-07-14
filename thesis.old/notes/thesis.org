@@ -1,0 +1,317 @@
+
+* Bibliography
+
+My papers
+go through /Users/seanmcl/save/text/library/papers
+scan bibs of very relevant papers
+
+* History
+
+--------------------------------------------------------------------------------
+ Brainstorm
+--------------------------------------------------------------------------------
+
+History
+intuitionistic logic
+inverse method
+applications
+modal logic
+proof
+
+Propositional logic, SAT solvers
+FOL with equality, Vampire, E
+
+
+
+There are a variety of proof search strategies employed by modern theorem provers,
+Resolution, tableaux, and matrix methods being by far the most common.
+
+A note on IL with equality
+
+
+
+- A note on equality: IL with equality is hard because simultaneous rigid E-unification is undecidable.
+
+
+* Inverse
+
+Parameters
+
+Labeling subformulas, abstracting variables
+
+Use of multisets can make some things more complicated.  E.g.
+two rules are needed for ∨-L
+
+Γ, T A    Δ, T B
+-----------------
+Γ, Δ, T A ∨ B
+
+
+Γ, T A, F C      Δ, T B, F C
+-----------------------------
+    Γ, Δ, T A ∨ B, F C
+
+The first is not enough, as if F C ∈ Γ and F C ∈ Δ then the multiset union
+would have two copies of F C which is not a legal intuitionistic sequent.
+
+
+
+
+* Implementation
+
+ Small note about parsing FOL with equality
+
+ Note: Mneumonic for atom case:  ↑p and ↓P should be syntactically correct,
+ so p is positive and P is negative
+
+* Constraints
+
+- Equality: Again mention simultaneous rigid E-unification as a possibility for the use
+  of constraints, but having an undecidable problem in the constraint reasoning is problematic.
+
+Extra rules for ◇L and □R
+
+(* -------------------------------------------------------------------------- *)
+(*  Parameters                                                                *)
+(* -------------------------------------------------------------------------- *)
+
+ME:
+
+
+ I've been thinking that there is another way to treat parameters.
+You could really treat them as constants, that are only unifiable with
+themselves.  The only difference being that when you generate
+initial sequents that contained a parameter, e.g. by focusing on p(a)
+where a is a parameter, you'd
+need to generate p(a1) |- p(a1), ..., p(an) |- p(an).  Since all of
+these are subsumed by p(X) |- p(X) I think this would still work,
+unification would be simpler, and fewer inference rules would apply.
+The problem is that you may generate facts over and over again.  For
+instance, in the proof
+
+
+ p(a) |- A                     p(b) |- A
+--------------------------   -----------------------
+exists x. p(x) |- A    exists x. p(x) |- B
+---------------------------------------------------------
+exists x. p(x) |- A /\ A
+
+
+you would have to generate both of the top proofs, since one does not
+subsume the other in this view.
+It seems like an interesting option anyway, if you don't see an
+obvious flaw in it.
+
+FRANK:
+
+I don't think this is right.  For example, if you have assumptions
+such as nat(0) and forall x. nat(x) -> exists y. succ(x,y) /\ nat (y)
+then we can use this arbitrarily often, and each instance of y must be
+be fresh.
+
+The beauty of writing P(a) |- P(a)  (in the small step system,
+appropriately generalized) that it captures all parameter
+cases in a single clause.  In that way, it is consistent with the
+inverse methods philosophy, while having n distinct axioms
+really is not.
+
+By the way, the traditional way to handle this (see, e.g., the
+handbook article on the inverse method) is *not* to introduce
+any parameter variables, but just have axioms such as
+P(x) |- P(x) where x is an arbitrary term.  The parameter
+restriction is then only enforced at the forallR and existsL
+rules.  The issue with this prior solution is that it overgenerates,
+since it does not note that only P(a) is a subformula of
+|- forall x. P(x) rather than an arbitrary P(x).
+
+
+Focusing makes prolog-like proof enumeration impossible.
+
+  "Propositional logic is of course of less interest than first-order logic, which
+  should be the subject of a future report. (We think in fact that for this logic,
+  proof enumeration rather than just provability are required.) Time efficiency is
+  not the only criterion that should be used; space efficiency and verifiable
+  correctness are equally important issues. It is even arguable that space is more
+  important than time, since it is harder to add RAM to a machine just when the
+  theorem prover runs out of memory than to allow extra time. The present
+  benchmarks aim just to address the time complexity issue."
+
+  -Dyckoff http://www.cs.st-andrews.ac.uk/~rd/logic/marks.html
+
+How much space is used?
+
+Countermodels (Porgi)
+
+Andrioli 2001 bipole
+
+Analytic Cut?
+
+Minimal logic?
+
+# [BB]
+  B. Bennett, Spatial Reasoning with Propositional Logics in Doyle, J, Sandewall,
+  E & Torasso, P (editors), Principles of Knowledge Representation and Reasoning:
+  Proceedings of the Fourth International conference (KR94), Morgan Kaufmann, San
+  Francisco, pp.51-62
+# [D92]
+  R. Dyckhoff, Contraction-free sequent calculi for intuitionistic logic,
+  J. Symbolic Logic, 1992.
+# [D97]
+  R. Dyckhoff, Verifiable implementation of a fast intuitionistic propositional
+  logic decision procedure, University of St Andrews Research Report (in
+  preparation).
+# [Fr1]
+  T. Franzen, Algorithmic Aspects of intuitionist propositional logic, SICS
+  Research Report R87010B, 1988.
+# [Fr2]
+  T. Franzen, Algorithmic Aspects of intuitionist propositional logic II, SICS
+  Research Report R-89/89006, 1989.
+# [HS]
+  A. Heuerding & S. Schwendimann, A benchmark method for the propositional modal
+  logics K, KT, S4; Technical report IAM-96-015, University of Bern, October 1996;
+  also available from [LWB].
+# [KK]
+  D. Korn & C. Kreitz, A constructively adequate refutation system for
+  intuitionistic logic, position paper at Tableaux'97, available in Research
+  Report CRIN 97-R-030, University of Nancy 1, Nancy, France or from
+  korn@informatik.th-darmstadt.de.
+# [H]
+  J. Howe, Two loop detection mechanisms: a comparison; in Springer LNAI 1227
+  (1997).
+# [Sch]
+  H. Schwichtenberg, Termination of permutative conversions in Gentzen's sequent
+  calculus, unpublished (1997).
+# [Sh]
+  N. Shankar, Proof search in the intuitionistic sequent calculus, Springer LNCS
+  607 (1992).
+# [SFH]
+  Sahlin, Franzen and Haridi, An intuitionistic predicate logic theorem prover,
+  Journal of Logic & Computation 2 (1992).
+# [T]
+  T. Tammet, A resolution theorem prover for intuitionistic logic, paper (not
+  implementation) available here.
+# [TM]
+  Tyugu & Mints.
+
+
+--------------------------------------------------------------------------------
+
+Voronkov
+
+2 kinds of redundancy: redundant sequents, redundant derivations
+
+Forward subsumption
+Backward subsumption
+
+
+The main idea of the inverse method is the following. Suppose that we have a
+logical system consisting of axioms Ax and inference rules IR. Suppose then that
+we want to find a proof of a (goal) formula 7. The (naive) backward procedure
+starts from 7 and tries to apply all possible rules that can be used to prove
+it, reducing this goal to subgoals. Then this procedure applies to subgoals
+until (in case of success) we come to axioms.  A normal forward reasoning
+procedure uses a different approach: starting from axioms it generates new
+formulas (or sequents) until the goal is reached.  It is well known that the
+main disadvantage of the forward reasoning that it is not goal-directed. Suppose
+however that we have a criterion which allows us to select only some relevant
+initial axioms Ax7 and inference rules ItLr which could be used to prove the
+goal 7. In this case we can specialize the forward procedure to make it a
+procedure oriented to prove only 7.  It allows one to exploit all properties of
+a forward reasoning procedure but to make it more goal oriented at the same
+time. This is the key idea of the inverse method.
+
+From now on we assume that 7 is a fixed ground formula to be proved. In what
+follows "subformula" means "subformula with the fixed occurrence". (In other
+words, we consider different occurences of the same subformula as different
+subformulas.)
+
+Not all the logics are so easy to handle as S4 or C1. To illustrate rules which
+are more difficult to specialize we give the example of the rule (V --*) of the
+intuitionistic sequent calculus Int. The difference between Int and C1 is that
+there can be at most one formula in the right part (succedent) of a
+sequent. This seemingly inessential difference produces the rule r re, axe ---+
+e] where 8 is a most general unifier of al, {1 with s2, t=. As one can see, we
+have to unify not only ~1 with 3=, as in the case of classical logic, but also
+tl with {=.
+
+--------------------------------------------------------------------------------
+
+Cite Encoding nonclassical logics, Ohlbach, Handbook
+
+* References
+
+* Maybe
+
+- linear logic format for TPTP?
+
+* Quotes
+
+\begin{quote}
+  \emph{
+    We can judge immediately whether propositions presented to us are
+    proved, and that which others could hardly do with the greatest mental
+    labor and good fortune, we can produce with the guidance of symbols
+    alone...  As a result of this, we shall be able to show within a century
+    what many thousands of years would hardly have granted to mortals
+    otherwise.
+  }
+  \flushright -- Gottfried Leibniz
+\end{quote}
+
+\begin{quote}
+  \emph{
+    \textbf{Logic: 1.a.} \ldots a formal system using symbolic techniques and mathematical methods to
+    establish truth-values in the physical sciences, in language, and in
+    philosophical argument.
+  }
+  \flushright -- The Oxford English Dictionary
+\end{quote}
+
+Prove: 1. trans. To establish as true; to make certain; to demonstrate the truth of by evidence or argument.
+
+
+--------------------------------------------------------------------------------
+
+A second aspect of focusing proofs is that the synchronous/asynchronous classification of non-atomic
+formulas must be extended to atomic formulas. The arbitrary assignment of positive (synchronous) and
+negative (asynchronous) bias to atomic formulas can have a major impact on, not the existence of focused
+proofs, but the shape of focused proofs. For example, consider the Horn clause specification of the Fibonacci
+series:
+fib(0, 0) ∧ fib(1, 1) ∧ ∀n∀f∀f′[fib(n, f) ∧ fib(n + 1, f′) ⊃ fib(n + 2, f + f′)].
+If all atomic formulas are given negative bias, then the only focused proofs of fib(n, fn) are those that can be
+classified as “backward chaining” (the size of the smallest one being exponential in n). On the other hand,
+if all atomic formulas are given positive bias, then the only focused proofs are those that can be classified as
+“forward chaining” (the size of the smallest one being linear in n).
+
+Miller/Liang
+
+Although nominally a multiset, the unbounded context of a LLF sequent is in fact treated additively. In
+mapping intuitionistic logic to linear logic, the left-hand side contexts of sequents are also treated additively.
+The contexts never decrease from conclusion to premise. We will not be able to directly account for certain
+known optimizations for LJ proofs: for example, the left introduction rule for implication can be optimized
+so that the introduced implication is maintained in one premise but not the other (c.f., [Dyc92]).
+
+Shifts may be definable in terms of other connectives:
+
+Various other proof systems can be embedded into LJF by mapping intuitionistic formulas to intuitionistic
+formulas in such a way that focusing features in LJF are stopped by the insertion of delay operators. In
+particular, if we define @−(B) = true ⊃ B and @+(B) = true ∧+ B, then B, @−(B), and @+(B) are all
+logically equivalent but @−(B) is always negative and @+(B) is always positive
+...
+It is possible to view focusing proof systems as describing new sets of “big connectives”, which are
+collections of either all asynchronous or all synchronous “small connectives” (i.e., true, false, ∧+, ∨, ∃, ∧−,
+⊃, and ∀). The embedding of various proof system into LJF using the delays @+(·) and @−(·) can be seen
+as describing how the big connectives of LJF can be systematically broken into the smaller connectives
+described by the other focusing proof systems.
+
+* Contributions
+
+Rule subsumption
+Rule cascading
+ Reduces number of matches
+ Obviates the need for rule subsumption, which is easy
+ if the conclusion is subsumed, but hard if one rule
+ subsumes another
+
+
+

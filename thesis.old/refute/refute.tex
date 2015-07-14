@@ -1,0 +1,140 @@
+\documentclass[]{article}
+
+\usepackage[dvipsnames]{xcolor}
+\usepackage[]{fullpage}
+\usepackage[]{url}
+\usepackage[]{amsthm}
+\usepackage[]{amsmath}
+\usepackage[]{amssymb}
+\usepackage[]{proof}
+\usepackage[]{enumerate}
+
+\usepackage[backref,bookmarks,
+bookmarksnumbered,
+citecolor=Plum,
+colorlinks=true,
+filecolor=red,
+linkcolor=blue,
+pageanchor=true,
+pdfpagelabels,
+plainpages=false,
+urlcolor=purple,
+% pagebackref
+]{hyperref}
+
+\input{commands}
+
+\begin{document}
+\title{Inverse refutations}
+\author{Sean McLaughlin\ Google}
+
+\section{Introduction}
+\label{sec:intro}
+
+\section{LJ}
+\label{sec:lj}
+
+\begin{definition}[Formula]
+  Assume a countably infinite set of atomic symbols $\cP$.
+  Formulas are defined by the grammar
+
+  \[
+  \begin{array}{l}
+    \mbox{Atomic formulas } p \in \cP\\
+    \mbox{Formulas }A ::= p \Sep A \And A \Sep \Top \Sep A \Or A \Sep
+    \Bot \Sep A \Imp A
+  \end{array}
+  \]
+\end{definition}
+
+\begin{definition}[Sequent]
+  A \emph{sequent} is a pair $\ASet{\Gamma, A}$ where $\Gamma$ is a
+  multiset of formulas and $A$ is a formula.
+\end{definition}
+
+The propositional fragment of the sequent calculus
+$\LJ$\footnote{The system we show here is not technically Gentzen's
+$\LJ$ but is close enough not to warrant a new name.} is given in
+Figure~\ref{fig.lj}.
+
+\input{lj}
+
+$\LJ$ has the following well-known properties.
+
+\begin{theorem}[Weakening]
+  \label{thm:lj-weaken}
+  If $\Seq{\Gamma}{G}$ then $\Seq{\Gamma, A}{G}$.
+\end{theorem}
+
+\begin{theorem}[Cut]
+  \label{thm:lj-cut}
+  If $\Seq{\Gamma, A}{G}$ and $\Seq{\Gamma}{A}$ then $\Seq{\Gamma}{G}$.
+\end{theorem}
+
+\begin{theorem}[Invertability]
+  \label{thm:lj-invert}
+  The rules $\And$-R, $\And$-L, $\Or$-L, and $\Imp$-R are \emph{invertible}.
+  The hypotheses are provable iff the conclusion is provable.
+\end{theorem}
+
+\begin{definition}
+  Define the following ordering on formulas, as specified
+  in~\cite{Dyckhoff.1992.JSL}:
+
+  \[
+  \begin{array}{l}
+    \Weight(p) = \Weight(\Top) = \Weight(\Bot) = 1 \\
+    \Weight(A \Or B) = \Weight(A \Imp B) = 1 + \Weight(A) + \Weight(B) \\
+    \Weight(A \And B) = 2 + \Weight(A) + \Weight(B) \\
+  \end{array}
+  \]
+
+  $\Weight$ is clearly a well-founded relation on formulas.
+\end{definition}
+
+Some proofs below rely on induction on the size of sequents, where
+size is defined via the multiset ordering of Dershowitz and
+Manna~\cite{Dershowitz.1979.ALP}. If the ordering on formulas is
+well-founded, so is the multiset ordering.  In the multiset ordering,
+we say $X < Y$ if $X$ can be obtained by replacing some subset
+$Y'\subseteq Y$ with another set $Y''$
+where each element of $Y''$ has a smaller weight than some element of
+$Y'$.
+
+\section{Refutations}
+\label{sec:refutations}
+
+The refutation calculus $\LJR$ is shown in Figure~\ref{fig.ljr}.
+
+\input{ljr}
+
+\begin{theorem}[Weakening]
+  \label{thm:ljr-weaken}
+  If $\Ref{\Gamma, A}{G}$ then $\Ref{\Gamma}{G}$.
+\end{theorem}
+\begin{proof}
+  Induction on the derivation $\Ref{\Gamma, A}{G}$.  Since $\Gamma$ is
+  a multiset, all cases are trivial.
+\end{proof}
+
+\input{complete}
+
+\CompleteLemmas
+\CompleteTheorem
+\CompleteProof
+
+\bibliographystyle{plain}
+\bibliography{refute}
+
+
+\end{document}
+
+
+
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

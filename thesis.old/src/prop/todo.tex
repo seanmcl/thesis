@@ -1,0 +1,98 @@
+
+\chapter{Focusing}
+
+In this chapter we revisit the backward calculus $\LPB$ for IPL
+and demonstrate some redundancy.  A subset of $\LPB$ proofs called
+\emph{focused proofs} are shown to be complete.  The inverse method
+is applied to focused proofs to yield a new calculus $\FPFs$.
+We describe our theorem prover \emph{Imogen}, an implementation of $\FPFs$.
+
+% A sequent of intuitionistic logic has the form $\Stable{\Gamma}{A}$,
+% where $\Gamma$ is a set or multiset of formulas.  For
+% purposes of Imogen it is convenient to always maintain $\Gamma$
+% as a set, without duplicates.
+% Since we can always eagerly decompose negative connectives
+% on the right of a sequent and positive connectives on the left,
+% the only sequents in our polarized calculus we need to consider
+% have negative formulas on the left or positive formulas on the
+% right, in addition to atoms which can appear with either polarity
+% on either side.  The right-hand side could also be empty if we are
+% deriving a contradiction.   We call such sequents \emph{stable}.
+% \[\begin{array}{llcl}
+% \mbox{Stable Hypotheses} & \Gamma &::= & \cdot \Sep \Gamma, A^- \Sep \Gamma, P^+ \\
+% \mbox{Stable Conclusions} & \gamma &::= & A^+ \Sep P^- \Sep \cdot \\
+% \mbox{Stable Sequents} & \multicolumn{3}{l}{\Stable{\Gamma}{\gamma}}
+% \end{array}\]
+
+
+\section{Proof search}
+
+In this section we describe an abstract machiene for proof search in $\LPFs$ and describe
+some optimizations.
+
+\subsection{An Otter loop}
+
+\begin{definition}
+  \begin{itemize}
+  \item[]
+  \item A \emph{state} is a pair of databases $\ASet{\cD^a,\cD^k}$.
+  \item $\cD^a$ is called the \emph{active database}.
+  \item $\cD^k$ is called the \emph{kept database}.
+  \item A state is \emph{saturated} if $\cD^k=\Set{}$.
+  \end{itemize}
+\end{definition}
+
+\begin{definition}
+  A set of sequents $X$ is called \emph{minimal} if there do not exist $Q,Q'\in
+  X$ such that $Q\Subsumes Q'$.  It is clear any finite set $X$ can be made
+  minimal by removing subsumed sequents. Fix some procedure
+  for doing so, called $\clear(X)$.
+\end{definition}
+
+\input{prop/fixed-rule}
+
+\subsection{Subsumption}
+
+In Section~\label{prop.sec.search} we defined subsumption steps generally as
+the removal of a subsumed sequent from the database via a subsumption step.
+In this section we define three concrete  is used in our implementation.
+The first two are standard in the literature.  The last one, to our knowledge,
+is new.
+
+\paragraph{Forward Subsumption}
+
+\begin{definition}
+  Define $\nextdb(\cR, \cD) = \cD\Union \match(\cR, \cD)$.
+  Given a set of rules $\cR$, define $\cD_0 =$ the initial sequents
+  of $\cR$.  Define $\cD_n =\nextdb(\cR, \cD_{n-1})$.
+  A sequent $Q$ is \emph{$\cR$-provable} if there exists an
+  $n$ and a sequent $Q'$ such that $Q'\in\cD_n$ and $Q'\Subsumes Q$.
+  If $\nextdb(\cR, \cD) = \cD$ we say that $\cD$ is \emph{$\cR$-saturated}.
+\end{definition}
+
+\paragraph{Backward Subsumption}
+
+
+\paragraph{Rule Subsumption}
+
+\begin{definition}
+  Let $\cR$ be a set of inference rules, and let $\cD$ be a database.
+  Define
+  \[
+  \match(R, \cD) = \Set{Q | Q_1,\ldots,Q_n\in\cD} \mbox{ and } \match(R, Q_1,\ldots,Q_n)=Q
+  \]
+\end{definition}
+
+\begin{definition}
+  Define $\nextdb(\cR, \cD) = \cD\Union \match(\cR, \cD)$.
+  Given a set of rules $\cR$, define $\cD_0 =$ the initial sequents
+  of $\cR$.  Define $\cD_n =\nextdb(\cR, \cD_{n-1})$.
+  A sequent $Q$ is \emph{$\cR$-provable} if there exists an
+  $n$ and a sequent $Q'$ such that $Q'\in\cD_n$ and $Q'\Subsumes Q$.
+  If $\nextdb(\cR, \cD) = \cD$ we say that $\cD$ is \emph{$\cR$-saturated}.
+\end{definition}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "thesis"
+%%% End:

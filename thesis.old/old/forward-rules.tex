@@ -1,0 +1,87 @@
+
+\newcommand{\PFInit}{\mbox{Init}}
+\newcommand{\PFInitRule}{
+  \Infer[\PFInit]{\FSeq{p}{p}}{}
+}
+
+\newcommand{\PFAndR}{\And\mbox{-R}}
+\newcommand{\PFAndRRule}{
+  \Infer[\PFAndR]
+  {\FSeq{\Gamma_1\Union\Gamma_2}{A_1 \And A_2}}
+  {\FSeq{\Gamma_1}{A_1} & \FSeq{\Gamma_2}{A_2}}
+}
+
+\newcommand{\PFAndL}{\And\mbox{-L}}
+\newcommand{\PFAndLRule}{
+  \Infer[\PFAndL]
+  {\FSeq{\Gamma, A_1 \And A_2}{\gamma}}
+  {\FSeq{\Gamma, A_1, A_2}{\gamma}}
+}
+
+\newcommand{\PFImpRa}{\Imp\mbox{-R}_1}
+\newcommand{\PFImpRaRule}{
+  \Infer[\PFImpRa]
+  {\FSeq{\Gamma}{A_1 \Imp A_2}}
+  {\FSeq{\Gamma, A_1}{A_2}}
+}
+
+\newcommand{\PFImpRb}{\Imp\mbox{-R}_2}
+\newcommand{\PFImpRbRule}{
+  \Infer[\PFImpRb]
+  {\FSeq{\Gamma}{A_1 \Imp A_2}}
+  {\FSeq{\Gamma}{A_2}}
+}
+
+\newcommand{\PFImpRc}{\Imp\mbox{-R}_3}
+\newcommand{\PFImpRcRule}{
+  \Infer[\PFImpRc]
+  {\FSeq{\Gamma}{A_1 \Imp A_2}}
+  {\FSeq{\Gamma, A_1}{\cdot}}
+}
+
+\newcommand{\PFImpL}{\Imp\mbox{-L}}
+\newcommand{\PFImpLRule}{
+  \Infer[\PFImpL]
+  {\FSeq{\Gamma_1\Union\Gamma_2, A_1\Imp A_2}{\gamma}}
+  {\FSeq{\Gamma_1, A_1\Imp A_2}{A_1} & \FSeq{\Gamma_2, A_2}{\gamma}}
+}
+
+\newcommand{\PFOrRL}{\Or\mbox{-R}_1}
+\newcommand{\PFOrRLRule}{
+  \Infer[\PFOrRL]
+  {\FSeq{\Gamma}{A_1 \Or A_2}}
+  {\FSeq{\Gamma}{A_1}}
+}
+
+\newcommand{\PFOrRR}{\Or\mbox{-R}_2}
+\newcommand{\PFOrRRRule}{
+  \Infer[\PFOrRR]
+  {\FSeq{\Gamma}{A_1 \Or A_2}}
+  {\FSeq{\Gamma}{A_2}}
+}
+
+\newcommand{\PFOrL}{\Or\mbox{-L}}
+\newcommand{\PFOrLRule}{
+  \Infer[\PFOrL]
+  {\FSeq{\Gamma_1\Union\Gamma_2, A_1 \Or A_2}{\gamma_1 \Union \gamma_2}}
+  {\FSeq{\Gamma_1, A_1}{\gamma_1} & \FSeq{\Gamma_2, A_2}{\gamma_2}}
+}
+
+\newcommand{\PFTopR}{\Top\mbox{-R}}
+\newcommand{\PFTopRRule}{
+  \Infer[\PFTopR]
+  {\FSeq{\cdot}{\Top}}
+  {}
+}
+
+\newcommand{\PFBotL}{\Bot\mbox{-L}}
+\newcommand{\PFBotLRule}{
+  \Infer[\PFBotL]
+  {\FSeq{\Bot}{\cdot}}
+  {}
+}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

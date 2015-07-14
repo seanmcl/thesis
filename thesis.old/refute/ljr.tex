@@ -1,0 +1,143 @@
+
+\newcommand{\LJRInitName}{\mbox{Init}}
+\newcommand{\LJRInit}[1][]{
+  \Infer[\LJRInitName#1]
+  {\Ref{p_1, \ldots, p_n, q_1 \Imp A_1, \ldots, q_m \Imp A_m}{r}}
+  {}
+}
+
+\newcommand{\LJRAndRLName}{\And\mbox{-R}_1}
+\newcommand{\LJRAndRL}[1][A]{
+  \Infer[\LJRAndRLName]
+  {\Ref{\Gamma}{#1_1 \And #1_2}}
+  {\Ref{\Gamma}{#1_1}}
+}
+
+\newcommand{\LJRAndRR}{
+  \Infer[\And$-R$_2]
+  {\Ref{\Gamma}{A_1 \And A_2}}
+  {\Ref{\Gamma}{A_2}}
+}
+
+\newcommand{\LJRAndL}{
+  \Infer[\And$-L$]
+  {\Ref{\Gamma, A_1 \And A_2}{C}}
+  {\Ref{\Gamma, A_1, A_2}{C}}
+}
+
+\newcommand{\LJRImpR}{
+  \Infer[\Imp$-R$]
+  {\Ref{\Gamma}{A_1 \Imp A_2}}
+  {\Ref{\Gamma, A_1}{A_2}}
+}
+
+\newcommand{\LJRImpLL}{
+  \Infer[\Imp$-L$_1]
+  {\Ref{\Gamma, A_1\Imp A_2}{C}}
+  {\Ref{\Gamma, A_2}{C}}
+}
+
+\newcommand{\LJRImpLR}{
+  \Infer[\Imp$-L$_2]
+  {\Ref{\Gamma, A_1\Imp A_2}{C}}
+  {\Ref{\Gamma, A_1\Imp A_2}{A_1} & \Ref{\Gamma}{C}}
+}
+
+\newcommand{\LJROrR}{
+  \Infer[\Or$-R$]
+  {\Ref{\Gamma}{A_1 \Or A_2}}
+  {\Ref{\Gamma}{A_1} & \Ref{\Gamma}{A_2}}
+}
+
+\newcommand{\LJROrLL}{
+  \infer[\Or$-L$_1]
+  {\Ref{\Gamma, A_1 \Or A_2}{C}}
+  {\Ref{\Gamma, A_1}{C}}
+}
+
+\newcommand{\LJROrLR}{
+  \infer[\Or$-L$_1]
+  {\Ref{\Gamma, A_1 \Or A_2}{C}}
+  {\Ref{\Gamma, A_2}{C}}
+}
+
+\newcommand{\LJRTopL}{
+  \infer[\Top$-L$]
+  {\Ref{\Gamma, \Top}{C}}
+  {\Ref{\Gamma}{C}}
+}
+
+\newcommand{\LJRStrengthen}[1][G]{
+  \infer[$Strengthen$]
+  {\Ref{\Gamma, A}{#1}}
+  {\Ref{\Gamma}{#1} & \Seq{\Gamma}{A}}
+}
+
+\newcommand{\LJRTopR}{\mbox{No rule for $\Top$-R}}
+
+\begin{figure}[h]
+  \begin{center}
+    {\small
+      \fbox{
+        \begin{tabular}{c}
+          \begin{tabular}{c}
+            \LJRInit[*]
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{ccc}
+            \LJRAndRL
+            &
+            \hspace{1cm}
+            \LJRAndRR
+            &
+            \hspace{1cm}
+            \LJRAndL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \LJRTopR
+            &
+            \hspace{1cm}
+            \LJRTopL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{ccc}
+            \LJROrLL
+            &
+            \hspace{10pt}
+            \LJROrLR
+            &
+            \hspace{10pt}
+            \LJROrR
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{ccc}
+            \LJRImpR
+            &
+            \hspace{20pt}
+            \LJRImpLL
+            &
+            \hspace{20pt}
+            \LJRImpLR
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{c}
+            \LJRStrengthen
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{c}
+            * In the Init rule, $p_i$ and $q_i$ are all atomic.
+            $r$ is either atomic or $\Bot$.
+          \end{tabular}
+        \end{tabular}
+      }
+    }
+  \end{center}
+  \caption{$\LJR$}
+  \label{fig.ljr}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "refute"
+%%% End:

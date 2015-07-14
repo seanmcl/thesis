@@ -1,0 +1,263 @@
+
+Notes to myself so I can remember what to include in the description
+of the implementation
+
+use gc-messages and gc-summary MLton runtime options
+
+* Symbols
+
+Symbols go through transformations during proof search:
+
+- During unification, for example when deciding whether one term is a
+  substitution instance of another, variables can become 'fixed'.  A fixed
+  variable is not eligible for substitution.
+
+- After the initial inversion phase of focusing, the parameters of the
+  initial sequents are 'frozen' as constants.  They are subsequently 'unfrozen'
+  (i.e. turned back into parameters) for proof term reconstruction.
+
+- Term indexing is implemented for terms, but is necessary for relations.
+  Thus the head predicate symbols must be converted to function symbols for indexing.
+
+- During focusing, quantified variables can become parameters, e.g. in decomposing
+  the forall-R rule.  These parameters again become variables in the corresponding
+  proof term.
+
+* Parsing
+
+Input formulas:
+
+  FOL (regular + polar)
+  Linear (regular + polar)
+  Ordered (regular + polar)
+
+All these formats are converted to a preformula = Parse.Formula.t
+
+Translations:
+  fol     ---> preformula ---> polarize ---> formula ---> optimize ---> formula
+  linear  ---> preformula ---> polarize ---> formula ---> optimize ---> linear P/R ---> formula
+  ordered ---> preformula ---> polarize ---> formula ---> optimize ---> ordered P/R ---> formula
+
+Input formulas that are in polar format (i.e. includes shifts) still need
+to be polarized to make sure it type checks.  If it does not, more shifts
+are tacitly added.
+
+* Ideas
+
+Experiment with -default-type word{32,64} int{32,64}
+
+Analytic cut
+
+When you deduce, |- p, simplify p, q |- r to q |- r
+
+--------------------------------------------------------------------------------
+
+
+Mystery:  ∨ is the top connective.  Either one of the disjuncts are solved
+within 200 iterations.  Combined, it takes 1400, even though the variables
+are disjoint
+
+Here's why: suppose A ∧ B share propositional variables, but C is disjoint from
+A and B.
+
+ ==> (A ∧ B) ∨ C is stable
+
+So you have all the rules for A, B in the same database.  C's rules
+are there, but that's a red herring.  While
+
+(A ∧ B) alone stabilizes to ==> A,  ==> B, and they can be solved separately.
+
+  ↓(r1 -o ↑r2 o-o
+          ↑(r3 ∧
+              ↓(r4 ∧ ↓(↓(r1 -o ↑_0) -o ↓(↓(r5 -o ↑_0) -o ↑_0) -o ↑_0) -o ↑_0)
+              ∨
+              ↓(↓(↑r5 o-o ↑r2) -o r6 -o ↑_0 o-o (r7 -o r6 -o ↑_0) & (r7 -o ↑_0)) ∨
+              r2))
+      ∧
+      ↓(↓(r6 -o ↑r3 o-o
+              r2 -o r7 -o ↑_0 o-o ↓(↓(r7 -o ↑_0) -o ↑_0) -o ↑r6)
+          -o r2 -o ↑_0)
+
+      ∨
+      ↓(↑(q1 ∨
+              ↓(↓(q1 ∨ ↓(q2 -o ↑_0) -o ↑_0) -o q1 -o ↓(q3 -o ↑_0) -o ↑_0))
+          o-o
+          q3 -o ↑_0 o-o
+          ↑(↓(q4 -o ↑_0) ∨
+              ↓(↓(q5 ∧ ↓(↓(q3 -o ↑_0) -o ↑_0) -o ↑_0) ∨
+                  ↓(↓(q3 -o q3 -o ↑_0) ∧ ↓(q3 -o ↑_0 o-o ↑q2) -o ↑_0)
+                  -o ↑_0)))
+
+--------------------------------------------------------------------------------
+
+Remove conflicts
+
+--------------------------------------------------------------------------------
+
+Goal (5/8)
+  ⊢ a4
+Initial seqs: 3
+  a3 ⊢ a3
+  a2 ⊢ a2
+  a1 ⊢ a1
+Initial rules: 9
+  ⊢ a2
+  ---------------------------
+  p8 ⊢ a1
+
+  ⊢ a1
+  ---------------------------
+  p8 ⊢ a2
+
+  a2, a3 ⊢ a1, a1, a3 ⊢ a2, p8 ⊢ a3
+  ---------------------------
+  ⊢ a4
+
+  a1 ⊢ a2, a2 ⊢ a1
+  ---------------------------
+  ⊢ a3
+
+  ⊢ a1, ⊢ a3
+  ---------------------------
+  ⊢ a2
+
+  ⊢ a2, ⊢ a3
+  ---------------------------
+  ⊢ a1
+Globals:
+  {p6, p9}
+
+
+%%% These rules have hyps supersets of other rules with same concl.  Remove them.
+
+  ⊢ a2, ⊢ a3, ⊢ a4
+  ---------------------------
+  ⊢ a1
+
+  ⊢ a1, ⊢ a3, ⊢ a4
+  ---------------------------
+  ⊢ a2
+
+  a2 ⊢ a1, a1 ⊢ a2, ⊢ a4
+  ---------------------------
+  ⊢ a3
+
+
+
+
+--------------------------------------------------------------------------------
+
+nice curve
+
+i: 10, as: 9, ks: 11, rs: 742
+i: 20, as: 19, ks: 11, rs: 2174
+i: 30, as: 28, ks: 77, rs: 7268
+i: 40, as: 38, ks: 102, rs: 10051
+i: 50, as: 45, ks: 120, rs: 11247
+i: 60, as: 55, ks: 149, rs: 12087
+i: 70, as: 65, ks: 188, rs: 14237
+i: 80, as: 75, ks: 194, rs: 18478
+i: 90, as: 85, ks: 212, rs: 20993
+i: 100, as: 95, ks: 219, rs: 24738
+i: 110, as: 105, ks: 235, rs: 28116
+i: 120, as: 115, ks: 227, rs: 30282
+i: 130, as: 125, ks: 220, rs: 32028
+i: 140, as: 135, ks: 213, rs: 32701
+i: 150, as: 145, ks: 210, rs: 33358
+i: 160, as: 155, ks: 218, rs: 34371
+i: 170, as: 165, ks: 212, rs: 34875
+i: 180, as: 175, ks: 202, rs: 35515
+i: 190, as: 185, ks: 192, rs: 35017
+i: 200, as: 195, ks: 198, rs: 36653
+i: 210, as: 205, ks: 195, rs: 39610
+i: 220, as: 213, ks: 185, rs: 41823
+i: 230, as: 223, ks: 178, rs: 42527
+i: 240, as: 221, ks: 175, rs: 42972
+i: 250, as: 210, ks: 148, rs: 41241
+i: 260, as: 208, ks: 146, rs: 42186
+i: 270, as: 218, ks: 141, rs: 44282
+i: 280, as: 228, ks: 137, rs: 46818
+i: 290, as: 236, ks: 131, rs: 47330
+i: 300, as: 241, ks: 130, rs: 47912
+i: 310, as: 246, ks: 127, rs: 48842
+i: 320, as: 256, ks: 120, rs: 52086
+i: 330, as: 264, ks: 147, rs: 53613
+i: 340, as: 259, ks: 149, rs: 53643
+i: 350, as: 259, ks: 140, rs: 53679
+i: 360, as: 259, ks: 221, rs: 55132
+i: 370, as: 260, ks: 232, rs: 55454
+i: 380, as: 258, ks: 237, rs: 56951
+i: 390, as: 266, ks: 231, rs: 57439
+i: 400, as: 267, ks: 286, rs: 57746
+i: 410, as: 277, ks: 293, rs: 59915
+i: 420, as: 287, ks: 292, rs: 62151
+i: 430, as: 293, ks: 300, rs: 64491
+i: 440, as: 298, ks: 297, rs: 66676
+i: 450, as: 308, ks: 296, rs: 67207
+i: 460, as: 318, ks: 284, rs: 69029
+i: 470, as: 312, ks: 281, rs: 67824
+i: 480, as: 319, ks: 276, rs: 67959
+i: 490, as: 326, ks: 279, rs: 68579
+i: 500, as: 319, ks: 265, rs: 67476
+i: 510, as: 326, ks: 278, rs: 67472
+i: 520, as: 336, ks: 275, rs: 67468
+i: 530, as: 338, ks: 321, rs: 68604
+i: 540, as: 346, ks: 311, rs: 69030
+i: 550, as: 355, ks: 305, rs: 69158
+i: 560, as: 365, ks: 298, rs: 69888
+i: 570, as: 374, ks: 325, rs: 71404
+i: 580, as: 384, ks: 314, rs: 70666
+i: 590, as: 375, ks: 314, rs: 70093
+i: 600, as: 382, ks: 313, rs: 71262
+i: 610, as: 390, ks: 315, rs: 72964
+i: 620, as: 398, ks: 333, rs: 74479
+i: 630, as: 404, ks: 339, rs: 75143
+i: 640, as: 412, ks: 347, rs: 76124
+i: 650, as: 414, ks: 352, rs: 74550
+i: 660, as: 404, ks: 340, rs: 74107
+i: 670, as: 405, ks: 330, rs: 74273
+i: 680, as: 414, ks: 346, rs: 75220
+i: 690, as: 395, ks: 310, rs: 70562
+i: 700, as: 388, ks: 300, rs: 70666
+i: 710, as: 398, ks: 292, rs: 71212
+i: 720, as: 408, ks: 283, rs: 71941
+i: 730, as: 418, ks: 274, rs: 72326
+i: 740, as: 428, ks: 266, rs: 72419
+i: 750, as: 438, ks: 261, rs: 75520
+i: 760, as: 437, ks: 248, rs: 77124
+i: 770, as: 447, ks: 246, rs: 78275
+i: 780, as: 387, ks: 168, rs: 68742
+i: 790, as: 397, ks: 158, rs: 69641
+i: 800, as: 407, ks: 148, rs: 72832
+i: 810, as: 340, ks: 117, rs: 63947
+i: 820, as: 332, ks: 135, rs: 64680
+i: 830, as: 312, ks: 133, rs: 63838
+i: 840, as: 310, ks: 127, rs: 63765
+i: 850, as: 309, ks: 118, rs: 63648
+i: 860, as: 311, ks: 112, rs: 63807
+i: 870, as: 301, ks: 101, rs: 63580
+i: 880, as: 303, ks: 92, rs: 64180
+i: 890, as: 300, ks: 79, rs: 64368
+i: 900, as: 305, ks: 69, rs: 65602
+i: 910, as: 239, ks: 69, rs: 58060
+i: 920, as: 246, ks: 67, rs: 59444
+i: 930, as: 226, ks: 54, rs: 55525
+i: 938, as: 214, ks: 43, rs: 50849
+
+--------------------------------------------------------------------------------
+
+It seems that an ordering on subformulas is not possible.  For example, if you
+have a goal like
+
+ A => B, C => D, A ===> B
+
+you must apply the =>L rule to A => B first.  There seems to be no syntactic way
+to tell which rule must be applied before the other, thus any ad-hoc ordering
+as in ordered-resolution will not work.
+
+Even ordering on atoms doesn't work.  I tried it and it's unsound.
+
+--------------------------------------------------------------------------------
+
+
+Globalization

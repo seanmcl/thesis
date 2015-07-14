@@ -1,0 +1,232 @@
+\documentclass[]{article}
+
+\usepackage[dvipsnames]{xcolor}
+\usepackage[]{fullpage}
+\usepackage[]{url}
+\usepackage[]{amsthm}
+
+\usepackage[
+backref,
+bookmarks,
+bookmarksnumbered,
+citecolor=Plum,
+colorlinks=true,
+filecolor=red,
+linkcolor=blue,
+pageanchor=true,
+pdfpagelabels,
+plainpages=false,
+urlcolor=purple,
+% pagebackref
+]{hyperref}
+
+\newcommand{\Atoms}{\mathcal{A}}
+\newcommand{\And}{\wedge}
+\newcommand{\Or}{\vee}
+\newcommand{\Imp}{\rightarrow}
+\newcommand{\Top}{\top}
+\newcommand{\Bot}{\bot}
+\newcommand{\Not}{\neg}
+\newcommand{\Iff}{\Leftrightarrow}
+
+\newcommand{\Hil}[2][]{#1 \vdash #2}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{example}{Example}[section]
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem*{remark}{Remark}
+
+
+\begin{document}
+
+\title{Proof search in intuitionistic propositional logic: a survey.}
+\author{Sean McLaughlin\\ Google}
+\maketitle
+
+\begin{abstract}
+  This report is a survey of the existing methods for automatically
+  proving theorems in intuitionistic propositional logic.  It includes
+  an extensive bibliography for those who wish to gain a deeper
+  knowledge of the techniques summarized here.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:introduction}
+
+Brouwer's intuitionistic logic was partly formalized by Kolmogorov,
+Heyting and Glivenko between 1925 and 1930.  We call the propositional
+fragment of their formalization intuitionistic propositional logic, or
+IPL.  Proof search in IPL is more difficult than proof search in
+propositional classical logic; the problem is PSPACE-complete.  This
+document is a survey of the known proof search strategies for IPL.
+
+\subsection{Language}
+\label{sec:language}
+
+The language of IPL is the same as that of classical propositional logic.
+Assume an infinite set of symbols $\Atoms$, called \emph{atomic formulas}.
+\emph{Formulas} of IPL are built from the following grammar:
+
+\[
+\mbox{Formulas F} ::= a ~|~ F \And F ~|~ \Top ~|~ F \Or F ~|~ \Bot ~|~
+F \Imp F
+\]
+
+\noindent
+where $a\in\Atoms$. Define $\Not A$ as $A \Imp \Bot$ and $A \Iff B$ as
+$(A \Imp B) \And (B \Imp A)$.  The precedence order is, from strongest
+to weakest, $\And, \Or, \Imp$. All binary connectives associate to the right.
+For example, $A \And B \Or C \Or D \Imp E$ means
+$((A \And B) \Or (C \Or D)) \Imp E$.
+
+\subsection{Hilbert systems}
+\label{sec:hilbert-systems}
+
+The first formalizations were in the Hilbert style.  There are
+many in the literature.  The following example comes from
+\cite[Section 2.4]{Troelstra.2000.ProofTheory}.  The axioms are
+
+\[
+\begin{array}{l}
+  A \Imp B \Imp A \\
+  (A \Imp (B \Imp C)) \Imp ((A \Imp B) \Imp (A \Imp C)) \\
+  A \Imp A \Or B \\
+  B \Imp A \Or B \\
+  (A \Imp C) \Imp (B \Imp C)  \Imp A \Or B \Imp C \\
+  A \And B \Imp A\\
+  A \And B \Imp B\\
+  A \Imp B \Imp A \And B\\
+  \Bot \Imp A\\
+\end{array}
+\]
+
+Here $A,B,C$ are metavariables standing for any formula.
+Deductions $\Hil[\Gamma]{A}$ are made under a set of assumptions $\Gamma$.
+Proofs are achieved by reasoning from the axioms.
+
+\begin{lemma}[Identity]
+  For any formula $A$, $\Hil[A]{A}$.
+\end{lemma}
+\begin{proof}
+  \begin{itemize}
+  \item[]
+  \item[1.]
+    $\Hil[]{(A \Imp (B \Imp A) \Imp A) \Imp (A \Imp (B \Imp A)) \Imp
+      (A \Imp A)}$
+  \item[2.]
+  \end{itemize}
+\end{proof}
+
+s k k
+
+There are two rules of inference.
+
+\[
+\begin{array}{l}
+  \Hil[\Gamma,A]{A} \\
+  \mbox{If } \Hil[\Gamma]{A \Imp B} \mbox{ and } \Hil[\Gamma]{A}
+  \mbox{ then } \Hil[\Gamma]{B}. \\
+\end{array}
+\]
+
+Hilbert systems are useless as a means of proof search, as the reader
+can readily verify by attempting a proof of even the simplest
+of formulas.  (See Section~\ref{sec:ex-hilbert} for a proof
+of $(A \Imp B) \Imp C \Or A \Imp B \Or C$.)  The problem is that
+the formulas $A,B,C$ are unrestricted, what Pfenning calls
+a non-analytic calculus~\cite{Pfenning.1984.CADE}.  This problem of
+unrestricted formulas in proof systems led to Gentzen's development of
+the sequent calculus in 1935.
+
+\subsection{Sequent calculus}
+\label{sec:sequent-calculus}
+
+
+
+\section{Gentzen systems}
+\label{sec:gentzen-systems}
+
+~\cite{Kleene.1952.Metamathematics}.
+
+
+abc~\cite{Dyckhoff.1992.JSL}
+
+Gentzen Systems
+\cite{Kleene.1952.Metamathematics}
+\cite{Kleene.1952.Metamathematics}
+
+
+\section{Hilbert systems}
+\label{sec:hilbert-systems}
+
+
+\section{Natural deduction}
+\label{sec:natural-deduction}
+
+
+\section{Loop detection}
+\label{sec:loop-detection}
+
+\section{Matrix methods}
+\label{sec:matrix-methods}
+
+\section{Model theory}
+\label{sec:model-theory}
+
+\section{Translations}
+\label{sec:translations}
+
+\section{Inverse methods}
+\label{sec:inverse-method}
+
+\section{Refutations}
+\label{sec:refutations}
+
+
+\section{Literature}
+\label{sec:literature}
+
+For more on the history of intuitionistic logic and its early
+formalizations, see
+\cite{
+  Kleene.1952.Metamathematics,
+  Troelstra.2000.ProofTheory,
+  SEP.2013.DevelopmentOfIntuitionisticLogic}.
+
+\section{Examples}
+\label{sec:examples}
+
+\subsection{Hilbert systems}
+\label{sec:ex-hilbert}
+
+\begin{lemma}
+\label{lem:hilbert}
+  \[
+  (a \Imp b) \Imp (c \Or a) \Imp (b \Or c)
+  \]
+\end{lemma}
+
+\begin{proof}
+
+\begin{itemize}
+\item[]
+\item[1.] abc
+\item[2.] abc
+\end{itemize}
+
+\end{proof}
+
+
+\bibliographystyle{alpha}
+\bibliography{review}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% reftex-default-bibliography: ("review")
+%%% TeX-master: t
+%%% End:

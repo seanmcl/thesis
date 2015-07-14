@@ -1,0 +1,126 @@
+
+\newcommand{\LJInit}
+{\Infer[$Init$]
+  {\Seq{\Gamma,p}{p}}
+  {}
+}
+
+\newcommand{\LJAndR}{
+  \Infer[\And$-R$]
+  {\Seq{\Gamma}{A_1 \And A_2}}
+  {\Seq{\Gamma}{A_1} & \Seq{\Gamma}{A_2}}
+}
+
+\newcommand{\LJAndL}{
+  \Infer[\And$-L$]
+  {\Seq{\Gamma, A_1 \And A_2}{C}}
+  {\Seq{\Gamma, A_1, A_2}{C}}
+}
+
+\newcommand{\LJImpR}{
+  \Infer[\Imp$-R$]
+  {\Seq{\Gamma}{A_1 \Imp A_2}}
+  {\Seq{\Gamma, A_1}{A_2}}
+}
+
+\newcommand{\LJImpL}{
+  \Infer[\Imp$-L$]
+  {\Seq{\Gamma, A_1\Imp A_2}{C}}
+  {\Seq{\Gamma, A_1\Imp A_2}{A_1} & \Seq{\Gamma, A_2}{C}}
+}
+
+\newcommand{\LJOrRL}{
+  \Infer[\Or$-R$_1]
+  {\Seq{\Gamma}{A_1 \Or A_2}}
+  {\Seq{\Gamma}{A_1}}
+}
+
+\newcommand{\LJOrRR}{
+  \infer[\Or$-R$_2]
+  {\Seq{\Gamma}{A_1 \Or A_2}}
+  {\Seq{\Gamma}{A_2}}
+}
+
+\newcommand{\LJOrL}{
+  \infer[\Or$-L$]
+  {\Seq{\Gamma, A_1 \Or A_2}{C}}
+  {\Seq{\Gamma, A_1}{C} & \Seq{\Gamma, A_2}{C}}
+}
+
+\newcommand{\LJTopR}{
+  \infer[\Top$-R$]
+  {\Seq{\Gamma}{\Top}}
+  {}
+}
+
+\newcommand{\LJTopL}{\mbox{No rule for $\Top$-L}}
+
+\newcommand{\LJBotL}{
+  \infer[\Bot$-L$]
+  {\Seq{\Gamma, \Bot}{C}}
+  {}
+}
+
+\newcommand{\LJBotR}{\mbox{No rule for $\Bot$-R}}
+
+\begin{figure}[h]
+  \begin{center}
+    {\small
+      \fbox{
+        \begin{tabular}{c}
+          \\
+          \begin{tabular}{ccc}
+            \LJInit
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \LJAndR
+            &
+            \hspace{1cm}
+            \LJAndL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \hspace{1cm}
+            \LJTopR
+            &
+            \hspace{1cm}
+            \LJTopL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{ccc}
+            \LJOrRL
+            &
+            \hspace{10pt}
+            \LJOrRR
+            &
+            \hspace{10pt}
+            \LJOrL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \LJBotR
+            &
+            \hspace{20pt}
+            \LJBotL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \LJImpR
+            &
+            \hspace{20pt}
+            \LJImpL
+          \end{tabular}
+          \\[2em]
+        \end{tabular}
+      }
+    }
+  \end{center}
+  \caption{$\LJ$}
+  \label{fig.lj}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "refute"
+%%% End:

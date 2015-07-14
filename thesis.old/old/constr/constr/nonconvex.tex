@@ -1,0 +1,59 @@
+
+
+\newcommand{\CBOrC}{
+  \Infer[\Or$-C$]
+  {\CSeq{\Psi}{\Gamma}{C}}
+  {\Psi \models \Psi_1 \Or \Psi_2 &
+    \begin{array}[b]{l}
+      \CSeq{\Psi_1}{\Gamma}{C} \\
+      \CSeq{\Psi_2}{\Gamma}{C}
+    \end{array}}
+}
+
+\newcommand{\CBExC}{
+  \Infer[\Ex$-C$]
+  {\CSeq{\Psi}{\Gamma}{C}}
+  {\Psi \models \Ex x.~\Psi_1(x) & \CSeq{\Psi_1(x)}{\Gamma}{C}}
+}
+
+\newcommand{\CFOrC}{
+  \Infer[\Or$-C$]
+  {\CFSeq{\Psi_1 \Or \Psi_2}{\Gamma_1 \Union \Gamma_2}{\gamma_1 \Union \gamma_2}}
+  {\CFSeq{\Psi_1}{\Gamma_1}{\gamma_1} & \CFSeq{\Psi_2}{\Gamma_2}{\gamma_2}}
+}
+
+\newcommand{\CFBotC}{
+  \Infer[\Bot$-C$]
+  {\CFSeq{\Bot}{\cdot}{\cdot}}
+  {}
+}
+
+\begin{figure}
+  \begin{center}
+    {\small
+      \fbox{
+        \begin{tabular}{cc}
+          \textbf{Backward rules} & \textbf{Forward rules}
+          \\[2em]
+          \CBOrC
+          &
+          \hspace{2em}
+          \CFOrC
+          \\[2em]
+          \CBExC
+          &
+          \hspace{2em}
+          \CFExC
+        \end{tabular}
+      }
+    }
+  \end{center}
+  \caption{Non-convex rules}
+  \label{constr.nonconvex}
+\end{figure}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

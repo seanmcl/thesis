@@ -1,0 +1,152 @@
+
+\newcommand{\LJFInit}{
+  \Infer[$Init$]{\PFSeq{p}{p}}{}
+}
+
+\newcommand{\LJFAndR}{
+  \Infer[\And$-R$]
+  {\PFSeq{\Gamma_1,\Gamma_2}{A_1 \And A_2}}
+  {\PFSeq{\Gamma_1}{A_1} & \PFSeq{\Gamma_2}{A_2}}
+}
+
+\newcommand{\LJFAndLa}{
+  \Infer[\And$-L$_1]
+  {\PFSeq{\Gamma,A_1 \And A_2}{\gamma}}
+  {\PFSeq{\Gamma,A_1}{\gamma}}
+}
+
+\newcommand{\LJFAndLb}{
+  \Infer[\And$-L$_2]
+  {\PFSeq{\Gamma,A_1 \And A_2}{\gamma}}
+  {\PFSeq{\Gamma,A_2}{\gamma}}
+}
+
+\newcommand{\LJFImpRa}{
+  \Infer[\Imp$-R$_1]
+  {\PFSeq{\Gamma}{A_1 \Imp A_2}}
+  {\PFSeq{\Gamma,A_1}{A_2}}
+}
+
+\newcommand{\LJFImpRb}{
+  \Infer[\Imp$-R$_2]
+  {\PFSeq{\Gamma}{A_1 \Imp A_2}}
+  {\PFSeq{\Gamma}{A_2}}
+}
+
+\newcommand{\LJFImpRc}{
+  \Infer[\Imp$-R$_3]
+  {\PFSeq{\Gamma}{A_1 \Imp A_2}}
+  {\PFSeq{\Gamma,A_1}{\cdot}}
+}
+
+\newcommand{\LJFImpL}{
+  \Infer[\Imp$-L$]
+  {\PFSeq{\Gamma_1,\Gamma_2, A_1\Imp A_2}{\gamma}}
+  {\PFSeq{\Gamma_1}{A_1} & \PFSeq{\Gamma_2, A_2}{\gamma}}
+}
+
+\newcommand{\LJFOrRa}{
+  \Infer[\Or$-R$_1]
+  {\PFSeq{\Gamma}{A_1 \Or A_2}}
+  {\PFSeq{\Gamma}{A_1}}
+}
+
+\newcommand{\LJFOrRb}{
+  \Infer[\Or$-R$_2]
+  {\PFSeq{\Gamma}{A_1 \Or A_2}}
+  {\PFSeq{\Gamma}{A_2}}
+}
+
+\newcommand{\LJFOrL}{
+  \Infer[\Or$-L$]
+  {\PFSeq{\Gamma_1, \Gamma_2, A_1 \Or A_2}{\gamma_1\Union\gamma_2}}
+  {\PFSeq{\Gamma_1, A_1}{\gamma_1} & \PFSeq{\Gamma_2, A_2}{\gamma_2}}
+}
+
+\newcommand{\LJFTopR}{
+  \Infer[\Top$-R$]
+  {\PFSeq{\cdot}{\Top}}
+  {}
+}
+
+\newcommand{\LJFBotL}{
+  \Infer[\Bot$-L$]
+  {\PFSeq{\Bot}{\cdot}}
+  {}
+}
+
+\newcommand{\LJFContract}{
+  \Infer[$Contract$]
+  {\PFSeq{\Gamma, A}{\gamma}}
+  {\PFSeq{\Gamma, A, A}{\gamma}}
+}
+
+\begin{figure}
+  \begin{center}
+    {\small
+      \fbox{
+        \begin{tabular}{c}
+          \begin{tabular}{cccc}
+            \LJFInit
+            &
+            \hspace{2em}
+            \LJFTopR
+            &
+            \hspace{2em}
+            \LJFBotL
+            &
+            \hspace{2em}
+            No rule for $\Top$-L
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{ccc}
+            \LJFAndR
+            &
+            \hspace{2em}
+            \LJFAndLa
+            &
+            \hspace{2em}
+            \LJFAndLb
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{ccc}
+            \LJFImpL
+            &
+            \hspace{2em}
+            \LJFContract
+            &
+            \hspace{2em}
+            No rule for $\Bot$-R
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{ccc}
+            \LJFImpRa
+            &
+            \hspace{2em}
+            \LJFImpRb
+            &
+            \hspace{2em}
+            \LJFImpRc
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{ccc}
+            \LJFOrRa
+            &
+            \hspace{2em}
+            \LJFOrRb
+            &
+            \hspace{2em}
+            \LJFOrL
+          \end{tabular}
+        \end{tabular}
+      }
+    }
+  \end{center}
+  \caption{The forward calculus $\LJF$}
+  \label{prop.ljf}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

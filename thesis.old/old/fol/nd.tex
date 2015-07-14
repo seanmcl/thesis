@@ -1,0 +1,175 @@
+
+\newcommand{\FNHyp}{
+  \Infer[$Hyp$]
+  {\FNd{\Gamma, l : A}{l : A}}
+  {\Delta\Entails \Gamma,A~\Ok}
+}
+
+\newcommand{\FNUnit}{
+  \Infer[\Unit$-I$]
+  {\FNd{\Gamma}{\Unit : \Top}}
+  {\Delta\Entails \Gamma~\Ok}
+}
+
+\newcommand{\FNAbort}{
+  \Infer[\Bot$-E$]
+  {\FNd{\Gamma,x:\Bot}{\Abort(x) : C}}
+  {\Delta\Entails \Gamma,C~\Ok}
+}
+
+\newcommand{\FNPair}{
+  \Infer[\And$-I$]
+  {\FNd{\Gamma}{\ASet{M,N} : A_1\And A_2}}
+  {\FNd{\Gamma}{M : A_1} & \FNd{\Gamma}{N : A_2}}
+}
+
+\newcommand{\FNFst}{
+  \Infer[\And$-E$_1]
+  {\FNd{\Gamma}{\Fst(M) : A_1}}
+  {\FNd{\Gamma}{\ASet{M,N} : A_1\And A_2}}
+}
+
+\newcommand{\FNSnd}{
+  \Infer[\And$-E$_1]
+  {\FNd{\Gamma}{\Snd(M) : A_2}}
+  {\FNd{\Gamma}{\ASet{M,N} : A_1\And A_2}}
+}
+
+\newcommand{\FNInl}{
+  \Infer[\Or$-I$_1]
+  {\FNd{\Gamma}{\Inl(M) : A_1\Or A_2}}
+  {\FNd{\Gamma}{M : A_1}}
+}
+
+\newcommand{\FNInr}{
+  \Infer[\Or$-I$_2]
+  {\FNd{\Gamma}{\Inr(M) : A_1\Or A_2}}
+  {\FNd{\Gamma}{M : A_2}}
+}
+
+\newcommand{\FNCase}{
+  \Infer[\Or$-E$]
+  {\FNd{\Gamma}{\Case~M~\Of~\Inr(l_1)\to M~|~\Inl(l_2)\to N : C}}
+  {
+    \FNd{\Gamma}{M : A_1\Or A_2}
+    &
+    \FNd{\Gamma, l_1:A_1}{M : C}
+    &
+    \FNd{\Gamma, l_2:A_2}{N : C}
+  }
+}
+
+\newcommand{\FNLam}{
+  \Infer[\Imp$-I$]
+  {\FNd{\Gamma}{\Lam l.~M : A_1\Imp A_2}}
+  {\FNd{\Gamma, l:A_1}{M : A_2}}
+}
+
+\newcommand{\FNApp}{
+  \Infer[\Imp$-E$]
+  {\FNd{\Gamma}{M~N : A_2}}
+  {
+    \FNd{\Gamma}{M : A_1\Imp A_2}
+    &
+    \FNd{\Gamma}{N : A_1}
+  }
+}
+
+\newcommand{\FNLamt}{
+  \Infer[\All$-I$^a]
+  {\FNd{\Gamma}{\Lamt x:\sigma.~M : \All x.~A(x)}}
+  {\FNd[\Delta,a:\sigma]{\Gamma}{M : A(a)}}
+}
+
+\newcommand{\FNAppt}{
+  \Infer[\All$-E$]
+  {\FNd{\Gamma}{M~t : A(t)}}
+  {\FNd{\Gamma}{M : \All x:\sigma.~A(x)} & \Delta\Entails t:\sigma}
+}
+
+\newcommand{\FNPack}{
+  \Infer[\Ex$-I$]
+  {\FNd{\Gamma}{\ASet{M, t}\As~\Ex x:\sigma.~A(x):\Ex x:\sigma.~A(x)}}
+  {\FNd{\Gamma}{M : A(t)} & \Delta\Entails t:\sigma}
+}
+
+\newcommand{\FNUnpack}{
+  \Infer[\Ex$-E$]
+  {\FNd{\Gamma}{\Let\ASet{x, y} = M~\In~N} : C}
+  {
+    \FNd{\Gamma}{M : \Ex x:\sigma.~A(x)}
+    &
+    \FNd[\Delta,a:\sigma]{\Gamma, l:A(a)}{N : C}
+  }
+}
+
+\begin{figure}
+  \begin{center}
+    {\footnotesize
+      \fbox{
+        \begin{tabular}{c}
+          \begin{tabular}{cc}
+            \FNHyp
+            &
+            \hspace{2em}
+            \FNPair
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{ccc}
+            \FNFst
+            &
+            \hspace{2em}
+            \FNSnd
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{c}
+            \FNCase
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \FNInl
+            &
+            \hspace{2em}
+            \FNInr
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \FNUnit
+            &
+            \hspace{2em}
+            \FNAbort
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \FNLam
+            &
+            \hspace{2em}
+            \FNApp
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \FNLamt
+            &
+            \hspace{2em}
+            \FNAppt
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{c}
+            \FNPack
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{c}
+            \FNUnpack
+          \end{tabular}
+        \end{tabular}
+      }
+    }
+  \end{center}
+  \caption{Natural deduction.}
+  \label{fol.nd}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

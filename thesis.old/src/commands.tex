@@ -1,0 +1,470 @@
+
+\newcommand{\Oper}[1]{\mathsf{#1}}
+
+% ------------------------------------------------------------------------------
+%  Spacing
+% ------------------------------------------------------------------------------
+
+
+\newcommand{\Sep}{\ |\ }
+\def\TableHspace{1em}
+\newcommand{\hsp}{\hspace{\TableHspace}}
+\newcommand{\SmallFboxSep}{\fboxsep=2pt}
+\newcommand{\BigFboxSep}{\fboxsep=14pt}
+\BigFboxSep
+
+% ------------------------------------------------------------------------------
+%  Calligraphic
+% ------------------------------------------------------------------------------
+
+
+\newcommand{\cA}{\mathcal{A}}
+\newcommand{\cB}{\mathcal{B}}
+\newcommand{\cC}{\mathcal{C}}
+\newcommand{\cD}{\mathcal{D}}
+\newcommand{\cE}{\mathcal{E}}
+\newcommand{\cF}{\mathcal{F}}
+\newcommand{\cG}{\mathcal{G}}
+\newcommand{\cH}{\mathcal{H}}
+\newcommand{\cI}{\mathcal{I}}
+\newcommand{\cJ}{\mathcal{J}}
+\newcommand{\cK}{\mathcal{K}}
+\newcommand{\cL}{\mathcal{L}}
+\newcommand{\cM}{\mathcal{M}}
+\newcommand{\cN}{\mathcal{N}}
+\newcommand{\cO}{\mathcal{O}}
+\newcommand{\cP}{\mathcal{P}}
+\newcommand{\cQ}{\mathcal{Q}}
+\newcommand{\cR}{\mathcal{R}}
+\newcommand{\cS}{\mathcal{S}}
+\newcommand{\cT}{\mathcal{T}}
+\newcommand{\cU}{\mathcal{U}}
+\newcommand{\cV}{\mathcal{V}}
+\newcommand{\cW}{\mathcal{W}}
+\newcommand{\cX}{\mathcal{X}}
+\newcommand{\cY}{\mathcal{Y}}
+\newcommand{\cZ}{\mathcal{Z}}
+
+\newcommand{\bA}{\mathbb{A}}
+\newcommand{\bB}{\mathbb{B}}
+\newcommand{\bC}{\mathbb{C}}
+\newcommand{\bD}{\mathbb{D}}
+\newcommand{\bE}{\mathbb{E}}
+\newcommand{\bF}{\mathbb{F}}
+\newcommand{\bG}{\mathbb{G}}
+\newcommand{\bH}{\mathbb{H}}
+\newcommand{\bI}{\mathbb{I}}
+\newcommand{\bJ}{\mathbb{J}}
+\newcommand{\bK}{\mathbb{K}}
+\newcommand{\bL}{\mathbb{L}}
+\newcommand{\bM}{\mathbb{M}}
+\newcommand{\bN}{\mathbb{N}}
+\newcommand{\bO}{\mathbb{O}}
+\newcommand{\bP}{\mathbb{P}}
+\newcommand{\bQ}{\mathbb{Q}}
+\newcommand{\bR}{\mathbb{R}}
+\newcommand{\bS}{\mathbb{S}}
+\newcommand{\bT}{\mathbb{T}}
+\newcommand{\bU}{\mathbb{U}}
+\newcommand{\bV}{\mathbb{V}}
+\newcommand{\bW}{\mathbb{W}}
+\newcommand{\bX}{\mathbb{X}}
+\newcommand{\bY}{\mathbb{Y}}
+\newcommand{\bZ}{\mathbb{Z}}
+
+% ------------------------------------------------------------------------------
+%  Math
+% ------------------------------------------------------------------------------
+
+
+\newcommand{\Nat}{\mathbb{N}}
+\newcommand{\Set}[1]{\left\{#1\right\}}
+\newcommand{\ASet}[1]{\left<#1\right>}
+\newcommand{\BSet}[1]{\left[#1\right]}
+\newcommand{\Union}{\cup}
+\newcommand{\MultiUnion}{\uplus}
+\newcommand{\Inter}{\cap}
+\newcommand{\Diff}{\setminus}
+\newcommand{\Card}[1]{\left|#1\right|}
+%\newcommand{\Eqdef}{\stackrel{\mathrm{def}}{=}}
+\newcommand{\EqDef}{\mathrel{\mathop:}=}
+\newcommand{\Ueq}{\doteq} % unify
+\newcommand{\sst}{\ |\ } % "set such that", e.g. \Set{x\sst x>5}
+\newcommand{\Atoms}{\cA}
+\newcommand{\SeqSeqs}{\SSet{\Seqs}}
+\newcommand{\SetSeqs}{\PSet{\Seqs}}
+\newcommand{\BMatch}{\mbox{bmatch}}
+\newcommand{\FMatch}{\mbox{fmatch}}
+\newcommand{\PSet}[1]{\cP(#1)}
+\newcommand{\SSet}[1]{\cS(#1)}
+\newcommand{\Subf}{\mbox{subf}}
+\newcommand{\Sgn}{\mbox{sgn}}
+\newcommand{\Subfs}{\mbox{subfs}}
+\newcommand{\Contracts}{\mbox{contracts}}
+\newcommand{\Paths}{\mbox{paths}}
+\newcommand{\LB}{\left[}
+\newcommand{\RB}{\right]}
+
+% ------------------------------------------------------------------------------
+%  Proofs
+% ------------------------------------------------------------------------------
+
+
+\newcommand{\Infer}[3][]{\infer[$\scriptsize$ #1]{#2}{#3}}
+\newcommand{\Infers}[3][]{\infer*[$\scriptsize$ #1]{#2}{#3}}
+\newcommand{\Infere}[3][]{\infer=[$\scriptsize$ #1]{#2}{#3}}
+\newcommand{\Inferd}[3][]{\infer-[$\scriptsize$ #1]{#2}{#3}}
+
+% These definitions allow you to always use \renewcommand
+\newcommand{\Qa}{}
+\newcommand{\Qb}{}
+\newcommand{\Qc}{}
+\newcommand{\Qd}{}
+\newcommand{\Qe}{}
+\newcommand{\Qf}{}
+\newcommand{\Qg}{}
+\newcommand{\Qh}{}
+\newcommand{\Qi}{}
+\newcommand{\Qj}{}
+\newcommand{\Qk}{}
+\newcommand{\Ql}{}
+\newcommand{\Qm}{}
+\newcommand{\Qn}{}
+\newcommand{\Qo}{}
+\newcommand{\Qp}{}
+\newcommand{\Qq}{}
+\newcommand{\Qr}{}
+\newcommand{\Qs}{}
+\newcommand{\Qt}{}
+\newcommand{\Qu}{}
+\newcommand{\Qv}{}
+\newcommand{\Qw}{}
+\newcommand{\Qx}{}
+\newcommand{\Qy}{}
+\newcommand{\Qz}{}
+
+\newcommand{\Ra}{}
+\newcommand{\Rb}{}
+\newcommand{\Rc}{}
+\newcommand{\Rd}{}
+\renewcommand{\Re}{}
+\newcommand{\Rf}{}
+\newcommand{\Rg}{}
+\newcommand{\Rh}{}
+\newcommand{\Ri}{}
+\newcommand{\Rj}{}
+\newcommand{\Rk}{}
+\newcommand{\Rl}{}
+\newcommand{\Rm}{}
+\newcommand{\Rn}{}
+\newcommand{\Ro}{}
+\newcommand{\Rp}{}
+\newcommand{\Rq}{}
+\newcommand{\Rr}{}
+\newcommand{\Rs}{}
+\newcommand{\Rt}{}
+\newcommand{\Ru}{}
+\newcommand{\Rv}{}
+\newcommand{\Rw}{}
+\newcommand{\Rx}{}
+\newcommand{\Ry}{}
+\newcommand{\Rz}{}
+
+\newcommand{\Sa}{}
+\newcommand{\Sb}{}
+\newcommand{\Sc}{}
+\newcommand{\Sd}{}
+\newcommand{\Se}{}
+\newcommand{\Sf}{}
+\newcommand{\Sg}{}
+\newcommand{\Sh}{}
+\newcommand{\Si}{}
+\newcommand{\Sj}{}
+\newcommand{\Sk}{}
+\newcommand{\Sl}{}
+\newcommand{\Sm}{}
+\newcommand{\Sn}{}
+\newcommand{\So}{}
+\newcommand{\Sp}{}
+\newcommand{\Sq}{}
+\newcommand{\Sr}{}
+\newcommand{\Ss}{}
+\newcommand{\St}{}
+\newcommand{\Su}{}
+\newcommand{\Sv}{}
+\newcommand{\Sw}{}
+\newcommand{\Sx}{}
+\newcommand{\Sy}{}
+\newcommand{\Sz}{}
+
+% ------------------------------------------------------------------------------
+%  Logics
+% ------------------------------------------------------------------------------
+
+
+\newcommand{\Inv}[1]{#1_{\mbox{\scriptsize Inv}}}
+
+%%% Prop
+
+\newcommand{\LJ}{\mathbf{G3i}}
+\newcommand{\LJF}{\Inv{\LJ}}
+\newcommand{\LP}{\mathbf{P}}
+\newcommand{\LPF}{\mathbf{F}}
+%\newcommand{\PF}{\Inv{\PB}}
+%\newcommand{\PFx}{\PF^{\xi}}
+
+%%% Fol
+
+\newcommand{\FB}{\mathscr{P}}
+\newcommand{\FF}{\Inv{\FB}}
+\newcommand{\FFx}[1][\xi]{\FF^{#1}}
+
+%%% Constr
+
+\newcommand{\CB}{\mathbf{C}}
+\newcommand{\CF}{\Inv{\CB}}
+
+%%% Modal
+
+\newcommand{\MB}{\mathbf{M}}
+
+% ------------------------------------------------------------------------------
+%  Formulas
+% ------------------------------------------------------------------------------
+
+
+%%% Prop
+
+\renewcommand{\And}{\wedge}
+\newcommand{\Or}{\vee}
+\newcommand{\Imp}{\supset}
+\newcommand{\Top}{\top}
+\newcommand{\Bot}{\bot}
+\newcommand{\Not}{\neg}
+\newcommand{\Iff}{\Leftrightarrow}
+
+%%% Polar
+
+\newcommand{\AndP}{\And}
+\newcommand{\AndN}{\&}
+\newcommand{\TopP}{\Top}
+\newcommand{\TopN}{\mbox{T}}
+\newcommand{\Down}{\mathord{\downarrow}}
+\newcommand{\Up}{\mathord{\uparrow}}
+\newcommand{\DU}{\Down\Up}
+\newcommand{\UD}{\Up\Down}
+
+%%% Fol
+
+\newcommand{\All}{\forall}
+\newcommand{\Ex}{\exists}
+
+%%% Linear
+
+\newcommand{\Tensor}{\wedge^+}
+\newcommand{\One}{\mathbf{1}}
+\newcommand{\Sum}{\oplus}
+\newcommand{\Zero}{\mathbf{0}}
+\newcommand{\With}{\wedge^-}
+\newcommand{\Lolli}{\multimap}
+
+%%% Modal
+
+\newcommand{\MWorld}{\mathtt{w}}
+\renewcommand{\Box}{\square}
+%\newcommand{\Dia}{\diamond}
+\newcommand{\Dia}{\lozenge}
+\newcommand{\MAt}[2]{#1 \mbox{{\footnotesize @}} #2}
+\newcommand{\MLe}[2]{#1 \le #2}
+
+%%% Signs
+
+\newcommand{\Left}[1]{\mbox{T }#1}
+\newcommand{\Right}[1]{\mbox{F }#1}
+
+% ------------------------------------------------------------------------------
+%  Sequents
+% ------------------------------------------------------------------------------
+
+\newcommand{\Seqs}{\mathbb{Q}}
+
+\newcommand{\ul}[1]{\underline{#1}}
+
+%%% Prop
+
+\newcommand{\PBSeq}[2]{#1 \Longrightarrow #2}
+\newcommand{\PFSeq}[2]{\ensuremath{#1 \longrightarrow #2}}
+\newcommand{\PBFSeq}[3]{#1;#2 \Longrightarrow #3}
+\newcommand{\Susp}[1]{\ASet{#1}}
+\newcommand{\Foc}[1]{\left[#1\right]}
+\newcommand{\NSeq}[1]{\vdash #1}
+\newcommand{\VSeq}[1]{\Vdash #1}
+
+%%% Fol
+
+\newcommand{\FNd}[3][\Delta]{#1;#2 \vdash #3}
+
+%%% Constr
+
+\newcommand{\CNd}[3][\Delta]{#1;#2 \vdash #3}
+\newcommand{\CSeq}[4][\Delta]{#1;#2;#3 \Longrightarrow #4}
+\newcommand{\CFSeq}[3]{#1;#2 \longrightarrow #3}
+%\newcommand{\CCSeq}[4][\Delta]{#1;#2;#3 \Longrightarrow^+ #4}
+\newcommand{\CCSeq}[4][\Delta]{#1;#2;#3 \stackrel{+}{\Longrightarrow} #4}
+
+%%% Modal
+
+\newcommand{\MNd}[3][\Delta]{#1;#2 \vdash #3}
+\newcommand{\MSeq}[3][\Delta]{#1;#2\Longrightarrow #3}
+
+% ------------------------------------------------------------------------------
+%  Natural deduction terms
+% ------------------------------------------------------------------------------
+
+
+%%% Prop
+
+\newcommand{\Fst}{\Oper{fst}}
+\newcommand{\Snd}{\Oper{snd}}
+\newcommand{\Inl}{\Oper{inl}}
+\newcommand{\Inr}{\Oper{inr}}
+\newcommand{\Case}{\Oper{case}}
+\newcommand{\Of}{\Oper{of}}
+\newcommand{\Abort}{\Oper{abort}}
+\newcommand{\Let}{\Oper{let}}
+\newcommand{\In}{\Oper{in}}
+\newcommand{\Lam}{\lambda}
+\newcommand{\Unit}{\ASet{}}
+
+%%% Fol
+
+\newcommand{\Lamt}{\Lambda}
+\newcommand{\As}{\Oper{as}}
+\newcommand{\Pack}{\Oper{pack}}
+\newcommand{\Unpack}{\Oper{unpack}}
+
+%%% Modal
+
+\newcommand{\MLam}{\Lambda}
+\newcommand{\MBox}[3]{\Oper{box}}
+\newcommand{\MLet}[3]{\Oper{let box } #1 = \Box #2 \Oper{in} #3}
+
+% ------------------------------------------------------------------------------
+%  Sequent terms
+% ------------------------------------------------------------------------------
+
+%%% Fol
+
+\newcommand{\Init}{\Oper{init}}
+
+% ------------------------------------------------------------------------------
+%  Sorts
+% ------------------------------------------------------------------------------
+
+\newcommand{\SortI}{\Oper{\iota}}
+\newcommand{\SortWorld}{\Oper{wld}}
+\newcommand{\SortFrame}{\Oper{frm}}
+\newcommand{\SortStr}{\Oper{str}}
+\newcommand{\Sort}{\Oper{sort}}
+
+% ------------------------------------------------------------------------------
+%  Universes
+% ------------------------------------------------------------------------------
+
+%%% Prop
+
+\newcommand{\UPred}{\cP}
+\newcommand{\UAtom}{\bP}
+
+%%% Fol
+
+\newcommand{\UVar}{\cX}
+\newcommand{\UParam}{\cA}
+\newcommand{\UFunc}{\cF}
+\newcommand{\UTerm}{\bT}
+\newcommand{\USort}{\bS}
+
+%%% Modal
+
+\newcommand{\UWorld}{\bW}
+
+%%% Constr
+
+\newcommand{\ConDom}{\cD}
+
+% ------------------------------------------------------------------------------
+%  Operators
+% ------------------------------------------------------------------------------
+
+%%% Generic
+
+\newcommand{\Subsumes}{\preceq}
+\newcommand{\ProperlySubsumes}{\prec}
+\newcommand{\Entails}{\models}
+\newcommand{\Subsumed}{\succeq}
+\newcommand{\Trans}{\hookrightarrow}
+\newcommand{\Even}{\Oper{even}}
+\newcommand{\Odd}{\Oper{odd}}
+\newcommand{\Ok}{\Oper{ok}}
+\newcommand{\Erase}[1]{(#1)^{\circ}}
+
+%%% Prop
+
+%%% Fol
+
+\newcommand{\Vars}{\Oper{vars}}
+\newcommand{\Params}{\Oper{params}}
+\newcommand{\Funcs}{\Oper{funcs}}
+\newcommand{\Free}{\Oper{free}}
+\newcommand{\Arity}{\Oper{arity}}
+\newcommand{\Dom}{\Oper{dom}}
+\newcommand{\Ran}{\Oper{ran}}
+
+%%% Constr
+
+\newcommand{\CEquiv}{\equiv}
+\newcommand{\PossFocus}[1]{\overline{#1}}
+\newcommand{\PossInvert}[1]{\underline{#1}}
+
+%%% Inverse
+
+\newcommand{\Dlimit}{\cD_{\infty}}
+
+%%% Modal
+
+\newcommand{\MTrans}[1]{\overline{#1}}
+
+% ------------------------------------------------------------------------------
+%  Old
+% ------------------------------------------------------------------------------
+
+
+% \newcommand{\Constraints}{\mathbb{C}}
+
+% \newcommand{\eps}{\epsilon}
+% \newcommand{\Param}[1]{\overline{#1}}
+
+% \newcommand{\clear}{\mbox{clear}}
+
+% \newcommand{\SSeq}[2]{#1 \longmapsto #2}
+% % convert a forward sequent to a backward sequent.
+% %\newcommand{\FB}[1]{\BSet{#1}}
+
+% \newcommand{\Closure}[1]{|#1|}
+% \newcommand{\lab}{\mbox{label}}
+% \newcommand{\unlab}{\mbox{unlabel}}
+% \newcommand{\labs}{\mbox{labels}}
+% \newcommand{\occs}{\mbox{occs}}
+% \newcommand{\subfp}{\le}
+% \newcommand{\rules}{\mbox{rules}}
+% \newcommand{\sign}{\mbox{sign}}
+% \newcommand{\match}{\mbox{match}}
+% \newcommand{\nextdb}{\mbox{next}}
+% \newcommand{\steps}{\rhd}
+% \newcommand{\Path}{\mbox{path}}
+% \newcommand{\Paths}{\mbox{paths}}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "thesis"
+%%% End:

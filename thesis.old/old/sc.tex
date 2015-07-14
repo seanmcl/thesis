@@ -1,0 +1,112 @@
+
+\newcommand{\SCInit}{\ensuremath{\mbox{Init}}}
+\newcommand{\SCInitRule}{\infer[$\RuleNameSize$ \SCInit]{\Seq{\Gamma, p}{p}}{}}
+
+\newcommand{\SCAndR}{\ensuremath{\And\mbox{-R}}}
+\newcommand{\SCAndRRule}{
+  \infer[$\RuleNameSize$ \SCAndR]
+  {\Seq{\Gamma}{A_1 \And A_2}}
+  {\Seq{\Gamma}{A_1} & \Seq{\Gamma}{A_2}}
+}
+
+\newcommand{\SCAndL}{\ensuremath{\And\mbox{-L}}}
+\newcommand{\SCAndLRule}{
+  \infer[$\RuleNameSize$ \SCAndL]
+  {\Seq{\Gamma, A_1 \And A_2}{C}}
+  {\Seq{\Gamma, A_1, A_2}{C}}
+}
+
+\newcommand{\SCImpR}{\ensuremath{\Imp\mbox{-R}}}
+\newcommand{\SCImpRRule}{
+  \infer[$\RuleNameSize$ \SCImpR]
+  {\Seq{\Gamma}{A_1 \Imp A_2}}
+  {\Seq{\Gamma, A_1}{A_2}}
+}
+
+\newcommand{\SCImpL}{\ensuremath{\Imp\mbox{-L}}}
+\newcommand{\SCImpLRule}{
+  \infer[$\RuleNameSize$ \SCImpL]
+  {\Seq{\Gamma, A_1\Imp A_2}{C}}
+  {\Seq{\Gamma, A_1\Imp A_2}{A_1} & \Seq{\Gamma, A_2}{C}}
+}
+
+\newcommand{\SCOrRL}{\ensuremath{\Or\mbox{-R}_1}}
+\newcommand{\SCOrRLRule}{
+  \infer[$\RuleNameSize$ \SCOrRL]
+  {\Seq{\Gamma}{A_1 \Or A_2}}
+  {\Seq{\Gamma}{A_1}}
+}
+
+\newcommand{\SCOrRR}{\ensuremath{\Or\mbox{-R}_2}}
+\newcommand{\SCOrRRRule}{
+  \infer[$\RuleNameSize$ \SCOrRR]
+  {\Seq{\Gamma}{A_1 \Or A_2}}
+  {\Seq{\Gamma}{A_2}}
+}
+
+\newcommand{\SCOrL}{\ensuremath{\Or\mbox{-L}}}
+\newcommand{\SCOrLRule}{
+  \infer[$\RuleNameSize$ \SCOrL]
+  {\Seq{\Gamma, A_1 \Or A_2}{C}}
+  {\Seq{\Gamma, A_1}{C} & \Seq{\Gamma, A_2}{C}}
+}
+
+\newcommand{\SCTopR}{\ensuremath{\Top\mbox{-R}}}
+\newcommand{\SCTopRRule}{
+  \infer[$\RuleNameSize$ \SCTopR]
+  {\Seq{\Gamma}{\Top}}
+  {}
+}
+
+\newcommand{\SCBotL}{\ensuremath{\Bot\mbox{-L}}}
+\newcommand{\SCBotLRule}{
+  \infer[$\RuleNameSize$ \SCBotL]
+  {\Seq{\Gamma, \Bot}{C}}
+  {}
+}
+
+\renewcommand{\figline}{\\[2em]}
+
+\begin{figure}
+  \begin{center}
+    \fbox{
+      \begin{tabular}{cccccc}
+        \SCInitRule
+        &
+        \SCBotLRule
+        &
+        \SCTopRRule
+        \figline
+        \SCOrRLRule
+        &
+        \SCOrRRRule
+        &
+        \SCOrLRule
+        \figline
+        \multicolumn{3}{c}{
+          \begin{tabular}{cc}
+            \SCImpRRule
+            &
+            \SCImpLRule
+            \figline
+            \SCAndRRule
+            &
+            \SCAndLRule
+            \figline
+            \mbox{No rule for $\Bot$-R}
+            &
+            \mbox{No rule for $\Top$-L}
+          \end{tabular}
+        }
+      \end{tabular}
+    }
+  \end{center}
+  \caption{Sequent Calculus}
+  \label{rules.sc}
+  \index{$\Seq{\Gamma}{A}$}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

@@ -1,0 +1,273 @@
+
+\chapter{First-order logic}
+
+Propositional logic allows reasoning that is parametric over the atomic formulas.
+The truth of $a\And b\Imp b\And a$ is independent of the meanings of
+$a$ and $b$.  We can substitute ``It is raining.'' for $a$ and ``5 is odd.c''
+for $b$ and obtain a valid inference.  But the logic is not parametric
+enough to capture, e.g., mathematical reasoning.  To express,
+``each natural number is either odd or even``, we'd need
+the infinite formula
+\[ (\Even(0)\Or\Odd(0))\And(\Even(1)\Or\Odd(1))\And\ldots \]
+
+\noindent
+We would prefer to reason about natural numbers in general, given some
+parametric facts about the atomic predicates $\Even$ and $\Odd$.
+The above proposition can be expressed in first-order logic as
+\[ \All x.~\Even(x)\Or\Odd(x). \]
+
+\noindent
+where $\All x.~A(x)$ means ``for any natural number $x$, the propositon
+$A(x)$ is true''.  Moreover, we may wish to reason simultaneously about natural numbers and
+real numbers, for example
+\[ \All x.~\Ex n.~n\le x< n+1. \]
+
+\noindent
+where $\Ex x.~A(x)$ means ``there is a natural number $x$ where $A(x)$ is true''.
+To express that the variables $x$ and $n$ should be chosen from different sets
+of things ($\bR$ and $\bN$ respectively) we label the variables with
+a \emph{sort}:
+\[ \All x : \bR.~\Ex n : \bN.~n\le x< n+1. \]
+
+\noindent
+In this chapter we describe intuitionistic first-order logic.  We begin
+by describing the syntax of sorts, terms, and formulas.  We then
+define \emph{natural deduction}, the standard proof-theoretic semantics.
+As in the last chapter, we then develop a polarized, focused sequent calculus
+and describe an inverse method for theorem proving in the focused calculus.
+
+\section{Syntax}
+
+\begin{definition}[Universes and Signatures]
+  \begin{itemize}
+  \item[]
+  \item Fix a finite set of symbols, called \emph{sorts}, denoted $\USort$.
+  \item Let $\UVar$ be an infinite set of symbols, called \emph{variables}.
+  \item Let $\UParam$ be an infinite set of symbols, called \emph{parameters}.
+  \item Let $\UFunc$ be an infinite set of symbols, called \emph{functon symbols}.
+    Each $f\in\UFunc$ has an associated \emph{signature},
+    $\Sigma(f) = \ASet{\ASet{\sigma_1,\ldots,\sigma_n}, \sigma}$ where
+    $\sigma_i\in\USort$.  $n$ is called the \emph{arity} of $f$, denoted
+    $\Arity(f)$.  If $\Arity(f)=0$ it is sometimes called a \emph{constant}.
+  \item Similarly, each predicate symbol $p\in\UPred$ has a signature,
+    $\Sigma(p) = \ASet{\sigma_1,\ldots,\sigma_n}$ where
+    $\sigma_i\in\USort$.  $n$ is called the \emph{arity} of $p$, denoted
+    $\Arity(p)$.
+  \end{itemize}
+\end{definition}
+
+\begin{definition}[Terms]
+  \begin{itemize}
+  \item[]
+  \item
+    Let $\UTerm$ be the set of \emph{terms} defined by the following grammar.
+
+    \[
+    \begin{array}{lrl}
+      \mbox{Terms } &T &::= x \Sep a \Sep f(T_1,\ldots,T_n)\\
+      \mbox{Sorting contexts } &\Delta &::= \cdot\Sep x:\sigma,\Delta\Sep a:\sigma,\Delta
+    \end{array}
+    \]
+    where $x\in\UVar$, $a\in\UParam$, $f\in\UFunc$, and $\sigma\in\USort$.
+    Let $\Vars(t)$ be the set of variables occurring in $t$, and
+    $\Params(t)$ be the set of parameters occurring in $t$.
+  \item
+    A term $t$ is \emph{well-formed at sort $\sigma$ in sorting context $\Delta$}
+    if a derivation of
+    $\Delta\Entails t :\sigma$ exists given the following rules:
+
+    \[
+    \begin{array}{c}
+      \begin{array}{cc}
+        \infer{\Delta\Entails x : \sigma}{x\in\UVar & x:\sigma\in\Delta }
+        &
+        \hspace{2em}
+        \infer{\Delta\Entails a : \sigma}{a\in\UParam & a:\sigma\in\Delta }
+      \end{array}
+      \\[2em]
+      \begin{array}{c}
+        \infer
+        {\Delta \Entails f(t_1,\ldots,t_n) : \sigma}
+        {\Sigma(f) = \ASet{\ASet{\sigma_1,\ldots,\sigma_n},\sigma} & \Delta\Entails t_1:\sigma_1 & \ldots & \Delta\Entails t_n:\sigma_n}
+      \end{array}
+    \end{array}
+    \]
+  \end{itemize}
+\end{definition}
+
+\begin{definition}[Formulas]
+  \begin{itemize}
+  \item[]
+  \item Atomic formulas have the form $p(t_1,\ldots,t_n)$ where $p\in\UPred$ and $t_i\in\UTerm$.
+  \item First-order formulas share the connectives propositional logic, with
+    the new forms
+    \[
+    \mbox{Formulas } A ::= p(t_1,\ldots,t_n) \Sep \All x:\sigma.~A \Sep \Ex x:\sigma.~A \Sep\ldots
+    \]
+  \item A formula $A$ is well-formed in $\Delta$ if a derivation of $\Delta\Entails A$
+    exists given the following rules:
+
+    \[
+    \begin{array}{c}
+      \begin{array}{cc}
+        \infer
+        {\Delta \Entails p(t_1,\ldots,t_n)~\Ok}
+        {\Sigma(p) = \ASet{\sigma_1,\ldots,\sigma_n} & \Delta\Entails t_1:\sigma_1 & \ldots & \Delta\Entails t_n:\sigma_n}
+        &
+        \hspace{2em}
+        \infer{\Delta\Entails \Top~\Ok}{}
+      \end{array}
+      \\[2em]
+      \begin{array}{cc}
+        \Infer
+        {\Delta\Entails A * B~\Ok}
+        {\Delta\Entails A~\Ok & \Delta\Entails B~\Ok & *\in\Set{\And,\Or,\Imp}}
+        &
+        \hspace{2em}
+        \infer{\Delta\Entails \Bot~\Ok}{}
+      \end{array}
+      \\[2em]
+      \begin{array}{cc}
+        \Infer
+        {\Delta\Entails ?x:\sigma.~A(x)~\Ok}
+        {\Delta,x:\sigma\Entails A~\Ok & \Delta\Entails B~\Ok & ?\in\Set{\All,\Ex}}
+      \end{array}
+    \end{array}
+    \]
+  \item A (multi-)set of formulas is well-formed in $\Delta$ if each of its elements
+    is.
+
+  \end{itemize}
+\end{definition}
+
+\section{Natural deduction}
+
+\input{fol/nd}
+
+\section{Backward sequent calculus}
+
+\input{fol/backward}
+
+\begin{definition}[Ground]
+  Terms and atomic formulas are called \emph{ground} if they have no
+  variables or parameters.
+  Formulas are ground if they have no free variables and no parameters.
+\end{definition}
+
+\begin{definition}[Substitutions]
+  \begin{itemize}
+  \item[]
+  \item
+    A substitution $\theta$ is a pair $\ASet{\theta_x,\theta_a}$
+    of finite mappings where
+    $\theta_x : \UVar\to\UTerm$ and $\theta_a : \UParam\to\UParam$.
+  \item
+    For historical reasons applying a substitution to a term is written
+    $t\theta$.  Define
+    \[
+    t\theta=
+    \begin{cases}
+      t=x\in\UVar & \theta_x(x)\\
+      t=a\in\UParam & \theta_a(a)\\
+      t=f(t_1,\ldots,t_n) & f(t_1\theta,\ldots,t_n\theta)
+    \end{cases}
+    \]
+  \item
+    Define the \emph{domain} and \emph{range} of a substitution as
+    \[
+    \begin{array}{rl}
+      \Dom(\theta) &= \Set{x \sst \theta(x)\neq x} \Union \Set{a \sst \theta(a)\neq a} \\
+      \Ran(\theta) &= \bigcup_{\theta(x)\neq x}(\Vars(\theta(x))\Union\Params(\theta(x))) \Union \Set{\theta(a) \sst \theta(a)\neq a} \\
+    \end{array}
+    \]
+  \item A substitution is called \emph{idempotent} if $t\theta\theta=t\theta$ for all $t$.
+  \end{itemize}
+\end{definition}
+
+\begin{definition}[Notation]
+  We systematically use the following (possibly subscripted)
+  symbols to represent the new syntactic entities.
+  \begin{center}
+    \begin{tabular}{l@{\hspace{3em}}l}
+      $c,d$ & constant function symbols\\
+      $f,g$ & non-constant function symbols\\
+    \end{tabular}
+  \end{center}
+\end{definition}
+
+\begin{definition}[Unification]
+
+\end{definition}
+
+\section{Forward sequent calculus}
+
+
+
+
+\section{XXX Notes XXX}
+
+\begin{itemize}
+\item Parameters are different from constants because any instantiated variable
+  can depend on any constant, but variables track the parameters on which they
+  can depend.
+\item Define $\Free(A)$ as the free variables and params of $A$ for labeling.
+\item Perfect vs. imperfect indexing
+\item Freezing and thawing of parameters after first inversion
+\item We use only pred symbols to determine pos/neg initial sequents.  You
+can imagine using the full relation, but then you'd need to do an allPairs
+unification which leads to many more initial sequents.
+\item Prolog example (use Imogen as programming language interpreter.)
+\item Proof reconstruction: either save substitutions, or reconstruct
+  them by brute-force search.
+\item Example of substitution subsumption
+   val bugs = "q(a1, a2, a1, a2) =>                                \
+              \ exists X1 X2 Y1 Y2.                                \
+              \ q(X1, X2, Y1, Y2) & ( P(X1) & P(X2) -> P(Y1) & P(Y2) )"
+Goal (1/1)
+  ⊢ p24
+Initial seqs: 3
+  p33(x39, x40) ⊢ P(x39)
+  p33(x42, x41) ⊢ P(x41)
+  q(x46, x45, x44, x43) ⊢ q(x46, x45, x44, x43)
+Initial rules: 1
+  ⊢ q(x35, x36, x37, x38), p33(x35, x36) ⊢ P(x37), p33(x35, x36) ⊢ P(x38)
+  ---------------------------{}:0
+  ⊢ p24
+Globals:
+  q(a1, a2, a1, a2)
+
+\item Motivation for cascading
+
+H1  H2  H3  H4
+---------------
+    H
+
+Say there's 10 ways Q1 can match H1, and ditto for Q2 and Q3.
+This generates 1000 partially applied rules, even though the
+final output will be reduced to a few sequents by subsumption.
+
+\item Motivation for partial application
+
+               q(a1, a2, a3, a1, a2, a3) =>
+                       exists X1 X2 X3 Y1 Y2 Y3.
+                          ( q(X1, X2, Y1, Y2) & ( ( p(X1) & p(X2) & p(X3) ) =>
+                              ( p(Y1) & p(Y2) & p(X3) ) )   )"
+
+In this problem, we generate all combinations of instantiations of variables
+before finding a subsuming sequent.
+
+\item A surprise is that generating contracts is generally a good idea!
+Waiting until the end, during contraction, makes it hard to pick good
+candidates for inference, as in the previous example.
+
+\item
+((∀ X1. (∃ X2. (p1(X1) ∧ p2(X2)))) => (∃ X2. (∀ X1. (p1(X1) ∧ p2(X2)))))
+A nice example of why you can't maximally match a sequent to a rule hypothesis.
+Maximally matching would cause proof search to fail.
+
+\end{itemize}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "thesis"
+%%% End:

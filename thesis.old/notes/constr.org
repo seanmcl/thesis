@@ -1,0 +1,5 @@
+
+3 < x < 6 => x = 4 | x = 5
+
+works in forward method, not in backward method.  Work out the
+example.

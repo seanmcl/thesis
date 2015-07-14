@@ -1,0 +1,161 @@
+
+\newcommand{\FBInit}{
+  \Infer[$Init$]
+  {\FSeq{\Gamma,p}{p}}
+  {\Delta\Entails\Gamma,p~\Ok}
+}
+
+\newcommand{\FBAndR}{
+  \Infer[\And$-R$]
+  {\FSeq{\Gamma}{A_1 \And A_2}}
+  {\FSeq{\Gamma}{A_1} & \FSeq{\Gamma}{A_2}}
+}
+
+\newcommand{\FBAndL}{
+  \Infer[\And$-L$]
+  {\FSeq{A_1 \And A_2}{\gamma}}
+  {\FSeq{A_1, A_2}{\gamma}}
+}
+
+\newcommand{\FBImpR}{
+  \Infer[\Imp$-R$]
+  {\FSeq{\Gamma}{A_1 \Imp A_2}}
+  {\FSeq{\Gamma,A_1}{A_2}}
+}
+
+\newcommand{\FBImpL}{
+  \Infer[\Imp$-L$]
+  {\FSeq{\Gamma,A_1\Imp A_2}{\gamma}}
+  {\FSeq{\Gamma,A_1\Imp A_2}{A_1} & \FSeq{\Gamma,A_2}{\gamma}}
+}
+
+\newcommand{\FBOrRL}{
+  \Infer[\Or$-R$_1]
+  {\FSeq{\Gamma}{A_1 \Or A_2}}
+  {\FSeq{\Gamma}{A_1}}
+}
+
+\newcommand{\FBOrRR}{
+  \Infer[\Or$-R$_2]
+  {\FSeq{\Gamma}{A_1 \Or A_2}}
+  {\FSeq{\Gamma}{A_2}}
+}
+
+\newcommand{\FBOrL}{
+  \Infer[\Or$-L$]
+  {\FSeq{A_1 \Or A_2}{\gamma}}
+  {\FSeq{A_1}{\gamma} & \FSeq{\Gamma, A_2}{\gamma}}
+}
+
+\newcommand{\FBTopR}{
+  \Infer[\Top$-R$]
+  {\FSeq{\Gamma}{\Top}}
+  {\Delta\Entails\Gamma~\Ok}
+}
+
+\newcommand{\FBTopL}{\mbox{No rule for $\Top$-L}}
+
+\newcommand{\FBBotL}{
+  \Infer[\Bot$-L$]
+  {\FSeq{\Gamma,\Bot}{\gamma}}
+  {\Delta\Entails\Gamma,\gamma~\Ok}
+}
+
+\newcommand{\FBBotR}{\mbox{No rule for $\Bot$-R}}
+
+\newcommand{\FBAllR}{
+  \Infer[\All$-R$]
+  {\FSeq{\Gamma}{\All x:\sigma.\ A(x)}}
+  {\FSeq[\Delta,a:\sigma]{\Gamma}{A(a)}}
+}
+
+\newcommand{\FBAllL}{
+  \Infer[\All$-L$]
+  {\FSeq{\Gamma, \All x:\sigma.\ A(x)}{\gamma}}
+  {\FSeq{\Gamma, A(t)}{\gamma} & \Delta\Entails t:\sigma}
+}
+
+\newcommand{\FBExL}{
+  \Infer[\Ex$-L$^a]
+  {\FSeq{\Gamma, \Ex x:\sigma.\ A(x)}{\gamma}}
+  {\FSeq[\Delta,a:\sigma]{\Gamma, A(a)}{\gamma}}
+}
+
+\newcommand{\FBExR}{
+  \Infer[\Ex$-R$]
+  {\FSeq{\Gamma}{\Ex x:\sigma.\ A(x)}}
+  {\FSeq{\Gamma}{A(t)} & \Delta\Entails t:\sigma}
+}
+
+\begin{figure}
+  \begin{center}
+    {\small
+      \fbox{
+        \begin{tabular}{c}
+          \begin{tabular}{ccc}
+            \FBInit
+            &
+            \hspace{1cm}
+            \FBTopR
+            &
+            \hspace{1cm}
+            \FBBotL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \FBAndR
+            &
+            \hspace{1cm}
+            \FBAndL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \FBOrRL
+            &
+            \hspace{10pt}
+            \FBOrRR
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{c}
+            \FBOrL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \FBImpR
+            &
+            \hspace{20pt}
+            \FBImpL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \FBAllR
+            &
+            \hspace{20pt}
+            \FBAllL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \FBExR
+            &
+            \hspace{20pt}
+            \FBExL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \FBBotR
+            &
+            \hspace{20pt}
+            \FBTopL
+          \end{tabular}
+        \end{tabular}
+      }
+    }
+  \end{center}
+  \caption{Backward sequent calculus.}
+  \label{fol.backward}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

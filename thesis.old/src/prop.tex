@@ -1,0 +1,742 @@
+
+% \chapter{Propositional Logic}
+% \label{chapter.prop}
+
+% Intuitionistic propositional logic (IPL) is the starting point for our
+% investigations into a uniform proof procedure for intuitionistic logics,
+% and is a sublogic of all logics in later chapters.
+% Though relatively simple compared with first-order logics,
+% it poses some interesting challenges.  In particular, it exposes
+% inefficiences in a naive implementation of the inverse method,
+% the observation of which lead to important optimizations that
+% apply to the other logics.
+
+% We begin in Section~\ref{prop.sec.def}
+% by defining two related sequent calculi for IPL, $\LJ$ and $\LJF$.
+% $\LJ$ is a mostly standard presentation, equivalent to Gentzen's original
+% LJ from 1934.  $\LJF$ is related to $\LJ$, but is more suitable
+% to forward reasoning in the inverse method.  We conclude the section with
+% a proof of soundness and completeness of $\LJF$ with respect to $\LJ$.
+% Section~\ref{prop.sec.inverse} shows how to use the inverse method to
+% turn $\LJF$ into a complete proof-search procedure.  In the process,
+% we will observe a number of inefficiences.  Section~\ref{prop.sec.focus}
+% defines focused calculi that correspond to $\LJ$.
+
+% \section{Preliminaries}
+
+% In this section we quickly review some background material and
+% notations that will be necessary in the coming text.
+
+% \paragraph{Multisets.}
+
+% Let $\cU$ be a set. A \emph{(finite) multiset} of $\cU$
+% is a function $f$ from
+% $\cU$ to $\Nat$ where $f(x)=0$ for all but a finite number of elements of
+% $\cU$.  The empty multiset, written $\cdot$ or $\emptyset$ is the
+% function $\lambda x.\ 0$. If $f$ is a multiset then $f, x$ is a multiset
+% where $(f, x) (x) = f(x)+1$ and $(f, x) (y)=f (y)$ when $x\neq y$.
+% If $f$ and $g$ are multisets, then $f\Union g$ is a multiset where
+% $(f\Union g) (x) = f(x)+g(x)$.  When we are writing both set and multiset union
+% in the same part of the text, we will use $X \uplus Y$ for multiset union.
+% % For a multiset $\Gamma$, write $\dedup(\Gamma)$ for the set obtained by deleting
+% % all duplicates in $\Gamma$.
+% The size of a set or multiset $\Gamma$ is written $\Card{\Gamma}$.
+
+% \paragraph{Ordered sequences.}
+
+% If $\cU$ is a set, a \emph{sequence} of $\cU$ is either empty (written $[]$)
+% or has the form $x:S$ where $x\in \cU$ and $S$ is a sequence of $\cU$.
+% We abbreviate $x_1 : x_2 : \cdots : x_n : []$ as $[x_1,\ldots,x_n]$.
+
+% \paragraph{Notations.}
+
+% If $\cU$ is a set, let $\PSet{\cU}$ be the powerset of $\cU$ and $\SSet{\cU}$ be
+% the set of ordered sequences of elements of $\cU$.  $\SSet{\cU}_n$ is the
+% set of sequences of $X$ with length $n$.
+
+% \section{Sequent calculus}
+
+% % \begin{quote}
+% %   \textit{We define the backward calculus $\LJ$ for
+% %     IPL, and remind the reader of some important properties.}
+% % \end{quote}
+
+% % \noindent
+
+% \begin{definition}[Formulas]
+%   Let $\Atoms$ be an infinite set of symbols, called \emph{atoms}.
+%   Formulas of IPL are
+%   \[
+%   \mbox{Formulas } A ::= p \Sep A \And A \Sep \Top \Sep A \Or A
+%   \Sep \Bot \Sep A \Imp A
+%   \]
+%   where $p\in\Atoms$ and $\And$, $\Or$, $\Imp$, $\Top$, $\Bot$
+%   signify conjunction, disjunction, implication, truth, and falsehood
+%   respectively.
+%   Formulas of the first kind are called \emph{atomic}.
+%   Derived connectives for negation and bi-implication are
+%   \[
+%   \begin{array}{rl}
+%     \Not A &:= A \Imp \Bot \\
+%     A \Iff B &:= (A \Imp B) \And (B \Imp A).
+%   \end{array}
+%   \]
+% \end{definition}
+
+% \noindent
+% The semantics of formulas is typically given by the system of
+% natural deduction due to Gentzen~\cite{Gentzen.1934.MZ}.  In natural deduction,
+% the meaning of a formula is given by its introduction and elimination rules.
+% An alternate semantics is given by the \emph{sequent calculus}, which is more
+% appropriate for proof search.  Here the introduction and elimination rules
+% are replaced by left and right rules, indicating how to use hypotheses
+% and construct conclusions respectively.
+
+% \begin{definition}[Sequents]
+%   A \emph{sequent} is a pair $\ASet{\Gamma,\gamma}$
+%   where $\Gamma$ is a multiset of formulas and
+%   $\gamma$ is a set of formulas with at most one element\footnote{While it
+%     is not necessary at the moment, we allow an empty consequent so that
+%     we can use the same definition of sequents in the forward calculi that
+%     occur later in this chapter.}.
+%   $\Gamma$ is called the \emph{antecedents}
+%   and $\gamma$ the \emph{consequent}.
+%   We write $\ASet{\Gamma,\gamma}$ as $\PBSeq{\Gamma}{\gamma}$.
+%   If $\gamma$ is empty, we write $\PBSeq{\Gamma}{\cdot}$.
+%   If $\gamma$ is a singleton $\Set{A}$, we write $\PBSeq{\Gamma}{A}$.
+%   If $\Gamma$ is empty, we write $\PBSeq{\cdot}{\gamma}$.
+%   We denote the set of all sequents by $\Seqs$,
+%   the set of all sequences of sequents by $\SeqSeqs$, and
+%   the set of all sets of sequents by $\SetSeqs$.
+% \end{definition}
+
+% \begin{definition}[Inference rules]
+%   An \emph{inference rule} (or simply \emph{rule})
+%   is a pair $\ASet{\cC, \cH}$
+%   where $\cC$ is a sequent, and $\cH$ is a sequence of sequents.
+%   $\cC$ is called the \emph{conclusion} and
+%   $\cH$ is called the \emph{premeses}.
+%   If $\rho = \ASet{\cC, \cH}$ is a rule, define
+%   $\Card{\rho} = \Card{\cH}$.
+%   We write $\ASet{\cC, \ASet{\cH_1, \cH_2,\ldots,\cH_n}}$ as
+%   \[
+%   \Infer{\cC}{\cH_1 & \cH_2 & \ldots & \cH_n}
+%   \]
+%   A rule $\rho$ is called initial if $\Card{\rho}=0$.
+% \end{definition}
+
+% \input{prop/lj}
+% \input{prop/lj-der}
+
+% Figure~\ref{prop.lj} shows the inference rules of $\LJ$\footnote{
+% $\LJ$ is equivalent to Gentzen's LJ~\cite{Gentzen.1934.MZ}.  There are a
+% menagerie of sequent calculi equivlent to LJ but with slight technical
+% differences.  See, for example, the many examples in \cite[Chapter
+% 3]{Troelstra.2000.ProofTheory}.  LJ itself is not optimal for use in proof
+% search due to its explicit structural rules.}, a standard
+% sequent calculus for IPL.  Figure~\ref{prop.lj-der} shows an example
+% proof in $\LJ$.  We remind the reader of some admissible rules of $\LJ$.
+
+% \begin{lemma}[Weakening]
+%   \label{prop.thm.weaken}
+%   The rule
+%   \[
+%   \Infer[\mbox{Weaken}]
+%   {\PBSeq{\Gamma,A}{\gamma}}
+%   {\PBSeq{\Gamma}{\gamma}}
+%   \]
+%   is admissible in $\LJ$.
+% \end{lemma}
+% \begin{proof} Easy induction on the derivation. \end{proof}
+
+% \begin{theorem}[Cut]
+%   The rule
+%   \[
+%   \Infer[\mbox{Cut}]
+%   {\PBSeq{\Gamma}{\gamma}}
+%   {\PBSeq{\Gamma}{A} & \PBSeq{\Gamma,A}{\gamma}}
+%   \]
+%   is admissible in $\LJ$.
+% \end{theorem}
+% \begin{proof}
+%   Due to Gentzen~\cite{Gentzen.1934.MZ}.  For a more modern proof,
+%   see Troelstra~\cite{Troelstra.2000.ProofTheory}
+% \end{proof}
+
+% \begin{theorem}[Identity]
+%   The rule
+%   \[
+%   \Infer[\mbox{Id}]
+%   {\PBSeq{\Gamma, A}{A}}
+%   {}
+%   \]
+%   is admissible in $\LJ$.
+% \end{theorem}
+% \begin{proof} Easy induction on $A$. \end{proof}
+
+% \begin{theorem}[Contraction]
+%   \label{prop.thm.contract}
+%   The rule
+%   \[
+%   \Infer[\mbox{Contract}]
+%   {\PBSeq{\Gamma, A}{\gamma}}
+%   {\PBSeq{\Gamma, A, A}{\gamma}}
+%   \]
+%   is admissible in $\LJ$.
+% \end{theorem}
+
+% \begin{proof}
+%   Induction on the derivation of $\PBSeq{\Gamma, A, A}{\gamma}$~\cite[Section 3.5.5]{Troelstra.2000.ProofTheory}.
+% \end{proof}
+
+% \begin{theorem}[Consistency]
+%   \label{prop.thm.consistent}
+%   $\PBSeq{\cdot}{\Bot}$ is not derivable.
+% \end{theorem}
+% \begin{proof} No inference rules apply. \end{proof}
+
+% \section{Focusing}
+
+% From a proof-search perspective, $\LJ$ is not optimal.  It admits too many
+% proofs.  For example,
+
+% \[
+% \begin{array}{cc}
+%   \Infer
+%   {\PBSeq{a\And b}{b\And a}}
+%   {
+%     \Infer
+%     {\PBSeq{a,b}{b\And a}}
+%     {
+%       \Infer
+%       {\PBSeq{a,b}{b}}
+%       {}
+%       &
+%       \Infer
+%       {\PBSeq{a,b}{a}}
+%       {}
+%     }
+%   }
+%   &
+%   \hspace{2em}
+%   \Infer
+%   {\PBSeq{a\And b}{b\And a}}
+%   {
+%     \Infer
+%     {\PBSeq{a\And b}{b}}
+%     {
+%       \Infer
+%       {\PBSeq{a,b}{b}}
+%       {}
+%     }
+%     &
+%     \Infer
+%     {\PBSeq{a\And b}{a}}
+%     {
+%       \Infer
+%       {\PBSeq{a,b}{a}}
+%       {}
+%     }
+%     &
+%   }
+% \end{array}
+% \]
+
+% \noindent
+% are both $\LJ$ derivations.  But the order in which we choose to decompose
+% the formulas in the sequent is, in this case, irrelevant with respect to
+% provability.  Call an inference rule \emph{invertible} if its conclusion
+% is provable if and only if its premeses are.  A connective is called
+% \emph{asynchronous} on the left (right) if its left (right) rule is invertible.
+% Otherwise the connective is called \emph{synchronous} on the left (right).
+
+% During proof search, invertible
+% rules can be applied eagerly in some fixed order without affecting
+% the provability of the sequent.  If we were to decree that we always
+% apply invertible rules to the consequent before the antecedents, then
+% the second proof would be a canonical representative of the proofs of
+% $\PBSeq{a\And b}{b\And a}$.  The reason this is essential for proof search
+% is that if a proof attempt were unsuccessful, say beginning with
+
+% \[
+% \Infer
+% {\PBSeq{a\And b}{b\And c}}
+% {
+%   \Infer
+%   {\PBSeq{a\And b}{b}}
+%   {
+%     \Infer
+%     {\PBSeq{a,b}{b}}
+%     {}
+%   }
+%   &
+%   \Infer
+%   {\PBSeq{a\And b}{c}}
+%   {
+%     ???
+%   }
+% }
+% \]
+
+% \noindent
+% we shouldn't backtrack to search for a proof starting with
+
+% \[
+% \Infer
+% {\PBSeq{a\And b}{b\And c}}
+% {
+%   \Infer
+%   {\PBSeq{a,b}{b\And c}}
+%   {
+%     \Infer
+%     {\PBSeq{a,b}{b}}
+%     {}
+%     &
+%     \Infer
+%     {\PBSeq{a,b}{c}}
+%     {???}
+%   }
+% }.
+% \]
+
+% \noindent
+% If the first attempt failed, so will the second.  This phenomenon is known as
+% \emph{don't care nondeterminism}.  Choices that are not of this form are
+% called \emph{don't know nondeterminism}.
+% A more subtle redundancy occurs in non-invertible rules.  For example,
+
+% \[
+% \begin{array}{cc}
+%   \Infer
+%   {\PBSeq{d, d\Imp a}{(a\Or b)\Or c}}
+%   {
+%     \Infer
+%     {\PBSeq{d, d\Imp a}{a\Or b}}
+%     {
+%       \Infer
+%       {\PBSeq{d, d\Imp a}{a}}
+%       {
+%         \Infer
+%         {\PBSeq{d, d\Imp a}{d}}
+%         {}
+%         &
+%         \Infer
+%         {\PBSeq{d, a}{a}}
+%         {}
+%       }
+%     }
+%   }
+%   &
+%   \hspace{2em}
+%   \Infer
+%   {\PBSeq{d, d\Imp a}{(a\Or b)\Or c}}
+%   {
+%     \Infer
+%     {\PBSeq{d, d\Imp a}{a\Or b}}
+%     {
+%       \Infer
+%       {\PBSeq{d, d\Imp a}{d}}
+%       {}
+%       &
+%       \Infer
+%       {\PBSeq{d, a}{a\Or b}}
+%       {
+%         \Infer
+%         {\PBSeq{d, a}{a}}
+%         {}
+%       }
+%     }
+%   }
+% \end{array}
+% \]
+
+% \noindent
+% are two proofs of $\PBSeq{d, d\Imp a}{(a\Or b)\Or c}$.  Here the second is
+% redundant because it does not obey the \emph{polarity} of the connectives;
+% while decomposing $(a\Or b)\Or c$, we do not need to make the intermediate
+% non-deterministic choice.  To make this precise, we refine the formulas
+% of IPL.
+
+% \subsection{Polarized formulas}
+
+% Logical connectives have a \emph{polarity}, either positive or negative.  In
+% linear logic, the polarity of each connective is uniquely determined.  Positive
+% connectives are asynchronous on the left and synchronous on the right.  Negative
+% connectives are synchronous on the left and asynchronous on the right.  This
+% symmetry breaks down for intuitionistic logic where conjunction and truth are
+% inherently ambiguous.  For example, both
+
+% \[
+% \Infer
+% {\PBSeq{\Gamma, A_1 \And A_2}{C}}
+% {\PBSeq{\Gamma, A_1, A_2}{C}}
+% \]
+
+% \noindent and the pair of rules
+
+% \[
+% \begin{array}{cc}
+%   \Infer
+%   {\PBSeq{\Gamma, A_1 \And A_2}{C}}
+%   {\PBSeq{\Gamma, A_1}{C}}
+%   &
+%   \hspace{2em}
+%   \Infer
+%   {\PBSeq{\Gamma, A_1 \And A_2}{C}}
+%   {\PBSeq{\Gamma, A_2}{C}}
+% \end{array}
+% \]
+
+% \noindent
+% are sound and complete.  In linear logic (see Section~\ref{chapter.linear}),
+% there are two different conjunctions corresponding to the two possibilities:
+
+% \[
+% \begin{array}{ccc}
+%   \Infer
+%   {\PBSeq{\Gamma, A_1 \otimes A_2}{C}}
+%   {\PBSeq{\Gamma, A_1, A_2}{C}}
+%   &
+%   \hspace{2em}
+%   \Infer
+%   {\PBSeq{\Gamma, A_1 \& A_2}{C}}
+%   {\PBSeq{\Gamma, A_1}{C}}
+%   &
+%   \hspace{2em}
+%   \Infer
+%   {\PBSeq{\Gamma, A_1 \& A_2}{C}}
+%   {\PBSeq{\Gamma, A_2}{C}}
+% \end{array}
+% \]
+
+% \noindent
+% In intuitionistic logic, since antecedents are combined and weakening is admissible,
+% the distinction between the two forms of conjunction is lost.
+% However, assigning polarities to the connectives is
+% still a useful tool. In particular, we can take advantage of
+% \emph{focusing}, described in the next section.  Thus, we will
+% refine the structure of intuitionistic formulas by assigning polarities,
+% yielding \emph{polarized formulas}~\cite{Lamarche.1995.LICS} where immediately
+% nested formulas always have the same polarity, unless an explicit
+% polarity-shifting connective $\Up$ or $\Down$ is encountered.  These coercions
+% are called \emph{shifts}.  Implication has slightly special status, in that its
+% left-hand side has opposite polarity from its right-hand side.  This is because
+% in the sequent calculus for intuitionistic logic, the focusing behavior of
+% connectives on the left-hand side is the opposite of their behavior on the
+% right-hand side.
+
+% \begin{align*}
+%   \mbox{Positive formulas } A^+ &::= p^+ \Sep A^+ \Or A^+ \Sep \Bot \Sep A^+ \AndP A^+ \Sep \TopP \Sep \Down A^- \\
+%   \mbox{Negative formulas } A^- &::= p^- \Sep A^+ \Imp A^- \Sep A^- ~ \AndN ~A^- \Sep \TopN \Sep \Up A^+
+% \end{align*}
+
+% \noindent The translation $A^-$ of an (unpolarized) formula $F$ in IPL
+% is nondeterministic, subject only to the constraint that
+% polarity is assigned to atomic formulas consistently (i.e., you can't have both
+% $p^-$ and $p^+$ in the same translation), and $|A^-| = F$.  The arbitrary
+% assignment of polarity to atomic formula is called a \emph{bias}.
+
+% \[
+% \begin{array}{lll}
+%   |p^+| &=& p \\
+%   |p^-| &=& p \\
+%   |A^- \AndN B^-| &=& |A^-| \And |B^-| \\
+%   |\TopP| &=& \Top \\
+%   |A^+ \AndP B^+| &=& |A^+| \And |B^+|\\
+%   |\TopN| &=& \Top \\
+%   |A^+ \Or B^+| &=& |A^+| \Or |B^+| \\
+%   |\Bot| &=& \Bot \\
+%   |A^+ \Lolli B^-| &=& |A^+| \Imp |B^-| \\
+%   |\Down A^-| &=& |A^-| \\
+%   |\Up A^+| &=& |A^+| \\
+% \end{array}
+% \]
+
+% \noindent
+% For example, the formula $((a \Or c) \And (b \Imp c)) \Imp (a \Imp b) \Imp c$
+% can be interpreted as any of the following polarized formulas (among others):
+
+% \begin{align*}
+%   &((\Down a^- \Or \Down c^-) \Tensor \Down(\Down b^- \Lolli c^-)) \Lolli (\Down (\Down a^- \Lolli b^-) \Lolli c^-) \\
+%   &\Down\Up((\Down a^- \Or \Down c^-) \Tensor \Down(\Down b^- \Lolli c^-)) \Lolli (\Down\Up\Down (\Down a^- \Lolli b^-) \Lolli c^-) \\
+%   &\Down(\Up (a^+ \Or c^+) \With (b^+ \Lolli \Up c^+)) \Lolli (\Down (a^+ \Lolli \Up b
+%   ^+) \Lolli \Up c^+)
+% \end{align*}
+
+% \noindent
+% (Shift operators have highest binding precedence in our presentation of the
+% examples.)  As we will see, the choice of translation determines the search
+% behavior on the resulting polarized formula.  Different choices can lead to
+% search spaces with radically different structure~\cite{Chaudhuri.2006.IJCAR}.
+
+% \subsection{Backward Focused Sequent Calculus}
+
+% The backward focused calculus $\LPF$ is a refinement of $\LJ$ that eliminates
+% don't-care nondeterministic choices, and manages don't-know
+% nondeterminism by chaining such inferences in sequence.  Andreoli was
+% the first to define this \emph{focusing} strategy and prove it
+% complete~\cite{Andreoli.1992.JLC} for linear logic.  Similar proofs for other logics
+% soon followed~\cite{Howe.1998.Thesis,Chaudhuri.2005.CSL,Chaudhuri.2006.IJCAR,Miller.2007.CSL,Zeilberger.2008.POPL},
+% demonstrating that polarization and focusing can be applied to
+% optimize search in a wide variety of logics.
+
+% A difficulty with focused calculi is that they have a somewhat heavy notation.
+% Past presentations define at least three classes of sequent, and numerous
+% recursive judgements to define the system.  This makes the critical cut elimination
+% theorem verbose, with dozens of different cases.  Here we follow
+% Pfenning and Simmons' \emph{structural focalization} technique
+% from~\cite{Simmons:2012:Thesis}.
+
+% In structural focalization, there is only one sequent form, given by
+% the following grammar
+
+% \begin{align*}
+%   \mbox{Antecedents } \ul{\Gamma} &::= \cdot\Sep A^-, \ul{\Gamma} \Sep A^+, \ul{\Gamma} \Sep [A^-],\ul{\Gamma} \Sep \Susp{A^+},\ul{\Gamma}\\
+%   \mbox{Consequents } \ul{\gamma} &::= \cdot\Sep A^- \Sep A^+ \Sep [A^+] \Sep \Susp{A^-}\\
+%   \mbox{Sequents } q &::= \PBSeq{\ul{\Gamma}}{\ul{\gamma}}
+% \end{align*}
+
+\input{prop/focus}
+
+% \begin{theorem}[Weakening]
+%   If $\PBSeq{\ul{\Gamma}}{\ul{\gamma}}$ then
+%   $\PBSeq{\ul{\Gamma}, \ul{\Gamma'}}{\ul{\gamma}}$.
+% \end{theorem}
+% \begin{proof}
+%   Straightforward induction on the derivation
+%   $\PBSeq{\ul{\Gamma}}{\ul{\gamma}}$, adding the antecedents
+%   $\ul{\Gamma'}$ at each step.
+% \end{proof}
+
+% \begin{theorem}[Substitution]
+%   \begin{itemize}
+%   \item []
+%   \item
+%     If $\PBSeq{\Gamma}{[A^+]}$ and $\PBSeq{\ul{\Gamma'},\Susp{A^+}}{\ul{\gamma}}$ then
+%     $\PBSeq{\Gamma,\ul{\Gamma'}}{\ul{\gamma}}$.
+%   \item
+%     If $\PBSeq{\ul{\Gamma}}{\Susp{A^-}}$ and $\PBSeq{\Gamma',\Foc{A^-}}{\gamma}$ then
+%     $\PBSeq{\ul{\Gamma},\Gamma'}{\gamma}$.
+%   \end{itemize}
+% \end{theorem}
+
+% \begin{proof}
+%   \begin{itemize}
+%   \item[]
+%   \item
+%     Induction on the second derivation.  If the last rule is $\mbox{Id}^+$, weaken the first
+%     derivation to get the result.
+%   \item
+%     Induction on the first derivation.  If the last rule is $\mbox{Id}^-$, weaken the second
+%     derivation to get the result.
+%   \end{itemize}
+% \end{proof}
+
+% \noindent
+% Following Simmons, we use admissible rules in proofs by writing
+% admissible rules applications with dotted lines to differentiate
+% them from the primitive inference rules of the logic.  The above theorems
+% give the following rules
+
+% \[
+% \begin{array}{c}
+%   \Inferd[$Weaken$]
+%   {\PBSeq{\ul{\Gamma}, \ul{\Gamma'}}{\ul{\gamma}}}
+%   {\PBSeq{\ul{\Gamma}}{\ul{\gamma}}}
+%   \\[2em]
+%   \begin{array}{cc}
+%     \Inferd[$Subst$^+]
+%     {\PBSeq{\Gamma, \ul{\Gamma'}}{\ul{\gamma}}}
+%     {
+%       \PBSeq{\Gamma}{\Foc{A^+}}
+%       &
+%       \PBSeq{\ul{\Gamma'}, \Susp{A^+}}{\ul{\gamma}}
+%     }
+%     &
+%     \hspace{2em}
+%     \Inferd[$Subst$^-]
+%     {\PBSeq{\ul{\Gamma}, \Gamma'}{\gamma}}
+%     {
+%       \PBSeq{\ul{\Gamma}}{\Susp{A^-}}
+%       &
+%       \PBSeq{\Gamma', \Foc{A^-}}{\gamma}
+%     }
+%   \end{array}
+% \end{array}
+% \]
+
+% \begin{theorem}[Identity expansion]
+%   \begin{itemize}
+%   \item[]
+%   \item If $\PBSeq{\Gamma}{\Susp{A^-}}$ then $\PBSeq{\Gamma}{A^-}$.
+%   \item If $\PBSeq{\Gamma, \Susp{A^+}}{\gamma}$ then $\PBSeq{\Gamma, A^+}{\gamma}$.
+%   \end{itemize}
+% \end{theorem}
+
+% \noindent As above, we write
+
+% \[
+% \begin{array}{cc}
+%   \Inferd[$\eta$^-]
+%   {\PBSeq{\Gamma, A^-}{\gamma}}
+%   {\PBSeq{\Gamma, \Susp{A^-}}{A^-}}
+%   &
+%   \hspace{2em}
+%   \Inferd[$\eta$^+]
+%   {\PBSeq{\Gamma}{A^+}}
+%   {\PBSeq{\Gamma}{\Susp{A^+}}}
+%   {}
+% \end{array}
+% \]
+
+% \begin{corollary}[Identity]
+%   The rules
+
+%   \[
+%   \begin{array}{cc}
+%     \Inferd[$Ident$^-]
+%     {\PBSeq{\Gamma, A^-}{A^-}}
+%     {}
+%     &
+%     \hspace{2em}
+%     \Inferd[$Ident$^+]
+%     {\PBSeq{\Gamma, A^+}{A^+}}
+%     {}
+%   \end{array}
+%   \] are admissible.
+% \end{corollary}
+
+% \begin{proof}
+%   \[
+%   \begin{array}{cc}
+%     \Inferd[$\eta$^-]
+%     {\PBSeq{\Gamma, A^-}{A^-}}
+%     {
+%       \Infer[$Focus-L$]
+%       {\PBSeq{\Gamma, A^-}{\Susp{A^-}}}
+%       {
+%         \Infer[$Id$^-]
+%         {\PBSeq{\Gamma, \Foc{A^-}}{\Susp{A^-}}}
+%         {}
+%       }
+%     }
+%     &
+%     \hspace{2em}
+%     \Inferd[$\eta$^+]
+%     {\PBSeq{\Gamma, A^+}{A^+}}
+%     {
+%       \Infer[$Focus-R$]
+%       {\PBSeq{\Gamma, \Susp{A^+}}{A^+}}
+%       {
+%         \Infer[$Id$^+]
+%         {\PBSeq{\Gamma, \Susp{A^+}}{\Foc{A^+}}}
+%         {}
+%       }
+%     }
+%   \end{array}
+%   \]
+% \end{proof}
+
+% \begin{proof}
+% Mutual induction on the formulas $A^+$, $A^-$.  Note that we will
+% use the admissible rules Ident and $\eta$, but only on strictly
+% smaller subformulas.
+
+% \input{prop/id-exp}
+% \end{proof}
+
+% \begin{theorem}[Soundness]
+%   \begin{itemize}
+%   \item[]
+%   \item If $\CSeq{\Gamma}{A}$ then $\PBSeq{\Gamma}{A}$
+%   \end{itemize}
+% \end{theorem}
+
+% \begin{proof}
+%   Routine induction of the derivations.
+% \end{proof}
+
+% \begin{theorem}[Completeness]
+%   If $\PBSeq{\cdot}{A}$ then $\CSeq{\cdot}{A}$
+% \end{theorem}
+% \begin{proof}
+%   There are a number of proofs in the literature for intuitionistic
+% linear logic, e.g.~\cite{Chaudhuri.2006.Thesis} and via translation
+% for intuitionistic logic~\cite{Miller.2007.Focusing,Liang.2009.TCS}.
+% IPL is a subset of the logic in Chapter~\ref{chapter.constraints}, so
+% this is an instance of Theorem~\ref{constr.thm.complete} as well.
+% \end{proof}
+
+% \subsection{Synthetic Connectives and Derived Rules}
+% \label{prop.sec.derived}
+
+% We have already observed that backward proofs have the
+% property that the proof is broken into blocks, with stable sequents at
+% the boundary.  The only rules applicable to stable sequents are the
+% rules that select a formula on which to focus.  It is the formulas
+% occurring in stable sequents that form the primary objects of our further
+% inquiry.
+
+% It helps to think of such formulas, abstracted over their free
+% variables, as \emph{synthetic connectives}~\cite{Andreoli.2001.APAL}.
+% Define the synthetic connectives of a formula $A$ as all subformulas
+% of $A$ that could appear in stable sequents in a focused backward proof.
+% In a change of perspective, we can consider each block of a proof as
+% the application of a left or right rule for a synthetic connective.
+% The rules operating on synthetic connectives are derived from the
+% rules for its constituent formulas.  We can thus consider a
+% backward proof as a proof using only these synthetic (derived) rules.
+% Each derived rule then corresponds to a block of the original proof.
+
+% Since we need only consider stable sequents and synthetic connectives,
+% we can simplify notation, and ignore the (empty) positive left and
+% negative right zones in the derived rules.
+% Write $\PBSeq{\Gamma}{C}$ as
+% \renewcommand{\PBSeq}[2]{\ensuremath{#1 \Longrightarrow #2}}
+% $\PBSeq{\Gamma}{C}$.
+% As a further simplification, we can give formulas a predicate label
+% and abstract over its free variables.  This labeling technique is described in
+% detail in~\cite{Voronkov.2001.Handbook}.  For the remainder, we assume
+% this labeling has been carried out.  Define an \emph{atomic formula}
+% as either a label or a predicate applied to a (possibly
+% empty) list of terms.  After labeling, our sequents consist entirely
+% of atomic formulas.
+
+% \begin{example}
+% Figure~\ref{prop.blocks} shows a focused proof.
+% Here the inversion phases are colored blue and the focusing phases
+% are purple.  The stable sequents, on the boundary, are colored red.
+% While it looks rather complex for such a simple formula, keep in
+% mind that the only choices are made at stable sequents.  Note
+% that the bias of the atoms is essential to the shape of the proof.
+% A different choice would lead to a proof with a much different structure.
+
+% The synthetic connectives are $a \Imp b$
+% and $(a \Imp b)\Imp c$.  There is a single derived rule for each
+% synthetic connective (though this is not the case in general).  The
+% atoms are assigned negative polarity.  We implicitly carry the
+% principal formula of a left rule to all of its premises.
+
+% \[
+% \begin{array}{cc}
+%   \Infer[r_1]{\PBSeq{a, a\Imp b}{b}}{}
+%   &\hspace{2em}
+%   \Infer[r_2]{\PBSeq{\Down (a\Imp b)\Imp c}{c}}{\PBSeq{a}{b}}
+% \end{array}
+% \]
+
+% \noindent
+% Using the derived rules, Figure~\ref{prop.blocks} can be compressed to the succinct
+
+% \[
+% \Infer[r_2]
+% {\PBSeq{\Down (a\Imp b)\Imp c, a\Imp b}{c}}
+% {\Infer[r_1]{\PBSeq{a, a\Imp b}{b}}{}}
+% \]
+% \end{example}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "thesis"
+%%% End:

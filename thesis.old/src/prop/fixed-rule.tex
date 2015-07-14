@@ -1,0 +1,30 @@
+
+\begin{algorithm}
+  \begin{algorithmic}[1]
+    \STATE Input a formula $\xi$
+    \STATE $\NS \Gets \Set{}$
+    \STATE $\KS \Gets $ the axioms of $\LPFs$
+    \STATE $\RU \Gets $ the rules of $\LPFs$
+    \WHILE{$\KS \neq \Set{}$} \label{ruleloop:while}
+    \FOR{$R \in \RU$}
+    \STATE $\NS \Gets \match(R, \KS, \AS) \Union \NS$
+    \ENDFOR
+    \IF{$\exists s\in \NS.\ s\Subsumes \FSeq{\cdot}{\xi}$}
+    \PRINT \Quote{Proof found. $\xi$ is true.}
+    \RETURN
+    \ENDIF
+    \STATE $\AS \Gets \KS \Union \AS$
+    \STATE $\KS \Gets \NS$
+    \STATE $\NS \Gets \emptyset$
+    \ENDWHILE
+    \PRINT \Quote{The database is saturated.  $\xi$ is false.}
+    \RETURN
+  \end{algorithmic}
+  \caption{The Imogen Fixed-Rule Loop}
+  \label{inverse:algorithm:fixed}
+\end{algorithm}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../../../main"
+%%% End:

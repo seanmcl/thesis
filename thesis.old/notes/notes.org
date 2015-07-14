@@ -1,0 +1,44 @@
+
+* Matching
+
+A note on why strict matching is complete.  i.e., one
+of the hyps or the concl must match
+
+(*
+A note about matching Seq.Var.  If we have a sequent seq = G |- X, where X is
+Seq.Var, then for a successful match(seq, ruleSeq) we must have
+that G is a subset of the antecedents of ruleSeq.  If not, we have
+the situation:
+
+  G |- X  matching
+
+  G1, D1 |- Y1 ... GN, DN |- YN
+-------------------------------
+     G1, ..., GN |- Y
+
+But if the intersection of G and D1 is empty, then G |- X subsumes
+G1, ..., GN |- Y.
+We call such a match 'strict'.
+*)
+
+* Rule subsumption
+
+
+    [ p11, p15, p16, p18 ⊢ p24
+    , p12 ⊢ p26 ]
+    ---------------------------93
+    p15 ⊢ Ξ
+
+    [ p11, p15, p16, p18 ⊢ p24
+    , p12 ⊢ p26 ]
+    ---------------------------95
+     ⊢ Ξ
+
+    [p12 ⊢ p26]
+    ---------------------------162
+    p15 ⊢ Ξ
+
+
+    [p12 ⊢ p26]
+    ---------------------------115
+     ⊢ Ξ

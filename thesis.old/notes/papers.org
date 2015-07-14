@@ -1,0 +1,8 @@
+
+* Voronkov
+
+- Wallen's procedure not a DP on prop int logic
+- Constraints go from expspace --> poly space
+- Equality used by other paper.  Suggests the method can be used for,
+  e.g. arithmetic constraints, modal logic
+- triangle-form unifier, polynomial space

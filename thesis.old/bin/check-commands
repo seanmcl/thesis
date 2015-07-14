@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Make sure all \{,re}newcommand references are used
+
+sed=gsed
+
+command_file=commands.tex
+
+# remove temp files (#) and the command file from files to consider
+tex_files=$(find . -name '*.tex' | grep -v \# | grep -v $command_file)
+
+# ignore names {QRS}{a-z}, as those are generic proof constructor names
+names=$(grep newcommand "$command_file" | grep -v '^%' | $sed 's/\\\(re\)\?newcommand{//' | $sed 's/}.*//' | grep -v 'Q[a-z]' | grep -v 'R[a-z]' | grep -v 'S[a-z]' | sort)
+
+dups=$(echo "$names" | uniq -d)
+
+if [ -n "$dups" ]; then
+  echo Duplicates
+  for dup in $dups; do
+    echo "  $dup"
+  done
+fi
+
+unused=""
+
+for name in $names; do
+  grep -l $name $tex_files &>/dev/null
+  if (( $? == 1 )); then
+    unused="$unused $name"
+  fi
+done
+
+if [ -n "$unused" ]; then
+  echo Unused
+  for name in $unused; do
+    echo "  $name"
+  done
+fi

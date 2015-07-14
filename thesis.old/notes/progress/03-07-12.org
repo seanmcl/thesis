@@ -1,0 +1,24 @@
+
+* Coding
+
+** Today
+
+- revived hash-cons code
+- re-read Filliatre's paper on hash consing
+- simplified Fillatre's code greatly
+- studied his use of hash consing in the Why tool
+
+** Tomorrow
+
+- Finish hash-consing library
+- Implement hash-consing for terms
+- Make some tests.
+
+* Writing
+
+- Some acknowledgments
+- Found some grants for title
+- Outline
+
+* Studying
+

@@ -1,0 +1,36 @@
+
+\newcommand{\CNAscribe}{
+  \Infer[$Ascribe$]
+  {\CNd{\Gamma}{M\ASet{A\Ueq A'} : A'}}
+  {\CNd{\Gamma}{M : A} & \Gamma\Entails A\Ueq A'}
+}
+
+\newcommand{\CNDomain}{
+  \Infer[$Domain$]
+  {\CNd{\Gamma}{[E] : E}}
+  {\Gamma\Entails E}
+}
+
+\begin{figure}
+  \begin{center}
+    {\footnotesize
+      \fbox{
+        \begin{tabular}{c}
+          \begin{tabular}{cc}
+            \CNAscribe
+            &
+            \hspace{2em}
+            \CNDomain
+          \end{tabular}
+        \end{tabular}
+      }
+    }
+  \end{center}
+  \caption{Additional natural deduction rules.}
+  \label{constr.nd}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

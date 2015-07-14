@@ -1,0 +1,41 @@
+
+\renewcommand{\Qa}{\PBSeq{\Gamma, \Susp{A^+}}{\Foc{A^+}}}
+\renewcommand{\Ra}{\Infer[$Id$^+]{\Qa}{}}
+
+\renewcommand{\Qb}{\PBSeq{\Gamma, \Susp{B^+}}{\Foc{B^+}}}
+\renewcommand{\Rb}{\Infer[$Id$^+]{\Qb}{}}
+
+\renewcommand{\Qc}{\PBSeq{\Gamma, \Susp{A^+},\Susp{B^+}}{\Foc{A^+\AndP B^+}}}
+\renewcommand{\Rc}{\Infer[\AndP$-R$]{\Qc}{\Ra & \Rb}}
+
+\renewcommand{\Qd}{\PBSeq{\Gamma, \Susp{A^+\AndP B^+}}{\gamma}}
+\renewcommand{\Rd}{\deduce{\Qd}{\cD}}
+
+\renewcommand{\Qe}{\PBSeq{\Gamma, \Susp{A^+},\Susp{B^+}}{\gamma}}
+\renewcommand{\Re}{\Infer[$Subst$^+]{\Qe}{\Rc & \Rd}}
+
+\renewcommand{\Qf}{\PBSeq{\Gamma, \Susp{A^+},B^+}{\gamma}}
+\renewcommand{\Rf}{\Infer[\eta^+]{\Qf}{\Re}}
+
+\renewcommand{\Qg}{\PBSeq{\Gamma, A^+,B^+}{\gamma}}
+\renewcommand{\Rg}{\Infer[\eta^+]{\Qg}{\Rf}}
+
+\renewcommand{\Qh}{\PBSeq{\Gamma, A^+\AndP B^+}{\gamma}}
+\renewcommand{\Rh}{\Infer[\AndP$-L$]{\Qh}{\Rg}}
+
+\begin{array}{ccc}
+  \begin{array}{cc}
+    \Infer[\eta^+]{\Qh}{\Rd}
+    &
+    \hspace{0em}
+    \hookrightarrow
+  \end{array}
+  &
+  \hspace{-8em}
+  \Rh
+\end{array}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../../thesis"
+%%% End:

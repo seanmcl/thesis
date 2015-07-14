@@ -1,0 +1,103 @@
+
+* Refutations
+
+Definitions:
+  Sound (also Correct) means ⊣ A means A is not a theorem.
+  Complete means if A is not a theorem then ⊣ A
+  L-complete (L for Lukasiewicz) means both sound and complete
+
+** 1957: Lukasiewicz.AristotlesSyllogisticFromTheStandpointOfModernFormalLogic
+Propositional Modal
+Complete refutation system for CL:
+
+CPC* ::=
+  1. ⊣ p
+  2. If ⊢ A ⊃ B and ⊣ B then ⊣ A
+  3. If ⊣ A[P] then ⊣ A
+
+
+** 1988: Tiomkin.ProvingUnprovability
+First-order Classical
+
+Stronger negation rule:
+
+ ⊣ φ
+------
+⊢ ¬ φ
+
+Interesting cut rules
+
+Γ ⊣ Δ   Γ, φ ⊢ Δ
+-----------------
+    Γ ⊣ Δ, φ
+
+
+Γ ⊣ Δ   Γ ⊢ Δ, φ
+-----------------
+    Γ, φ ⊣ Δ
+
+Uses Herbrand's theorem to justify left ∀ rule:
+
+Γ, {φ[t_i]} ⊣ Δ
+----------------
+Γ, ∀ x. φ[x] ⊣ Δ
+
+His language has no function symbols, so the Herbrand universe is finite.
+In classical FOL, the disprovable sentences (RE) are those that
+are falsified in finite model.
+
+
+** 1994: Goranko.RefutationSystemsInModalLogic
+Propositional Modal
+Scanty research
+Modus Tollens (Aristotle) A ⊃ B, ¬ B ⊢ ¬ A
+I.e. not necessary to construct a refuting model
+1973 complete refutation system for S5
+
+Proofs of L-completness for a bunch of logics by adding
+axioms to CPC*.
+
+Introduces sequent calculus for refutations p.315 and proves L-completeness.
+
+*** Observation: semantic properties can be encoded
+
+Consistency:
+
+⊢ φ
+------
+⊣ ¬ φ
+
+
+Completeness:
+
+φ ⊣ ψ  φ ⊢ ψ
+-------------
+    ⊢ ψ
+
+
+φ ⊣ ψ  φ ⊢ ψ
+-------------
+    ⊣ ψ
+
+
+Disjunction:
+
+Γ ⊣ A  Γ ⊣ B
+-------------
+  Γ ⊣ A ∨ B
+
+Can't be expressed as ordinary (⊢) rules.  This rule is the contrapositive
+of the disjunction rule.
+
+** 1995: Pinto.LoopFreeConstructionOfCounterModelsForIntuitionisticPropositionalLogic
+Propositional Intuitionistic
+CRIP
+
+
+
+
+
+
+* Can't find on internet or prohibitively expensive
+Dummett "Elements of Intuitionisim"
+Prawitz "Ideas and results in proof theory"

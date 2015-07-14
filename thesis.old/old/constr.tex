@@ -1,0 +1,19 @@
+  \item If $\Psi(x) \Entails\Psi'$ and $x\not\in\Free(\Psi')$ then
+    $\Ex x.~\Psi(x)\Entails\Psi'$.  This is justified by the view of
+    free variables in entailment expressions as being universal over
+    the expression.  Informally, $\All x.\ (\Psi(x)\Entails \Psi')$ where
+    $x\not\in\Free(\Psi')$ is equivalent to $(\Ex x.~\Psi(x))\Entails \Psi'$.
+    This is related to the identity, true even intuitionistically,
+    $(\All x.~(A(x)\Imp B)) \Iff ((\Ex x.~A(x)) \Imp B)$ when $x\not\in\Free(B)$.
+  \item Dually, If $\Psi\Entails\Psi'(x)$ and $x\not\in\Free(\Psi)$ then
+    $\Psi\Entails\All x.~\Psi'(x)$.
+  \item If $\Psi\Entails\Bot$ then $\Psi\Entails\Psi'$ for any $\Psi'$.
+  \item If $\Psi\Entails \Ex x.~A(x)\Ueq \Ex x.~B(x)$ then
+    $\Psi\And a=b\Entails A(a)\Ueq \Ex x.~B(b)$
+  \item If $\Psi\And a=b\Entails \Psi'$ and $a\not\in\Psi'$ then $\Psi\Entails\Psi'$.
+  \item If $\Psi\And x=t\Entails \Psi'$ and $x\not\in\Psi'$ then $\Psi\Entails\Psi'$.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

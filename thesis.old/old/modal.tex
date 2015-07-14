@@ -1,0 +1,144 @@
+
+\chapter{Modal Logic}\label{chapter.modal}
+
+
+A logic is called \emph{modal} if it augments the usual connectives
+of classical and intuitionistic logic with connectives intended to capture
+\emph{modes} of reasoning.  For example, rather than asserting that proposition
+$A$ is \emph{categorically} true, one might assert that $A$ is \emph{usually}
+true, \emph{sometimes} true, \emph{necessarily} true,
+someone knows or believes that $A$ is true, $A$ is true \emph{after} some
+point in time, or after a program has terminated.
+Modal logics are widely used in computer science.  Classical
+temporal logic, a modal logic capturing a notion of time, is the foundation of
+model checking, an important technique for hardware and software
+verification~\cite{Clarke.2001.Handbook}.  It has been used to model distributed
+computation~\cite{Murphy.2004.LICS}, and
+authorization~\cite{Gurevich.2009.DKAL2,Gurevich.2008.DKAL,Garg.2009.Thesis}.
+Dynamic logic and Hennessy-Milner logic are other examples of modal logics with
+applications to computer science.
+
+In this chapter we will focus on normal intuitionistic modal logics (IML).  IML
+extends intuitionistic logic with the connectives $\Box$ (necessity) and $\Dia$
+(possibility).  We follow Simpson~\cite{Simpson.1994.Thesis} in defining the
+semantics of IML using a Kripke semantics.  Propositions are true in the
+context of a \emph{world}.  An \emph{accessibility relation} $\cR$ oversees the
+possibility of navigating between the different worlds.  If $w$ and $w'$ are
+worlds and $w\cR w'$, we say $w'$ is \emph{accessible} or \emph{visible} from
+$w$.
+
+\section{Syntax and Semantics}
+\label{modal.sec.def}
+
+\begin{definition}
+  \begin{itemize}
+  \item[]
+  \item Formulas are built from first-order formulas with the additional
+    branches
+    \[
+    \mbox{Formulas } A ::= \ldots \Sep \Box A \Sep \Dia A
+    \]
+  \item Let $\UWorld$ be an infinite set of symbols, called \emph{worlds}.
+  \item A \emph{labeled formula} is a pair $\ASet{A,w}$ written $\MAt{A}{w}$.
+  \item A \emph{modal sequent} is a tuple $\ASet{\Delta,\Psi,\Gamma,\gamma}$
+    written $\MSeq{\Psi}{\Gamma}{\gamma}$ where $\Delta$ is a typing context,
+    $\Psi$ is a set of
+
+  \end{itemize}
+\end{definition}
+
+\input{modal/nd}
+\input{modal/backward}
+
+\begin{example}
+
+  \renewcommand{\Sa}{\MSeq{\MAt{p}{w_2}}{\MAt{p}{w_2}}}
+  \renewcommand{\Qa}{\Infer[$Init$]{\Sa}{}}
+
+  \renewcommand{\Sb}{\MSeq{\Psi,\MAt{\Box p}{w_0}}{\MAt{p}{w_2}}}
+  \renewcommand{\Qb}{\Infer[\Box$-L$]{\Sb}{\Qa & \Delta~;~\Psi\Entails \MLe{w_0}{w_2}}}
+
+  \renewcommand{\Sc}{\MSeq[w_1:\MWorld]{\MLe{w_0}{w_1},\MAt{\Box p}{w_0}}{\MAt{\Box p}{w_1}}}
+  \renewcommand{\Qc}{\Infer[\Box$-R$^{w_2}]{\Sc}{\Qb}}
+
+  \renewcommand{\Sd}{\MSeq[\cdot]{\MAt{\Box p}{w_0}}{\MAt{\Box\Box p}{w_0}}}
+  \renewcommand{\Qd}{\Infer[\Box$-R$^{w_1}]{\Sd}{\Qc}}
+
+  \renewcommand{\Se}{\MSeq[\cdot]{\cdot}{\MAt{\Box p\Imp \Box\Box p}{w_0}}}
+  \renewcommand{\Qe}{\Infer[\Imp$-R$]{\Se}{\Qd}}
+
+  \[
+  \begin{array}{c}
+    \begin{array}{rl}
+      \Delta&=w_1:\MWorld,w_2:\MWorld\\
+      \Psi&=\MLe{w_0}{w_1}\And\MLe{w_1}{w_2}\\
+    \end{array}
+    \\[2em]
+    \Qe
+  \end{array}
+  \]
+\end{example}
+
+\section{Encoding IML in $\CB$}
+
+While it is possible to design a focused inverse method theorem prover based
+on $\MB$, it is not necessary.
+We can define an adequate translation of IML formulas to $\CB$ formulas,
+where there is a bijection between focused proofs in $\MB$ and focused
+proofs of the translated formulas.  It is also possible to recover single-step
+$\MB$ proofs using a translation that adds more shifts.
+
+\subsection{Translating world formulas}
+
+Recall from Section~\ref{fol.sec.label}
+that $\Free(A)$ is an ordered list of the free variables and parameters
+occurring in $A$, and that
+We extend the $\Free$ function to work on world
+formulas by reserving the first position for
+the world $w$.  In particular, (abusing notation slightly)
+$\Free(\MAt{A}{w}) = \ASet{w, \Free(A)}$.  For example,
+$\Free(\MAt{p(x, y) \And q(a)}{w})=\ASet{w,x,y,a}$.  Using the labeling
+function of Section~\ref{fol.sec.label} (extended to generate labels for
+the modal operators), define
+the translation function $\MTrans{\MAt{A}{w}} = l_A(\Free(\MAt{A}{w}))$.
+Thus $\Arity(\MAt{A}{w})=\Arity(A)+1$.
+\ednote{Make sure you define $\Free$ when you talk about labeling in FOL.}
+
+\[
+\MTrans{\MAt{C}{w}} =
+\begin{cases}
+  C=\Box A & \All w':\MWorld.~\MLe{w}{w'}\Imp l_A(w', \Free(A)) \\
+  C=\Dia A & \Ex w':\MWorld.~\MLe{w}{w'}\And l_A(w', \Free(A)) \\
+  \mbox{otherwise} & l_{C}(w, \Free(C))
+\end{cases}
+\]
+
+\input{modal/trans}
+\input{modal/trans-ex}
+
+\subsection{Multi-modal IML}
+
+\section{Related Work}
+
+\cite{Alechina.2006.JAL}
+\cite{Amati.1994.SL}
+\cite{Pfenning.2010.ModalLogic}
+
+\section{XXX Notes}
+
+\begin{itemize}
+\item Adequacy wrt focused proofs
+\item Simulate single-step Pfenning modal logic with shifts.
+\item Change translation to get non-constant domain logics.
+  For example by changing the sort of the translation of box to
+  $|\Box A @ w| = \All w':wld.~w\le w'\Imp |A|_w'$ where all quantifiers
+  in $A$ are translated in the sort $\sigma_{w'}$.
+\item Pfenning/Davies via translation
+\item Lax logic via (double) translation
+\item Write down focused Pfenning-Davies.  Don't know if this has been done.
+\end{itemize}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "thesis"
+%%% End:

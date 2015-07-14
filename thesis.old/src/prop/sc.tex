@@ -1,0 +1,33 @@
+
+\newcommand{\SCStep}[2]{#1\hookrightarrow #2}
+
+\newcommand{\SCInit}{
+  \Infer[$Init$]
+  {\SCStep{\Init(p)}{p}}
+  {}
+}
+
+\newcommand{\SCTensR}{
+  \Infer[\And$-I$]
+  {\SCStep{\And R(t_1, t_2)}{\ASet{H_1, H_2}}}
+  {\SCStep{t_1}{H_1} & \SCStep{t_2}{H_2}}
+}
+
+\begin{figure}
+  \begin{center}
+    \fbox{
+      \begin{tabular}{cccccc}
+        \SCInit
+        &
+        \SCTensR
+      \end{tabular}
+    }
+  \end{center}
+  \caption{Sequent traces}
+  \label{prop.sc}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

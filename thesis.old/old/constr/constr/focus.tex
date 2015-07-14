@@ -1,0 +1,258 @@
+
+\newcommand{\CCFocusR}{
+  \Infer[$focus-R$]
+  {\CCSeq{\Psi}{\Gamma}{A^+}}
+  {\CCSeq{\Psi}{\Gamma}{[A^+]}}
+}
+
+\newcommand{\CCFocusL}{
+  \Infer[$focus-L$]
+  {\CCSeq{\Psi}{\Gamma,A^-}{\gamma}}
+  {\CCSeq{\Psi}{\Gamma, [A^-]}{\gamma}}
+}
+
+\newcommand{\CCEtaP}{
+  \Infer[\eta^+]
+  {\CCSeq{\Psi}{\Gamma,p^+}{\gamma}}
+  {\CCSeq{\Psi}{\Gamma, \ASet{p^+}}{\gamma}}
+}
+
+\newcommand{\CCEtaN}{
+  \Infer[\eta^-]
+  {\CCSeq{\Psi}{\Gamma}{p^-}}
+  {\CCSeq{\Psi}{\Gamma}{\ASet{p^-}}}
+}
+
+\newcommand{\CCIdP}{
+  \Infer[$id$^+]
+  {\CCSeq{\Psi}{\Gamma,\ASet{A_1^+}}{[A_2^+]}}
+  {\Delta;\Psi\Entails A_1\Ueq A_2}
+}
+
+\newcommand{\CCIdN}{
+  \Infer[$id$^+]
+  {\CCSeq{\Psi}{\Gamma,[A_1^-]}{\ASet{A_2^-}}}
+  {\Delta;\Psi\Entails A_1\Ueq A_2}
+}
+
+\newcommand{\CCUpR}{
+  \Infer[\Up$-R$]
+  {\CCSeq{\Psi}{\Gamma}{\Up A^+}}
+  {\CCSeq{\Psi}{\Gamma}{A^+}}
+}
+
+\newcommand{\CCUpL}{
+  \Infer[\Up$-L$]
+  {\CCSeq{\Psi}{\Gamma,[\Up A^-]}{\gamma}}
+  {\CCSeq{\Psi}{\Gamma, A^-}{\gamma}}
+}
+
+\newcommand{\CCDownR}{
+  \Infer[\Down$-R$]
+  {\CCSeq{\Psi}{\Gamma}{[\Down A^-]}}
+  {\CCSeq{\Psi}{\Gamma}{A^-}}
+}
+
+\newcommand{\CCDownL}{
+  \Infer[\Down$-L$]
+  {\CCSeq{\Psi}{\Gamma, \Down A^-}{\gamma}}
+  {\CCSeq{\Psi}{\Gamma, A^-}{\gamma}}
+}
+
+\newcommand{\CCTopPR}{
+  \Infer[\TopP$-R$]
+  {\CCSeq{\Psi}{\Gamma}{[\TopP]}}
+  {}
+}
+
+% \newcommand{\CCTopPL}{
+%   \Infer[\TopP$-L$]
+%   {\CCSeq{\Psi}{\Gamma,\TopP}{\gamma}}
+%   {\CCSeq{\Psi}{\Gamma}{\gamma}}
+% }
+
+\newcommand{\CCTopNR}{
+  \Infer[\TopN$-R$]
+  {\CCSeq{\Psi}{\Gamma}{\TopN}}
+  {}
+}
+
+% \newcommand{\CCTopNL}{
+%   \Infer[\TopN$-L$]
+%   {\CCSeq{\Psi}{\Gamma,[\TopN]}{\gamma}}
+%   {}
+% }
+
+\newcommand{\CCAndPR}{
+  \Infer[\AndP$-R$]
+  {\CCSeq{\Psi}{\Gamma}{[A_1^+\AndP A_2^+]}}
+  {\CCSeq{\Psi}{\Gamma}{[A_1^+]} & \CCSeq{\Psi}{\Gamma}{[A_2^+]}}
+}
+
+\newcommand{\CCAndPL}{
+  \Infer[\AndP$-L$]
+  {\CCSeq{\Psi}{\Gamma,A_1^+\AndP A_2^+}{\gamma}}
+  {\CCSeq{\Psi}{\Gamma,A_1^+,A_2^+}{\gamma}}
+}
+
+\newcommand{\CCAndNR}{
+  \Infer[\AndN$-R$]
+  {\CCSeq{\Psi}{\Gamma}{A_1^-\AndN A_2^-}}
+  {\CCSeq{\Psi}{\Gamma}{A_1^-} & \CCSeq{\Psi}{\Gamma}{A_2^-}}
+}
+
+\newcommand{\CCAndNL}{
+  \Infer[\AndN$-L$_i]
+  {\CCSeq{\Psi}{\Gamma,[A_1^-\AndN A_2^-]}{\gamma}}
+  {\CCSeq{\Psi}{\Gamma,[A_i^-]}{\gamma}}
+}
+
+\newcommand{\CCOrR}{
+  \Infer[\Or$-R$_i]
+  {\CCSeq{\Psi}{\Gamma}{[A_1^+\Or A_2^+]}}
+  {\CCSeq{\Psi}{\Gamma}{A_i^+}}
+}
+
+\newcommand{\CCOrL}{
+  \Infer[\Or$-L$]
+  {\CCSeq{\Psi}{\Gamma,A_1^+\Or A_2^+}{\gamma}}
+  {\CCSeq{\Psi}{\Gamma,A_1}{\gamma} & \CCSeq{\Psi}{\Gamma,A_2}{\gamma}}
+}
+
+\newcommand{\CCImpR}{
+  \Infer[\Imp$-R$]
+  {\CCSeq{\Psi}{\Gamma}{A_1^+\Imp A_2^-}}
+  {\CCSeq{\Psi}{\Gamma,A_1^+}{A_2^-}}
+}
+
+\newcommand{\CCImpL}{
+  \Infer[\Imp$-L$]
+  {\CCSeq{\Psi}{\Gamma,[A_1^+\Imp A_2^-]}{\gamma}}
+  {\CCSeq{\Psi}{\Gamma,A_1^+\Imp A_2^-}{[A_1^+]} & \CCSeq{\Psi}{\Gamma,[A_2^-]}{\gamma}}
+}
+
+\newcommand{\CCAllR}{
+  \Infer[\All$-R$^a]
+  {\CCSeq{\Psi}{\Gamma}{\All x:\sigma.~A^-(x)}}
+  {\CCSeq[\Delta,a:\sigma]{\Psi}{\Gamma}{A^-(a)}}
+}
+
+\newcommand{\CCAllL}{
+  \Infer[\All$-L$]
+  {\CCSeq{\Psi}{\Gamma, [\All x:\sigma.~A^-(x)]}{\gamma}}
+  {\CCSeq{\Psi}{\Gamma, [A^-(t)]}{\gamma} & \Delta\Entails t:\sigma}
+}
+
+\newcommand{\CCExR}{
+  \Infer[\Ex$-R$]
+  {\CCSeq{\Psi}{\Gamma}{[\Ex x:\sigma.~A^+(x)]}}
+  {\CCSeq{\Psi}{\Gamma}{[A^+(t)]} & \Delta\Entails t:\sigma}
+}
+
+\newcommand{\CCExL}{
+  \Infer[\Ex$-L$^a]
+  {\CCSeq{\Psi}{\Gamma, \Ex x:\sigma.~A^+(x)}{\gamma}}
+  {\CCSeq[\Delta,a:\sigma]{\Psi}{\Gamma, A^+(a)}{\gamma}}
+}
+
+\newcommand{\CCDomR}{
+  \Infer[$dom-R$]
+  {\CCSeq{\Psi}{\Gamma}{[e^+]}}
+  {\Psi\Entails e^+}
+}
+
+\newcommand{\CCDomL}{
+  \Infer[$dom-L$]
+  {\CCSeq{\Psi}{\Gamma, e^+}{\gamma}}
+  {\CCSeq{\Psi, e^+}{\Gamma}{\gamma}}
+}
+
+\begin{figure}
+  \begin{center}
+    {\small
+      \begin{tabular}{c}
+        \\[1em]
+        \begin{tabular}{ccc}
+          \CCFocusR
+          &\hsp
+          \CCFocusL
+          &\hsp
+          \CCEtaP
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{ccc}
+          \CCEtaN
+          &\hsp
+          \CCIdP
+          &\hsp
+          \CCIdN
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{ccc}
+          \CCUpR
+          &\hsp
+          \CCUpL
+          &\hsp
+          \CCDownR
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{ccc}
+          \CCDownL
+          &\hsp
+          \CCDomR
+          &\hsp
+          \CCDomL
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{cc}
+          \CCAllR
+          &\hsp
+          \CCAllL
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{cc}
+          \CCExR
+          &\hsp
+          \CCExL
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{cc}
+          \CCTopPR
+          &\hsp
+          \CCTopNR
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{cc}
+          \CCAndPR
+          &\hsp
+          \CCAndPL
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{cc}
+          \CCAndNR
+          &\hsp
+          \CCAndNL
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{cc}
+          \CCOrR
+          &\hsp
+          \CCOrL
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{cc}
+          \CCImpR
+          &\hsp
+          \CCImpL
+        \end{tabular}
+      \end{tabular}
+    }
+  \end{center}
+  \caption{Focused sequent calculus}
+  \label{constr.focus}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

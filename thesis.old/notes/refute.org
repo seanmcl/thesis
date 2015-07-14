@@ -1,0 +1,130 @@
+
+* Rules
+
+It's tempting to consider the following rule:
+
+Γ, A ⊃ B ⊬ A       Γ ⊬ C
+-----------------------
+    Γ, A ⊃ B ⊬ C
+
+
+This isn't sound.  Consider
+
+
+
+   ???
+-------------------------
+   p ⊃ q, q ⊃ r ⊬ p ⊃ p
+
+Neither p nor q is provable from p ⊃ q, q ⊃ r, and
+p ⊃ q ⊬ p ⊃ p and q ⊃ r ⊬ p ⊃ p.  Thus, any rule dealing with implication on
+the left needs to account for this.
+
+
+* Misc
+
+** Multi-formula rules
+
+The inverse method seems to be problematic for rules like this
+
+    Γ ⊢ A
+------------
+◻ Γ, Δ ⊢ ◻ A
+
+**
+Having multiple succedents is nice in refutations, since the axioms
+are more clearly worlds with atoms on the right false and the left true
+in the valuation.
+
+** For IPL refutations
+
+ Γ ⊬ A₁     Γ ⊬ A₂    ⋯     Γ ⊬ An
+------------------------------------
+              Γ ⊬ p
+
+Γ = Γ', A₁ ⊃ B₁, A₂ ⊃ B₂, ⋯ , An ⊃ Bn
+Γ', Δ are atomic disjoint
+
+
+
+p, ¬¬p ⊬ ⊥
+¬¬p ⊬ ¬p
+¬¬p ⊬ p
+⊬ ¬¬p ⊃ p
+
+It's hard to see how p,¬¬p ⊬ ⊥ could be an axiom.  In Dyckhoff's system,
+
+p, ⊥ ⊃ ⊥ ⊬ ⊥
+¬¬p ⊬ p
+⊬ ¬¬p ⊃ p
+
+** Idea: axiom antecedents include logical consequences of Γ
+
+If Γ ⊢ A and Δ ⊢ A then Γ ∩ Δ ⊢ A?  No.  p ⊢ p ∨ q, q ⊢ p ∨ q, ∅ ⊬ p ∨ q.
+
+** Mixing proofs and refutations
+
+I was thinking refutations may help with proofs.  For example, the
+following rule piqued my interest:
+
+Γ, A ⊃ B ⊢ C   Γ, A ⊃ B ⊬ A
+---------------------------
+       Γ ⊢ C
+
+It doesn't help though.  For the only way Γ, A ⊃ B ⊢ C could have
+been proved is in the following way
+
+Γ₁, B ⊢ C   Γ₂ ⊢ A
+------------------
+Γ₁, Γ₂, A ⊃ B ⊢ C
+
+So the second premise would never hold.
+
+On the other hand, the rule
+
+Γ ⊢ A  Γ ⊬ C
+------------
+Γ, A ⊬ C
+
+seems to be helpful, though it's not clear I can get the ⊬ relation to
+work without baking in derivability already.
+
+
+** 1/21/14
+
+It seems focusing can take care of all the inversion and choice
+apart from implications on the left (and right if using multi-succedent)
+I'm not sure how to handle multiple implications on the left.
+
+Problems:
+1. you need to refute all choices simultaneously (?)
+2. Inverse method may help, but how do you get a single implication
+   on the left, even from an axiom?
+
+Say refuting
+
+* Examples
+
+** p ∧ q ⊃ r
+
+---------
+p, q ⊣ r
+----------
+p ∧ q ⊣ r
+
+** p ⊃ q, p ⊣ r
+
+--------
+p, q ⊣ r
+-------------
+p, p ⊃ q ⊣ r
+
+** p ⊃ q, q ⊃ r ⊣ r
+
+
+
+Γ
+
+----------------  ----------------
+p ⊃ q, q ⊃ r ⊣ p  p ⊃ q, q ⊃ r ⊣ q
+----------------------------------

@@ -1,0 +1,110 @@
+
+\newcommand{\CFInit}{
+  \Infer[$Init$]
+  {\CFSeq{p \doteq p'}{p}{p'}}
+  {}
+}
+
+\newcommand{\CFER}{
+  \Infer[E$-R$]
+  {\CFSeq{E}{\cdot}{E}}
+  {}
+}
+
+\newcommand{\CFEL}{
+  \Infer[E$-L$]
+  {\CFSeq{E \Imp \Psi}{\Gamma, E}{\gamma}}
+  {\CFSeq{\Psi}{\Gamma}{\gamma}}
+}
+
+\newcommand{\CFAllR}{
+  \Infer[\All$-R$^x]
+  {\CFSeq{\All x.~\Psi(x)}{\Gamma}{\All x.~A(x)}}
+  {\CFSeq{\Psi(x)}{\Gamma}{A(x)}}
+}
+
+\newcommand{\CFAllL}{
+  \Infer[\All$-L$]
+  {\CFSeq{\Psi}{\Gamma, \All x.~A(x)}{\gamma}}
+  {\CFSeq{\Psi}{\Gamma, A(t)}{\gamma}}
+}
+
+\newcommand{\CFCon}{
+  \Infer[$Contract$]
+  {\CFSeq{\Psi \And A \doteq A'}{\Gamma, A}{\gamma}}
+  {\CFSeq{\Psi}{\Gamma, A, A'}{\gamma}}
+}
+
+\newcommand{\CFExC}{
+  \Infer[\Ex$-C$]
+  {\CFSeq{\Ex x.~\Psi(x)}{\Gamma}{\gamma}}
+  {\CFSeq{\Psi(x)}{\Gamma}{\gamma} & x\not\in\Vars(\Gamma,\gamma)}
+}
+
+\newcommand{\CFExR}{
+  \Infer[\Ex$-R$]
+  {\CFSeq{\Psi}{\Gamma}{\Ex x.~A(x)}}
+  {\CFSeq{\Psi}{\Gamma}{A(t)}}
+}
+
+\newcommand{\CFExL}{
+  \Infer[\Ex$-L$^a]
+  {\CFSeq{\Psi}{\Gamma, \Ex x.~A(x)}{\gamma}}
+  {\CFSeq{\Psi}{\Gamma, A(a)}{\gamma}}
+}
+
+\newcommand{\CFAndR}{
+  \Infer[\And$-R$]
+  {\CFSeq{\Psi_1\And\Psi_2}{\Gamma_1\Union\Gamma_2}{A_1\And A_2}}
+  { \CFSeq{\Psi_1}{\Gamma_1}{A_1} & \CFSeq{\Psi_2}{\Gamma_2}{A_2} }
+}
+
+\begin{figure}
+  \begin{center}
+    {\small
+      \fbox{
+        \begin{tabular}{c}
+          \begin{tabular}{ccc}
+            \CFInit
+            &
+            \hspace{2em}
+            \CFER
+            &
+            \hspace{2em}
+            \CFEL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \CFAllR
+            &
+            \hspace{2em}
+            \CFAllL
+            \\[2em]
+            \CFCon
+            &
+            \hspace{2em}
+            \CFExC
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{c}
+            \CFAndR
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \CFExR
+            &
+            \hspace{2em}
+            \CFExL
+          \end{tabular}
+        \end{tabular}
+      }
+    }
+  \end{center}
+  \caption{The forward calculus.}
+  \label{constr.forward}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

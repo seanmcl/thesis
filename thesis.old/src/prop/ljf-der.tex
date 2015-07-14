@@ -1,0 +1,48 @@
+
+\renewcommand{\ab}{a \Imp b}
+\renewcommand{\ac}{a \Or c}
+\renewcommand{\abc}{(a\Imp b) \Imp c}
+\renewcommand{\bb}{\Bot \Or b}
+
+\renewcommand{\Qa}{\PFSeq{b}{b}}
+\renewcommand{\Ra}{\Infer[$Init$]{\Qa}{}}
+
+\renewcommand{\Qb}{\PFSeq{b}{\ab}}
+\renewcommand{\Rb}{\Infer[\Imp$-R$]{\Qb}{\Ra}}
+
+\renewcommand{\Qc}{\PFSeq{c}{c}}
+\renewcommand{\Rc}{\Infer[$Init$]{\Qc}{}}
+
+\renewcommand{\Qd}{\PFSeq{c}{\ac}}
+\renewcommand{\Rd}{\Infer[\Or$-R$_2]{\Qd}{\Rc}}
+
+\renewcommand{\Qe}{\PFSeq{b, \abc}{\ac}}
+\renewcommand{\Re}{\Infer[\Imp$-L$]{\Qe}{\Rd & \Rb}}
+
+\renewcommand{\Qf}{\PFSeq{\Bot}{\cdot}}
+\renewcommand{\Rf}{\Infer[\Bot$-L$]{\Qf}{}}
+
+\renewcommand{\Qg}{\PFSeq{\bb, \abc}{\ac}}
+\renewcommand{\Rg}{\Infer[\Or$-L$]{\Qg}{\Rf & \Re}}
+
+\renewcommand{\Qh}{\PFSeq{\bb}{(\abc) \Imp \ac}}
+\renewcommand{\Rh}{\Infer[\Imp$-R$]{\Qh}{\Rg}}
+
+\renewcommand{\Qj}{\PFSeq{\cdot}{\bb \Imp (\abc) \Imp \ac}}
+\renewcommand{\Rj}{\Infer[\Imp$-R$]{\Qj}{\Rh}}
+
+\begin{figure}
+  \begin{center}
+    \fbox{
+      \Rj
+    }
+  \end{center}
+  \caption{A derivation in $\LJF$}
+  \label{prop.forward-der}
+\end{figure}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

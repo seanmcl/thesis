@@ -1,0 +1,39 @@
+
+\chapter*{Introduction}\label{chapter.intro}
+
+\begin{quote} Building a theorem prover is a cross between proving a
+theorem and driving a sports car.  -- Tobias Nipkow\end{quote}
+
+This thesis describes the theory and implementation of a theorem
+prover called Imogen which proves theorems in a number of
+intuitionistic logics.  Imogen is interesting for two reasons.  The
+first reason is performance.  On the propositional fragment, its
+performance is comparable to the best existing theorem provers, of
+which there are many.  On full first-order logic, it performs
+significantly better than any other existing theorem provers on
+standard benchmarks.  The second reason is its generality.  With
+relatively minor changes to the code that handles first-order logic,
+Imogen is able to prove theorems in less well-known logics, such as
+linear logic, two fundamentally different types of modal logic, and
+ordered logic.  The way Imogen accomplishes these two feats is the
+subject matter of this thesis.
+
+Before we begin, it's worth considering why we should care about
+theorem proving in intuitionistic logics.  While no one would doubt
+its theoretical and historical interest, any practical use that would
+require theorem proving may indeed require some justification.
+This is especially true due to the fact that the theorem proving
+problem is, practically speaking, much harder than the classical
+problem.  I'll give two concrete examples to justify this statement,
+one well-known and one less so.  First, the decision problem
+for the propositional fragment is PSPACE-complete for intuitionistic
+logic, while the classical problem is merely NP-complete.  Second,
+a standard unification problem that arises during proof search
+in first-order logic with equality is undecidable
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "thesis"
+%%% End:

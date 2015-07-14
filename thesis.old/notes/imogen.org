@@ -1,0 +1,353 @@
+
+* Misc
+
+--------------------------------------------------------------------------------
+
+subterm property
+
+--------------------------------------------------------------------------------
+
+In proving Γ ⊢ A ∧ A, A is still proved twice.  This is a problem.
+A ⊃ A is not so clear, as the subformulas have different sign.
+
+ Γ ⊢ A       Γ ⊢ A
+-------------------
+    Γ ⊢ A ∧ A
+
+--------------------------------------------------------------------------------
+
+If any hypothesis of a rule subsumes the conclusion, remove it
+
+--------------------------------------------------------------------------------
+
+In the prop implementation, try a tree structure for antecedent subsumption.
+Indexing in general can be much improved there.
+
+--------------------------------------------------------------------------------
+
+Analytic cut on atoms is free
+On general formulas, we need an equivalence relation on polarized formulas,
+and when adding a new active sequent we could search for equivlent
+formulas and cut them out.
+
+Sequents with no antecedents are very good candidates for cuts, as they
+will be sure to reduce the size of sequents and perhaps make others
+subsumed.
+
+singleton antecedents will simply replace the consequents, but this is
+good too, as they can be strengthened if the rhs is Ξ.
+
+Look at some examples to see if it's worth it.
+
+--------------------------------------------------------------------------------
+
+Exhaust few-hyp rules before even considering big hyp rules.
+
+--------------------------------------------------------------------------------
+
+Represent a partial rule application like so:
+
+  , p8 ⊢ p3 ]
+  ---------------------------20
+  p3, p6, p14 ⊢ p1
+  p0, p6, p7 ⊢ p1
+  p0, p1, p6 ⊢ p1
+  p0, p6, p15 ⊢ p1
+  p1, p6, p15 ⊢ p1
+
+The number of rules is then ∑_{i=0}^N{|hyps(R_i)|}
+
+No need for kept rules.
+
+--------------------------------------------------------------------------------
+
+
+If you have a sequent A, Γ ⊢ B where A doesn't occur in any antecedent
+of any rule, you can delete the sequent.  It can never help in a proof,
+since the A will always tag along.  I don't know if this ever happens.
+
+--------------------------------------------------------------------------------
+
+It seems like you should be able to compile this into matching
+
+
+  [ ⊢ p9]
+  ---------------------------1
+  p7 ⊢ P3
+
+  [ ⊢ P3]
+  ---------------------------2
+  p14 ⊢ Ξ
+
+
+Compiled in the abstract machine:
+
+    ⊢ p9
+  ---------------
+   p14, p7 ⊢ Ξ
+
+--------------------------------------------------------------------------------
+
+
+With a rule like this
+
+  [ ⊢ P0]
+  ---------------------------4
+   ⊢ p9
+
+it seems you can simplify somewhere, perhaps p0 ---> p9 on the right
+
+--------------------------------------------------------------------------------
+
+When you match any hyp of any rule exactly, the hyp should be
+deleted permanently.  Rule subsumption handles this case for
+matching the first hyp.
+
+--------------------------------------------------------------------------------
+
+"Inverse code trees" for matching stuff like this
+
+  [ P1, P3 ⊢ p17
+  , P1, p16 ⊢ P3
+  , p15 ⊢ P1
+  ,  ⊢ P0
+  , P1 ⊢ p26
+  ,  ⊢ P0
+  , p27 ⊢ P1
+  , P0, P1 ⊢ p31 ]
+  ---------------------------49
+  p8 ⊢ P2
+
+  [ P1, P2, P3 ⊢ p17
+  , P1, P2, p16 ⊢ P3
+  , P2, p15 ⊢ P1
+  , p14 ⊢ P2
+  , P1 ⊢ p26
+  ,  ⊢ P0
+  , p27 ⊢ P1
+  , P0, P1 ⊢ p31 ]
+  ---------------------------59
+  p8 ⊢ P0
+
+
+Could be something like
+
+
+0  [ P1, P3 ⊢ p17
+1  , P1, p16 ⊢ P3
+2  , p15 ⊢ P1
+3  ,  ⊢ P0
+4  , P1 ⊢ p26
+5  ,  ⊢ P0
+6  , p27 ⊢ P1
+7  , P0, P1 ⊢ p31 ]
+  ---------------------------49
+  p8 ⊢ P2
+
+8  [ P1, P2, P3 ⊢ p17
+9  , P1, P2, p16 ⊢ P3
+10  , P2, p15 ⊢ P1
+11  , p14 ⊢ P2
+12  , P1 ⊢ p26
+13  ,  ⊢ P0
+14  , p27 ⊢ P1
+15  , P0, P1 ⊢ p31 ]
+  ---------------------------59
+  p8 ⊢ P0
+
+
+3 = 13
+
+
+P1, P3 ⊢ p17
+
+
+  [ P1, P3 ⊢ p17
+  , P1, p16 ⊢ P3
+  , p15 ⊢ P1
+  ,  ⊢ P0
+  , P1 ⊢ p26
+  ,  ⊢ P0
+  , p27 ⊢ P1
+  , P0, P1 ⊢ p31 ]
+  ---------------------------49
+  p8 ⊢ P2
+
+  [ P1, P2, P3 ⊢ p17
+  , P1, P2, p16 ⊢ P3
+  , P2, p15 ⊢ P1
+  , p14 ⊢ P2
+  , P1 ⊢ p26
+  ,  ⊢ P0
+  , p27 ⊢ P1
+  , P0, P1 ⊢ p31 ]
+  ---------------------------59
+  p8 ⊢ P0
+
+
+
+
+
+--------------------------------------------------------------------------------
+
+This rule has redundant hypotheses (8+6) and subsumed hypotheses (9 ≤ 4)
+
+0  [ p22 ⊢ Ξ
+1  , P0 ⊢ Ξ
+2  , p23 ⊢ Ξ
+3  ,  ⊢ P3
+4  ,  ⊢ P1
+5  ,  ⊢ P2
+6  ,  ⊢ P0
+7  , P1 ⊢ p26
+8  ,  ⊢ P0
+9  , p27 ⊢ P1
+10  , P0, P1 ⊢ p31 ]
+  ---------------------------19
+  p8 ⊢ Ξ
+
+
+ [ p22 ⊢ Ξ
+ , P0 ⊢ Ξ
+ , p23 ⊢ Ξ
+ ,  ⊢ P3
+ ,  ⊢ P2
+ , P1 ⊢ p26
+ ,  ⊢ P0
+ , p27 ⊢ P1
+  , P0, P1 ⊢ p31 ]
+---------------------------19
+  p8 ⊢ Ξ
+
+--------------------------------------------------------------------------------
+
+This rule subsumes itself
+
+  [ P1, P2, P3 ⊢ p17
+  , P1, P2, p16 ⊢ P3
+  , P2, p15 ⊢ P1
+  , p14 ⊢ P2
+  , P1 ⊢ p26
+  ,  ⊢ P0
+  , p27 ⊢ P1
+  , P0, P1 ⊢ p31
+  , p33 ⊢ p35
+  ,  ⊢ p37 ]
+  ---------------------------352
+   ⊢ P0
+
+
+--------------------------------------------------------------------------------
+
+Separate disjunction variables
+
+( (p1 => false) =>
+  (p3 => false) <=>
+  p2 => false <=> (p1 <=> p0 => false) | p1 <=> p3 => false)
+
+|
+
+ ((q1 => false <=> ((q1 <=> q2) => false) & q2 <=> ((q0 => false) => false)
+   => (q0 => false) <=> q3 <=> q2) => false)
+
+A | B ===> [A, B]
+A & B
+A <=> B
+
+
+--------------------------------------------------------------------------------
+
+
+Write a trace of subsumption calls and results as in Voronkov paper
+
+--------------------------------------------------------------------------------
+
+Remove contraction and redo matching following Voronkov
+
+--------------------------------------------------------------------------------
+
+Remove rules that are "exactly matched".  I.e.,
+
+Γ ⊢ A
+...
+-------
+Δ ⊢ B
+
+is matched with Γ' ⊢ A where Γ' ⊆ Γ
+Maybe something with
+
+Γ ⊢ ⊥ [or Ξ]
+...
+-------
+Δ ⊢ B
+
+
+--------------------------------------------------------------------------------
+
+If the database is saturated, and you're actively doing backward subsumption,
+a simple check is to show that the database subsumes the initial sequents.
+
+--------------------------------------------------------------------------------
+
+Remove duplicate rules
+
+[ p11, p15, p16, p18 ⊢ p24
+, p12 ⊢ p26 ]
+---------------------------136
+  ⊢ Ξ
+
+[ p11, p15, p16, p18 ⊢ p24
+, p12 ⊢ p26 ]
+---------------------------140
+⊢ Ξ
+
+[ p11, p15, p16, p18 ⊢ p24
+, p12 ⊢ p26 ]
+---------------------------152
+  ⊢ Ξ
+
+
+--------------------------------------------------------------------------------
+
+Remove subsumed rules
+
+[ p11, p15, p16, p18 ⊢ p24
+, p12 ⊢ p26 ]
+---------------------------152
+  ⊢ Ξ
+
+subsumes
+
+[ p11, p15, p16, p18 ⊢ p24
+, p12 ⊢ p26 ]
+---------------------------142
+p15 ⊢ Ξ
+
+
+--------------------------------------------------------------------------------
+
+Consider trying to prove stronger theorems:
+
+e.g. instead of proving
+
+  ¬¬ (A ∨ B)
+
+prove
+
+  ¬¬ A ∨ ¬¬ B
+
+--------------------------------------------------------------------------------
+
+
+
+Logging
+
+Experiment with MLton.share and MLton.shareAll
+
+* Parser
+
+TPTP ---> AST ---> Formula
+Comments
+
+
+Check input (e.g. 0 for -sub)

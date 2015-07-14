@@ -1,0 +1,14 @@
+
+(forall Y. real(Y) => exists X. cause(X,Y))                       =>
+(forall Y. think(cogito,Y) => exists X. cause(X,Y))               =>
+(forall X. forall Y. cause(X,Y) => equal(X,Y) | greater(X,Y))     =>
+think(cogito,idea_Dei)                                            =>
+real(idea_Dei)                                                    =>
+~equal(cogito,idea_Dei)                                           =>
+~greater(cogito,idea_Dei)                                         =>
+
+~cause(cogito, idea_Dei) &
+ exists W.
+  (cause(W,idea_Dei) &
+   (equal(W, idea_Dei) |
+    greater(W, idea_Dei)))

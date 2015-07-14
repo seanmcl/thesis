@@ -1,0 +1,112 @@
+
+* Intro
+
+** Why
+
+Coq, Agda automated proof search
+
+** Contributions
+
+Framework for efficient forward reasoning in sequent calculus
+New redundancy criteria
+Logical optimizations
+
+* Fol
+
+** LJ
+
+multisets
+backward sequents
+backward rules
+{,non}invertible rules
+subformula property
+weakening, contraction, exchange are admissible
+
+** Polarization and focusing
+
+** Inverse method
+
+substitutions
+forward rules
+completeness
+kept and active databases (Otter loop)
+rule generation
+rule matching
+proof terms
+signed subformulas
+can't in general prove a sequent, only one that subsumes it P, Q ===> P
+
+*** subsumption
+forward
+backward
+recursive backward
+rule subsumption
+completeness of aggressive subsumption
+
+** Polarized inverse method
+
+forward sequents
+forward inference rules
+derived rules
+logical optimizations
+simulation of focusing strategies (single step, weak, fair weak, pos/neg atoms)
+unification with parameters
+
+** Misc
+
+translations to classical logic, comparison with number
+of connectives/shifts, Goedel-Gentzen, Gilvenko
+
+** Implementation issues
+
+rule matching
+contraction
+problem: exponentially many stable sequents, or exponentially many hypotheses in a rule.
+Do experiments with different unification algorithms, indexing strategies, hash
+ consing, and term representations.
+
+* Constraints
+
+XXX
+
+* Modal
+
+* Substructural
+
+* Implementation
+
+Globalization
+Local quantification: every sequent is a proof
+
+** Imogen
+
+** Prop
+
+** Fol
+
+** Modal
+
+** Linear
+
+** Ordered
+
+** Other experiments
+
+* Conclusion
+
+** Related work
+
+Model-based approaches (BDD)
+Tableau search (PITP is the best at IPL)
+
+** Future work
+
+analyze subterm property to avoid bad examples
+term orderings a la resolution.
+strengthening of sequents rather than recursive deletion
+
+* Bibliography
+
+*** term representations
+*** unification
+*** term indexing

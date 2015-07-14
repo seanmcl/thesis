@@ -1,0 +1,37 @@
+
+% Define block styles
+\tikzstyle{circ} = [ellipse, draw, fill=blue!20, text width=8em, text centered, rounded corners, minimum height=4em]
+\tikzstyle{block} = [rectangle, draw, fill=green!20, text width=10em, text centered, rounded corners, minimum height=4em]
+\tikzstyle{line} = [draw, -latex', thick]
+
+\begin{figure}
+  \begin{center}
+    \begin{tikzpicture}[node distance = 3cm, auto, scale=0.7, transform shape, ->, >=stealth', semithick]
+      % Place nodes
+      \node [circ] (R) at (6,8) {Rules};
+      \node [circ] (AS) at (0,4) {Active Sequents};
+      \node [circ] (KS) at (6,0) {Kept Sequents};
+      \node [block] (MR) at (6,4) {matchRule};
+      \node [circ] (NS) at (12,4) {New Sequents};
+
+      % Draw edges
+      \path [line, color=blue] (R) -- node{line 7} (MR);
+      \path [line, color=red] (NS) -- node{line 14} (KS);
+      \path [line, color=red] (KS) -- node{line 13} (AS);
+      \path [line, color=blue] (KS) -- node{line 7} (MR);
+      \path [line, color=blue] (AS) -- node{line 7} (MR);
+      \path [line, color=orange] (MR) -- node{line 7} (NS);
+
+%       \path[line, draw, color=blue] (NS) -- +(0,-2) -- node[above]{line 14--15} +(-5.5, -2) -- +(-5.5, -0.7);
+%       \path[line, draw, <-, color=blue] (AS) -- +(0,-2) -- node[above]{line 13} +(5.5, -2) -- +(5.5, -0.7);
+%      \path[line, draw, color=blue] (AR) -- +(0,-2) -- +(9, -2) -- +(9, 0) -- (KR);
+    \end{tikzpicture}
+  \end{center}
+  \caption{Imogen's Fixed-Rule Loop}
+  \label{prop.fixed-loop}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

@@ -1,0 +1,118 @@
+
+\newcommand{\PInit}{\Infer[$Init$]{\PFSeq{p}{p}}{}}
+
+\newcommand{\PAndR}{
+  \Infer[\And$-R$]
+  {\PFSeq{\cdot}{A_1 \And A_2}}
+  {\PFSeq{\cdot}{A_1} & \PFSeq{\cdot}{A_2}}
+}
+
+\newcommand{\PAndL}{
+  \Infer[\And$-L$]
+  {\PFSeq{A_1 \And A_2}{\cdot}}
+  {\PFSeq{A_1, A_2}{\cdot}}
+}
+
+\newcommand{\PImpR}{
+  \Infer[\Imp$-R$]
+  {\PFSeq{\cdot}{A_1 \Imp A_2}}
+  {\PFSeq{A_1}{A_2}}
+}
+
+\newcommand{\PImpL}{
+  \Infer[\Imp$-L$]
+  {\PFSeq{A_1\Imp A_2}{\cdot}}
+  {\PFSeq{A_1\Imp A_2}{A_1} & \PFSeq{A_2}{\cdot}}
+}
+
+\newcommand{\POrRL}{
+  \Infer[\Or$-R$_1]
+  {\PFSeq{\cdot}{A_1 \Or A_2}}
+  {\PFSeq{\cdot}{A_1}}
+}
+
+\newcommand{\POrRR}{
+  \infer[\Or$-R$_2]
+  {\PFSeq{\cdot}{A_1 \Or A_2}}
+  {\PFSeq{\cdot}{A_2}}
+}
+
+\newcommand{\POrL}{
+  \infer[\Or$-L$]
+  {\PFSeq{A_1 \Or A_2}{\cdot}}
+  {\PFSeq{A_1}{\cdot} & \PFSeq{\Gamma, A_2}{\cdot}}
+}
+
+\newcommand{\PTopR}{
+  \infer[\Top$-R$]
+  {\PFSeq{\cdot}{\Top}}
+  {}
+}
+
+\newcommand{\PTopL}{\mbox{No rule for $\Top$-L}}
+
+\newcommand{\PBotL}{
+  \infer[\Bot$-L$]
+  {\PFSeq{\Bot}{\cdot}}
+  {}
+}
+
+\newcommand{\PBotR}{\mbox{No rule for $\Bot$-R}}
+
+\begin{figure}
+  \begin{center}
+    {\small
+      \fbox{
+        \begin{tabular}{c}
+          \begin{tabular}{ccc}
+            \PInit
+            &
+            \hspace{1cm}
+            \PTopR
+            &
+            \hspace{1cm}
+            \PTopL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \PAndR
+            &
+            \hspace{1cm}
+            \PAndL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{ccc}
+            \POrRL
+            &
+            \hspace{10pt}
+            \POrRR
+            &
+            \hspace{10pt}
+            \POrL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \PBotR
+            &
+            \hspace{20pt}
+            \PBotL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \PImpR
+            &
+            \hspace{20pt}
+            \PImpL
+          \end{tabular}
+        \end{tabular}
+      }
+    }
+  \end{center}
+  \caption{The combined calculus $\LP$}
+  \label{prop.p}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

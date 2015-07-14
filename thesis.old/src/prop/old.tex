@@ -1,0 +1,2506 @@
+
+\begin{theorem}[Completeness]
+  \label{prop.thm.forward-complete}
+  If $\Seq{\Gamma}{A}$ is derivable then there is a derivable
+  sequent $\FSeq{\Gamma'}{\gamma'}$ where
+  $\FB{\FSeq{\Gamma'}{\gamma'}}\Subsumes \Seq{\Gamma}{A}$.
+\end{theorem}
+
+\begin{proof}
+  By induction on the derivation of $\Seq{\Gamma}{A}$.
+  We show some representative rules.
+  \begin{description}
+  \item[Case:]
+    \[ \PBInitRule \]
+    \begin{tabbing}
+      $\FSeq{p}{p}$ \` Init ($\gamma'=\Set{p}$, $\Gamma'=\Set{p}$) \\
+    \end{tabbing}
+  \item[Case:]
+    \[ \PBImpRRule \]
+    \begin{tabbing}
+      $\FSeq{\Gamma_1}{\gamma}$ \` IH \\
+      $\Gamma_1 \subseteq \Gamma, A_1$ \` IH \\
+      $\gamma \subseteq \Set{A_2}$ \` IH \\
+    \end{tabbing}
+    \begin{description}
+    \item[Case:]
+      $A_1\in\Gamma_1$, $A_2\in\gamma$
+      \begin{tabbing}
+        $\Gamma_1=\Gamma',A_1$ \\
+        $\gamma=\Set{A_2}$ \\
+        $\Gamma' \subseteq \Gamma$ \\
+        $\FSeq{\Gamma',A_1}{A_2}$ \` IH \\
+        $\FSeq{\Gamma'}{A_1\Imp A_2}$ \` $\Imp$-R$_1$ \\
+      \end{tabbing}
+    \end{description}
+    Other cases are similar, % with $\PFImpRb$ and $\PFImpRc$
+  \item[Case:]
+    \[ \PBImpLRule \]
+    \begin{tabbing}
+      $\FSeq{\Gamma_1}{\gamma_1}$ \` IH (1) \\
+      $\Gamma_1\subseteq \Gamma, A_1\Imp A_2$ \` IH \\
+      $\gamma_1\subseteq \Set{A_1}$ \` IH \\
+      $\FSeq{\Gamma_2}{\gamma_2}$ \` IH (2) \\
+      $\Gamma_2\subseteq \Gamma, A_2$ \` IH \\
+      $\gamma_2\subseteq \Set{C}$ \` IH \\
+    \end{tabbing}
+    \begin{description}
+    \item[Case:]
+      $A_2\not\in\Gamma_2$
+      Then setting $\Gamma'=\Gamma_2$ and $\gamma=\gamma_2$ will do.
+    \item[Case:]
+      $A_2\in\Gamma_2$ and $A_1\not\in\gamma_1$.
+      Then setting $\Gamma'=\Gamma_1$ and $\gamma=\gamma_1$ will do.
+    \item[Case:]
+      $A_2\in\Gamma_2$ and $A_1\in\gamma_1$.
+      Let $\Gamma_2=\Gamma_2',A_2$.  Then $\Gamma_2' \subseteq \Gamma$.
+      Set $\gamma=\gamma_2$.
+      Because $\Gamma_1 \subseteq \Gamma, A_1\Imp A_2$ and $\Gamma_2' \subseteq \Gamma$,
+      some series of contractions
+      of $\Gamma_1\Union\Gamma_2'$ will yield
+      $\Gamma_3 \subseteq \Gamma, A_1\Imp A_2$.
+      \[
+      \Infere[$Contract$]
+      { \FSeq{\Gamma_3,A_1\Imp A_2}{\gamma} }
+      {
+        \Infer[\Imp$-L$]
+        {\FSeq{\Gamma_1\Union\Gamma_2',A_1\Imp A_2}{\gamma}}
+        {\FSeq{\Gamma_1}{A_1} & \FSeq{\Gamma_2',A_2}{\gamma}}
+      }
+      \]
+      If $A_1\Imp A_2\in\Gamma_3$, one more contraction will yield
+      $\Gamma'$ such that $\Gamma' \subseteq \Gamma$.  Otherwise set $\Gamma'=\Gamma_3$.
+    \end{description}
+  \end{description}
+\end{proof}
+
+\begin{theorem}
+  \label{prop.thm.subsume-goal}
+  \begin{itemize}
+  \item[]
+  \item There is no derivation of $\FSeq{\cdot}{\cdot}$
+  \item There is no derivable sequent that subsumes $\FSeq{\cdot}{\xi}$
+  \end{itemize}
+\end{theorem}
+
+\begin{proof}
+  \begin{itemize}
+  \item[]
+  \item By Theorem~\ref{prop.thm.forward-sound},
+    a derivation of $\FSeq{\cdot}{\cdot}$ would yield a derivation of
+    $\Seq{\cdot}{\Bot}$.  But this contradicts Theorem~\ref{prop.thm.consistent}.
+  \item There is no sequent besides $\FSeq{\cdot}{\cdot}$ that subsumes
+    $\FSeq{\cdot}{\xi}$.
+  \end{itemize}
+\end{proof}
+
+\begin{remark}
+Figure~\ref{prop.forward} shows a forward calculus $\LPF$ that is sound and
+complete with respect to the backward rules.  There are some surprises.  Unlike
+$\LPB$, contraction is not admissible, and is thus needed as an explicit rule.
+The single rule $\Imp$-R becomes three rules %$\PFImpRa$, $\PFImpRb$, $\PFImpRc$, depending on whether the backward rule uses the antecedent
+(consequent) or not.  (Consider, for example, trying to prove $\Bot\Imp A$.)
+Figure~\ref{prop.backward-der} shows a derivation in $\LPB$ and
+Figure~\ref{prop.forward-der} its corresponding derivation in $\LPF$.
+\end{remark}
+
+\subsection{Rule specialization}
+\label{prop.sec.specialization}
+
+$\LPF$ still does not satisfy the finite rule property.  There are still an
+infinite number of instances of the \emph{Init} rule. The second part also fails.
+For example, the subformula $A_2$
+in \[\PBOrRLRule\] is unrestricted.  Here we are saved by the subformula
+property. We can instantiate the rules with (the finite number of)
+subformulas of the goal sequent.  Fix a formula $\xi$ to be checked for
+provability for the remainder of this section.  Define $\LPFx$ to be $\LPF$
+restricted to signed subformulas of $\xi$.  Then $\LPFx$ satisfies the finite
+rule property.  For example, if $\xi=p_1\And p_2\Imp p_2\And p_1$
+then
+
+\[
+\LPFx =
+\begin{cases}
+  \begin{array}{c@{\hspace{2em}}c@{\hspace{2em}}c}
+    \Infer{\FSeq{p_1}{p_1}}{}
+    &
+    \Infer{\FSeq{p_2}{p_2}}{}
+    &
+    \Infer{\FSeq{\Gamma_1\Union\Gamma_2}{p_2\And p_1}}{\FSeq{\Gamma_1}{p_2} & \FSeq{\Gamma_2}{p_1}}
+    \\[2em]
+    \Infer{\FSeq{\Gamma,p_1\And p_2}{\gamma}}{\FSeq{\Gamma,p_1,p_2}{\gamma}}
+    &
+    \Infer{\FSeq{\Gamma}{\xi}}{\FSeq{\Gamma,p_1\And p_2}{p_2\And p_1}}
+    &
+    \Infer{\FSeq{\Gamma}{\xi}}{\FSeq{\Gamma}{p_2\And p_1}}
+  \end{array}
+\end{cases}
+\]
+
+\begin{theorem}[Soundness and completeness of $\LPFx$]
+  {\ \\}
+  \begin{quote}
+    $\Seq{\cdot}{\xi}$ is derivable in $\LPB$
+    iff $\FSeq{\cdot}{\xi}$ is derivable in $\LPFx$
+  \end{quote}
+\end{theorem}
+
+\begin{proof}
+  Theorems~\ref{prop.thm.forward-sound}, \ref{prop.thm.forward-complete},
+  and \ref{prop.thm.subformula}.
+\end{proof}
+
+\section{The Inverse Method}
+
+\begin{quote}
+  \textit{
+    We define the inverse method, a process for obtaining a forward
+    proof search strategy from the forward calculus.
+  }
+\end{quote}
+
+\subsection{Rule generation}
+
+We now describe a systematic method for simplifying a set of
+forward inference rules into
+
+\begin{definition}
+
+\end{definition}
+
+\begin{definition}
+  Let $A^s\in\subfs(\xi)$, $s\in\Set{+,-}$.  Define
+
+  \[
+  \rules(A^s) \EqDef
+  \begin{cases}
+    \Infer{\FSeq{p}{p}}{} &
+    \mbox{$A=p$, $p$ is two-sided}
+    \\[1em]
+    \Infer
+    {\FSeq{\cdot}{A_1\And A_2}}
+    {\FSeq{\cdot}{A_1} & \FSeq{\cdot}{A_2}} &
+    \mbox{$A=A_1\And A_2$, $s=+$}
+    \\[1em]
+    \Infer
+    {\FSeq{A_1\And A_2}{\cdot}}
+    {\FSeq{A_1, A_2}{\cdot}} &
+    \mbox{$A=A_1\And A_2$, $s=-$}
+    \\[1em]
+    \Infer
+    {\FSeq{\cdot}{\Top}}
+    {} &
+    \mbox{$A=\Top$, $s=+$}
+    \\[1em]
+    \Infer
+    {\FSeq{\cdot}{A_1\Or A_2}}
+    {\FSeq{\cdot}{A_1}}
+    ,\hspace{1em}
+    \Infer
+    {\FSeq{\cdot}{A_1\Or A_2}}
+    {\FSeq{\cdot}{A_2}} &
+    \mbox{$A=A_1\Or A_2$, $s=+$}
+    \\[1em]
+    \Infer
+    {\FSeq{A_1\Or A_2}{\cdot}}
+    {\FSeq{A_1}{\cdot} & \FSeq{A_2}{\cdot}} &
+    \mbox{$A=A_1\Or A_2$, $s=-$}
+    \\[1em]
+    \Infer
+    {\FSeq{\Bot}{\cdot}}
+    {} &
+    \mbox{$A=\Bot$, $s=-$}
+    \\[1em]
+    \Infer
+    {\FSeq{\cdot}{A_1\Imp A_2}}
+    {\FSeq{A_1}{A_2}} &
+    \mbox{$A=A_1\Imp A_2$, $s=+$}
+    \\[1em]
+    \Infer
+    {\FSeq{A_1\Imp A_2}{\cdot}}
+    {\FSeq{\cdot}{A_1} & \FSeq{A_2}{\cdot}} &
+    \mbox{$A=A_1\Imp A_2$, $s=-$}
+   \end{cases}
+  \]
+\end{definition}
+
+\begin{definition}
+  \[
+  \LPFs = \bigcup_{A\in\subfs(\xi)} \rules(A)
+  \]
+\end{definition}
+
+\noindent
+Our running example becomes
+
+\[
+\LPFs =
+\begin{cases}
+  \begin{array}{ccc}
+    \Infer{\FSeq{p_1}{p_1}}{}
+    &
+    \hspace{2em}
+    \Infer{\FSeq{p_2}{p_2}}{}
+    &
+    \hspace{2em}
+    \Infer{\FSeq{}{p_2\And p_1}}{\FSeq{\cdot}{p_2} & \FSeq{\cdot}{p_1}}
+    \\[2em]
+    \Infer{\FSeq{p_1\And p_2}{\cdot}}{\FSeq{p_1,p_2}{\cdot}}
+    &
+    \hspace{2em}
+    \Infer{\FSeq{\cdot}{\xi}}{\FSeq{p_1\And p_2}{p_2\And p_1}}
+  \end{array}
+\end{cases}
+\]
+
+\subsection{Derivations and proof search}
+\label{prop.sec.search}
+
+\begin{definition}
+  \begin{itemize}
+  \item[]
+  \item The \emph{goal} is $\FSeq{\cdot}{\xi}$.
+  \item A \emph{database} is a set of sequents.
+  \end{itemize}
+\end{definition}
+
+\noindent
+Proof search in $\LPFx$ proceeds by
+maintaining a database of provable sequents.  The database initially contains
+only the initial sequents.  At each step, we use the matching
+algorithm defined above to match hypotheses of the rules to sequents
+in the existing database, thereby producing new sequents.  In time, we either generate
+the goal, or no new sequents can be generated.  In the later case, $\cD$ is said
+to be \emph{saturated}, and $\xi$ is unprovable.
+
+We formalize this method of proof search following Voronkov~\cite[Section
+7.4]{Voronkov.2001.Handbook}.  There are two operations on databases, adding
+sequents via rule matching, and removing sequents by subsumption.
+
+\begin{definition}
+  We define a relation $\cD\steps\cD'$ between databases with the following
+  properties.
+  \begin{itemize}
+  \item If $R$ is an inference rule,
+    and $q_1, \ldots, q_n\in\cD$, and $q = \match(R, q_1,\ldots, q_n)$, then
+    $\cD\steps\cD\Union{q}$.  Such an inference is called an
+    \emph{inference step}.
+
+  \item If$\Set{q_1,q_2}\subseteq\cD$ and  $q_1\Subsumes q_2$
+    then $\cD\steps\cD\Diff\Set{q_2}$.
+    Such an inference is called a \emph{subsumption step}.
+
+  \item A \emph{step} is an inference step or a subsumption step.
+
+  \item A \emph{derivation} is a sequence $\cD_0\steps\cD_1\steps\cdots$
+    of databases, where $\cD_0$
+    are the initial sequents and for each $i$, $\cD_i\steps\cD_{i+1}$.
+
+  \item A derivation \emph{succeeds} if some $\cD_i$ contains the goal.
+  \item A derivation \emph{fails} if it doesn't succeed.
+  \end{itemize}
+\end{definition}
+
+\noindent
+A technical problem arises due to the possibility of a derivation where
+a sequent is repeatedly added and deleted, e.g. by an inference step followed
+by a subsumption step.
+
+\[
+\cD\Union\Set{q_1,q_2}\steps\cD\Union\Set{q_1}\steps\cD\Union\Set{q_1,q_2}\steps\cdots
+\]
+
+\noindent We wish to rule out these sorts of derivations, which motivates the
+notion of \emph{fair} derivations.
+
+\begin{definition}
+  The \emph{limit} of a derivation $\cD$ is
+  \[
+  \Dlimit = \bigcup_i\bigcap_{j\geq i}\cD_j
+  \]
+
+  \noindent
+  A derivation is called \emph{fair} if for every inference rule $R$
+  if $q_1$, \ldots, $q_n$, belong to the limit of the derivation, and
+  $q = \match(R, q_1, \ldots, q_n)$ then there is some $i$ such that
+  the inference $\cD_i\steps\cD_{i+1}$ where $\cD_{i+1}=\cD\Union\Set{q}$
+  is a step in the derivation.
+\end{definition}
+
+\chapter{Propositional Logic}
+\label{chapter.prop}
+
+% In this chapter we describe the inverse method using intuitionistic
+% propositional logic (IPL).  Its study elucidates many of the issues involved in
+% efficient automated reasoning for the more complex logics that follow in later
+% chapters.  Despite its relative simplicity, it has some practical applications.
+% Mendler~\cite{Mendler.1996.Tableaux} uses IPL to model stabilization
+% delays in physical electronic circuits, and Gurevich~\cite{Gurevich.1911.TCL}
+% uses it as the foundation for Microsoft's authorization logic DKAL.
+
+% The theorem-proving problem has received some attention in the literature.
+% There are at least seven other theorem provers for IPL and a published set of
+% benchmark problems.  Thus it is a good medium for comparing the inverse method
+% with existing techniques, none of which uses forward search.
+
+% We assume the reader is familiar with the basic aspects of sequent calculus for
+% classical and intuitionistic logic.  A thorough reference is~\cite[Chapter
+% 3]{Troelstra.2000.ProofTheory}.  After defining the syntax and proof theory of
+% IPL in Section~\ref{prop.sec.def}, we show how to use the inverse method to
+% obtain a forward proof search procedure.  The process takes us through 3
+% additional logical systems:
+
+% \[
+% \LPB \longleftrightarrow
+% \LPF \longleftrightarrow
+% \LPFx \longleftrightarrow
+% \LPFs
+% \]
+
+% \ednote{Fill in forward refereneces to other sections.}
+
+% \subsection{Motivation}
+
+% Resolution, a forward search strategy, is empirically the most effective method
+% of proof search in classical first-order logic. Resolution theorem provers
+% dominate the annual CADE system competition
+% (CASC)~\cite{Sutcliffe.2002.AI,Sutcliffe.2006.AI}.  In our view, forward search
+% has at least two significant advantages.  First, each sequent derived by forward
+% search is a (miniature) theorem, independent of the state of the current search
+% procedure.  By contrast, sequents arising during backward search are always dependent
+% on other parts of the proof (though this will not be apparent until we
+% study first-order logic in Chapter~\ref{chapter.fol}).
+% Second, the database itself is amenable to optimizations,
+% particularly strategies for reduncancy elimination, which dramatically improve
+% the performance of classical first-order theorem provers~\cite{Voronkov.2001.Indexing}.
+% Resolution, though, depends on normal forms specific to classical
+% logic.  In particular, for each formula $f$ in classical logic, there is a
+% quantifier-free formula $f'$ in disjunctive normal form that is
+% equi-satisfiable.  There are no similar normal forms for the non-classical logics
+% we study.  The inverse method is attractive because it shares the primary
+% advantages of resolution, but does not require normal forms\footnote{There
+% is a close connection between the inverse method and
+% hyperresolution~\cite[Section 5]{Voronkov.2001.Handbook}.}.
+
+% \ednote{Show an example of this, possibly at the end of the chapter}.
+
+\section{Backward Sequent Calculus}
+\label{prop.sec.def}
+
+\begin{quote}
+  \textit{We define the backward calculus $\LPB$ for
+    IPL, and remind the reader of some important properties.}
+\end{quote}
+
+\noindent
+Let $\cP$ be an infinite set of symbols, called \emph{labels}.
+Propositional formulas are built from the following grammar:
+\index{$\cP$}
+
+\[
+\mbox{Formulas } A ::= p \Sep A \And A \Sep \Top \Sep A \Or A
+  \Sep \Bot \Sep A \Imp A
+\]
+
+\noindent where $p\in\mathcal{P}$ and $\And$, $\Or$, $\Imp$, $\Top$, $\Bot$
+signify conjunction, disjunction, implication, truth, and falsehood
+respectively.  Subformula of the first kind are called \emph{atomic}.
+
+\begin{definition}
+  Derived connectives for negation and bi-implication are
+
+  \[
+  \begin{array}{rl}
+    \Not A &:= A \Imp \Bot \\
+    A \Iff B &:= (A \Imp B) \And (B \Imp A)
+  \end{array}
+  \]
+\end{definition}
+
+\begin{definition}[Sequents]
+  \begin{itemize}
+  \item[]
+  \item If $A$ is a formula, a \emph{signed formula} is
+    $\Left{A}$ or $\Right{A}$.
+  \item A signed formula of the form $\Left{A}$ is called a \emph{left formula}.
+  \item A signed formula of the form $\Right{A}$ is called a \emph{right formula}.
+  \item A \emph{sequent} is a set of signed formulas
+    with at most one right formula.
+  \end{itemize}
+\end{definition}
+
+\begin{remark}
+  Most presentations use multisets of antecedents rather than sets.  Using sets
+  is not ideal in the meta-theory of the sequent calculus.  For example, there
+  should be two different proofs of $a\Imp a\Imp a$.  Using sets, there is only
+  one.  Since we are concerned only with the existence of proofs and not their
+  enumeration, using sets is perfectly acceptable.
+\end{remark}
+
+\begin{definition}[Inference rules]
+  \begin{itemize}
+    \item[]
+    \item An \emph{inference rule} is a pair $\ASet{\cC, \cH}$
+      where $\cC$ is
+      a sequent, and $\cH$ is an ordered sequence of sequents.
+    \item $\cC$ is called the \emph{conclusion}.
+    \item $\cH$ are called the \emph{premeses}.
+    \item We write $\ASet{\cC, \ASet{\cH_1, \cH_2,\ldots,\cH_n}}$ as
+      \[
+      \Infer{\cC}{\cH_1 & \cH_2 & \ldots & \cH_n}
+      \]
+    \item When $\cH=\emptyset$ we call the rule
+      an \emph{initial sequent}
+    \end{itemize}
+\end{definition}
+
+\begin{definition}
+  A \emph{system} is a set of inference rules.
+\end{definition}
+
+\begin{definition}
+  The system $\LPB$ is the set of all instances of
+  the rule schemas of Figure~\ref{prop.backward}.
+\end{definition}
+
+\begin{definition}[Backward rule matching]
+  \label{prop.def.backward-match}
+  \begin{itemize}
+  \item[]
+  \item The function \emph{$\match$} takes an inference rule
+    \[
+    r=\infer
+    {\Gamma}
+    {\Gamma_1 & \cdots & \Gamma_n}
+    \]
+    \noindent
+    and a sequent $\Delta$.  $\match(r, \Delta)$ is defined
+    if $\Gamma \subseteq \Delta$.
+    In that case, let $\Delta'=\Delta\Diff\Gamma$.  Then
+
+    \[
+    \match(r, q) = \ASet{\Gamma_1\Union\Delta', \ldots, \Gamma_n\Union\Delta'}
+    \]
+    \noindent
+    subject to the constraint that the resulting sequents
+    have at most one right formula.  If some resulting sequent
+    has multiple right formulas, the
+    match is not defined.
+  \end{itemize}
+\end{definition}
+
+\begin{definition}
+  \begin{itemize}
+  \item[]
+  \item A $\LPB$ \emph{derivation} in a system $\cS$ is a tree of sequents where the children of
+    any node $q$ are the result of $\match(r, q)$ for some rule $r\in\cS$.
+  \item A \emph{proof} is a derivation where the leaves are initial sequents.
+  \item We write derivations as usual.  We use a two ruled line for a multiple
+    step deduction.
+  \end{itemize}
+\end{definition}
+
+\input{prop/backward}
+
+\noindent The backward inference rule schemas are shown in
+Figure~\ref{prop.rules}.  They
+are equivalent to Gentzen's LJ~\cite{Gentzen.1934.MZ}.
+
+\begin{remark}
+There are a menagerie of sequent calculi equivlent to LJ but with slight
+technical differences.  LJ itself is not optimal for use in proof search due to
+its explicit structural rules.  See, for example, the many examples in
+\cite[Chapter 3]{Troelstra.2000.ProofTheory}.
+\end{remark}
+
+\begin{remark}
+  The equivalence of $\LPB$ with LJ is easy enough that we do not include it
+  here.  The main difference is that we use sets for antecedents, while LJ uses
+  ordered sequences with explicit structural rules.
+\end{remark}
+
+
+\begin{remark}
+  We are being purposely pedantic in our distinction between inference rules and
+  rule schemas becauese our presentation is somewhat unusual.  Normally rule schemas are
+  presented with meta-variables standing for the non-prinicipal formulas.  For
+  example, the rule $\And$-T is normally written
+  \[
+  \Infer[\And$-L$]
+  {\NSeq{\Gamma, \Left{A_1 \And A_2}}}
+  {\NSeq{\Gamma, \Left{A_1}, \Left{A_2}}}
+  \]
+  \noindent
+  Then the following is considered to be an instance of this schema,
+  where $c\And d$ is the principal formula.
+  \[
+  \Infer[\And$-L$]
+  {\NSeq{\Left{a}, \Left{b}, \Left{c \And d}}}
+  {\NSeq{\Left{a}, \Left{b}, \Left{c}, \Left{d}}}
+  \]
+  \noindent
+  This is not the case in our presentation.  The instance
+  of the $\And$-T schema for  $c\And d$ is
+  \[
+  \Infer[\And$-L$]
+  {\NSeq{\Left{c \And d}}}
+  {\NSeq{\Left{c}, \Left{d}}}
+  \]
+  \noindent
+  Our explicit rule matching makes
+  \[
+  \Infer[\And$-L$]
+  {\NSeq{\Left{a}, \Left{b}, \Left{c \And d}}}
+  {\NSeq{\Left{a}, \Left{b}, \Left{c}, \Left{d}}}
+  \]
+  \noindent
+  a valid \emph{derivation}, but not a rule.  This distinction
+  is especially significant in the focused calculus
+  (Section~\ref{prop.sec.focus}).
+\end{remark}
+
+\begin{remark}
+  It is easy to see by examining the rules and matching procedure
+  that every sequent in
+  a derivation of $\Set{\Right{A}}$ has exactly one right
+  formula.  Because of this, it is common in other presentations
+  of this material to write sequents
+  as $\Seq{\Gamma}{A}$ where $\Gamma$ are the
+  left formulas and $A$ is the right formula.
+\end{remark}
+
+\noindent
+$\LPB$ with the rule matching of Def.~\ref{prop.def.backward-match} is suitable
+for backward search.  Begin with the goal formula and repeatedly match the
+inference rules, generating new sequents in the derivation.  Backtracking is
+necessary when there is a choice of which rule to apply.
+The only troubling rule in the system is $\Imp$-L.  Each of the other rules propegate only
+subformulas of the principal formula.  In contrast, $\Imp$-L propegates the principal formula
+as well as its subformulas to one of the hypotheses.  Backward search must thus
+avoid looping behavior where $\Imp$-L is repeatedly applied to the same formula.
+Various ways of addressing this issue have been considered
+(Section~\ref{prop.sec.related}).  One benefit of forward search is that this
+looping problem disappears.  Before continuing, we collect some relevant
+properties of $\LPB$ that we will use later.
+
+\subsection{The Subformula Property}
+
+\begin{definition}[Signed subformulas]
+  \label{prop.def.subf}
+  \index{subformula!sign of}
+  \begin{itemize}
+  \item[]
+  \item The \emph{immediate signed subformula} relation is shown in
+     Figure~\ref{prop.subformulas}.
+  \item The \emph{signed subformula} relation $\le$ is the reflexive transitive
+    closure of $<$.
+  \item Define $\subfs(\gamma) = \Set{\gamma'\sst \gamma'\le\gamma}$
+  \item The signed subformulas of a set of signed formulas are the union of the
+    signed subformulas of the elements of the set.
+  \end{itemize}
+\end{definition}
+
+\input{prop/subformulas}
+
+\begin{theorem}
+\label{prop.thm.subformula}
+If $\Delta$ is a sequent, any formula occurring in a sequent in a
+derivation of $\Delta$ is a signed subformula of $\Delta$.
+\end{theorem}
+
+\begin{proof} Routine inspection of the inference rules. \end{proof}
+
+\subsection{Admissible rules}
+
+\begin{lemma}[Weakening]
+  \label{prop.thm.weaken}
+  The rule \[\Infer[\mbox{Weaken}]{\NSeq{\Left{A}}}{\NSeq{\cdot}}\]
+  is admissible in $\LPB$.
+\end{lemma}
+\begin{proof} Easy induction on the derivation. \end{proof}
+
+\begin{theorem}[Cut]
+  The rule \[\Infer[\mbox{Cut}]{\NSeq{\cdot}}{\NSeq{\Right{A}} & \NSeq{\Left{A}}}\]
+  is admissible in $\LPB$.
+\end{theorem}
+\begin{proof} Gentzen~\cite{Gentzen.1934.MZ}. \end{proof}
+
+\begin{theorem}[Identity]
+  The rule \[\Infer[\mbox{Id}]{\NSeq{\Left{A},\Right{A}}}{}\]
+  is admissible in $\LPB$.
+\end{theorem}
+\begin{proof} Easy induction on $A$. \end{proof}
+
+\begin{theorem}[Consistency]
+  \label{prop.thm.consistent}
+  $\NSeq{\Right{\Bot}}$ is not derivable.
+\end{theorem}
+\begin{proof} No inference rules apply. \end{proof}
+
+\subsection{Subsumption}
+
+\begin{definition}[Subsumption]
+  \index{subsumes}
+  \index{subsumption}
+  \begin{itemize}
+  \item[]
+  \item $\Delta$ \emph{subsumes} $\Delta'$
+    if $\Delta\subseteq\Delta'$
+  \item Write $\Delta\Subsumes\Delta'$
+  \item $\Delta$ \emph{properly subsumes} $\Delta'$ if
+    $\Delta\Subsumes \Delta'$
+    and $\Delta\neq \Delta'$.  Write $\Delta\SubsumesProp \Delta'$
+  \item If $\cD$ is a set of sequents $\cD\Subsumes \Delta$ if
+    there exists $\Delta'\in\cD$ such that $\Delta'\Subsumes \Delta$.
+  \end{itemize}
+\end{definition}
+
+\noindent
+Subsumption is a measure of the ``strength'' of a sequent
+in the following sense.
+
+\begin{theorem}
+  \label{prop.thm.subs}
+  If $\Delta\Subsumes \Delta'$ and there exists a
+  derivation of $\Delta$ then there exists a derivation of
+  $\Delta'$.
+\end{theorem}
+\begin{proof} Simply weaken the derivation of $\Delta$. \end{proof}
+
+\begin{definition}
+  Note that if $\Delta\Subsumes \Delta'$ and $\Delta'\Subsumes \Delta$ then
+  $\Delta = \Delta'$.  Thus we can remove the subsumed elements from a set of
+  sequents in any order and the result is unique.
+  The \emph{subsumption closure} of a set
+  $\cD$ is
+  \[
+  \Closure{\cD} = \Set{x\in\cD \sst \not\exists y\in\cD.\ y\neq x\And y\Subsumes x}
+  \]
+\end{definition}
+
+\subsection{Atoms}
+
+Atomic formulas play an important role in inverse method search.
+
+\begin{definition}
+  \index{$\atoms(A)$}
+  For a formula $A$, let
+  $\atoms(A)=\Set{p\sst p\in\subfs(A), p \mbox{ is atomic}}$.
+\end{definition}
+
+\begin{definition}
+  Given a formula $A$,
+  An atomic formula $p$ is called \emph{two-sided}
+%  if $\Set{\Left(p},\Right{p}} \subseteq \subfs(A)$.
+\end{definition}
+
+\noindent For example, in $p \Imp q \Imp p$, $p$ is two-sided but $q$ is not.
+
+\begin{theorem}
+  We can restrict instances of Init to two-sided atoms.
+\end{theorem}
+\begin{proof}
+  In every derivation in $\LPB$, the principal formula $p$ of the Init rule is
+two-sided.
+\end{proof}
+
+
+\section{Forward Sequent Calculus}
+
+\begin{quote}
+  \textit{
+    We derive a forward calculus $\LPF$ from $\LPB$, prove its soundness
+    and completeness, and define $\LPFx$.
+  }
+\end{quote}
+
+\subsection{The Forward calculus}
+
+We've described rule matching as a function from the conclusion
+of a rule to its premises.  We can also define matching in the
+opposite direction, as a function of the premises to the conclusion.
+
+\begin{definition}[Forward rule matching]
+  \label{prop.def.match1}
+
+  Given a sequence of sequents
+  \[
+  \cQ = \ASet{\Delta_1, \ldots, \Delta_n}
+  \]
+
+  \noindent and a rule
+  \[
+  r = \Infer
+  {\Gamma}
+  {\Gamma_1 & \cdots & \Gamma_n}
+  \]
+
+  \noindent let
+  \[
+  \Delta = \Gamma\Union (\Delta_1\Diff\Gamma_1) \Union \dots\Union(\Delta_n\Diff\Gamma_n).
+  \]
+
+  \noindent
+  If $\Delta$ is a sequent (i.e. there is at most one
+  right signed formula) then we write
+  $\match(r, \cQ) = \Delta$.  Otherwise $\match(r, \cQ)$ is undefined.
+  The sequents $\Delta_i$ are called the \emph{matched sequents} and the
+  rule $r$ is called the \emph{matched rule}.  We can also lift matching
+  to sets.
+  Let $\cR$ be a set of rules and let $\cD$ be a set of sequents.
+  Define
+  \[
+  \match(\cR, \cD) = \Set{q\sst q=\match(r, q_1, \ldots, q_n), r\in\cR, q_i\in\cD}
+  \]
+\end{definition}
+
+\noindent
+The forward calculus is shown in Figure~\ref{prop.forward}.
+\input{prop/forward}
+
+\input{prop/backward-der}
+%\input{prop/forward-der}
+
+\subsection{Soundness and Completeness}
+
+The soundness and completeness theorems justify using forward sequents for proof
+search.  The theorems are not totally straightforward, as they must account for
+an empty consequent and missing parametric antecedents.  For example,
+$\NSeq{\Left{p},\Left{q},\Right{p}}$ is derivable in $\LPB$ but
+$\FSeq{p, q}{p}$ is not derivable in $\LPF$.
+(Weakening is not an admissible rule.)  Instead we show we can always
+prove a stronger sequent.
+
+\begin{theorem}[Soundness]
+  \label{prop.thm.forward-sound}
+  If $\NSeq{\Delta}$ is derivable in $\LPF$ then
+  $\VSeq{\Delta}$ is derivable in $\LPB$.
+\end{theorem}
+
+\begin{proof}
+  By induction on the derivation of $\VSeq{\Delta}$.
+  Let $\Delta = \match(r, \cQ)$ where $r$ is the last
+  rule application.  We show some representative rules.
+  \begin{description}
+  \item[Case:]
+    $r = \mbox{Init}$.
+    Then $\Delta$ is an instance of $Init$
+    \[ \Infer[Init]{\VSeq{\Left{p},\Right{p}}}{} \]
+    and we have the identical derivation
+    \[ \Infer[Init]{\NSeq{\Left{p},\Right{p}}}{} \]
+  \item[Case:]
+    \Infer[\Imp$-R$]
+    {\VSeq{\Right{A_1 \Imp A_2}}}
+    {\VSeq{\Left{A_1},\Right{A_2}}}
+    By IH we have $\NSeq{\Delta}$.  There are a few cases, depending
+    on whether $\Left{A_1}$
+    If
+
+  \item[Case:]
+    \[ \PFImpLRule \]
+    \begin{tabbing}
+      $\FB{\FSeq{\Gamma_1, A_1\Imp A_2}{A_1}}$ \` IH \\
+      $\Seq{\Gamma_1, A_1\Imp A_2}{A_1}$ \` Def. \\
+      $\Seq{\Gamma_1, \Gamma_2, A_1\Imp A_2}{A_1}$ \` Weaken \\
+      $\FB{\FSeq{\Gamma_2, A_2}{\gamma}}$ \` IH \\
+      $\Seq{\Gamma_2, A_2}{\FB{\gamma}}$ \` Def. \\
+      $\Seq{\Gamma_1, \Gamma_2, A_2}{\FB{\gamma}}$ \` Weaken \\
+      $\Seq{\Gamma_1, \Gamma_2, A_1\Imp A_2}{\FB{\gamma}}$ \` $\Imp$-L\\
+      $\FB{\FSeq{\Gamma_1, \Gamma_2, A_1\Imp A_2}{\gamma}}$
+      \` Def., possibly with contractions (Lemma~\ref{prop.thm.contract})\\
+    \end{tabbing}
+  \end{description}
+\end{proof}
+
+\begin{theorem}[Completeness]
+  \label{prop.thm.forward-complete}
+  If $\Seq{\Gamma}{A}$ is derivable then there is a derivable
+  sequent $\FSeq{\Gamma'}{\gamma'}$ where
+  $\FB{\FSeq{\Gamma'}{\gamma'}}\Subsumes \Seq{\Gamma}{A}$.
+\end{theorem}
+
+\begin{proof}
+  By induction on the derivation of $\Seq{\Gamma}{A}$.
+  We show some representative rules.
+  \begin{description}
+  \item[Case:]
+    \[ \PBInitRule \]
+    \begin{tabbing}
+      $\FSeq{p}{p}$ \` Init ($\gamma'=\Set{p}$, $\Gamma'=\Set{p}$) \\
+    \end{tabbing}
+  \item[Case:]
+    \[ \PBImpRRule \]
+    \begin{tabbing}
+      $\FSeq{\Gamma_1}{\gamma}$ \` IH \\
+      $\Gamma_1 \subseteq \Gamma, A_1$ \` IH \\
+      $\gamma \subseteq \Set{A_2}$ \` IH \\
+    \end{tabbing}
+    \begin{description}
+    \item[Case:]
+      $A_1\in\Gamma_1$, $A_2\in\gamma$
+      \begin{tabbing}
+        $\Gamma_1=\Gamma',A_1$ \\
+        $\gamma=\Set{A_2}$ \\
+        $\Gamma' \subseteq \Gamma$ \\
+        $\FSeq{\Gamma',A_1}{A_2}$ \` IH \\
+        $\FSeq{\Gamma'}{A_1\Imp A_2}$ \` $\Imp$-R$_1$ \\
+      \end{tabbing}
+    \end{description}
+    Other cases are similar, % with $\PFImpRb$ and $\PFImpRc$
+  \item[Case:]
+    \[ \PBImpLRule \]
+    \begin{tabbing}
+      $\FSeq{\Gamma_1}{\gamma_1}$ \` IH (1) \\
+      $\Gamma_1\subseteq \Gamma, A_1\Imp A_2$ \` IH \\
+      $\gamma_1\subseteq \Set{A_1}$ \` IH \\
+      $\FSeq{\Gamma_2}{\gamma_2}$ \` IH (2) \\
+      $\Gamma_2\subseteq \Gamma, A_2$ \` IH \\
+      $\gamma_2\subseteq \Set{C}$ \` IH \\
+    \end{tabbing}
+    \begin{description}
+    \item[Case:]
+      $A_2\not\in\Gamma_2$
+      Then setting $\Gamma'=\Gamma_2$ and $\gamma=\gamma_2$ will do.
+    \item[Case:]
+      $A_2\in\Gamma_2$ and $A_1\not\in\gamma_1$.
+      Then setting $\Gamma'=\Gamma_1$ and $\gamma=\gamma_1$ will do.
+    \item[Case:]
+      $A_2\in\Gamma_2$ and $A_1\in\gamma_1$.
+      Let $\Gamma_2=\Gamma_2',A_2$.  Then $\Gamma_2' \subseteq \Gamma$.
+      Set $\gamma=\gamma_2$.
+      Because $\Gamma_1 \subseteq \Gamma, A_1\Imp A_2$ and $\Gamma_2' \subseteq \Gamma$,
+      some series of contractions
+      of $\Gamma_1\Union\Gamma_2'$ will yield
+      $\Gamma_3 \subseteq \Gamma, A_1\Imp A_2$.
+      \[
+      \Infere[$Contract$]
+      { \FSeq{\Gamma_3,A_1\Imp A_2}{\gamma} }
+      {
+        \Infer[\Imp$-L$]
+        {\FSeq{\Gamma_1\Union\Gamma_2',A_1\Imp A_2}{\gamma}}
+        {\FSeq{\Gamma_1}{A_1} & \FSeq{\Gamma_2',A_2}{\gamma}}
+      }
+      \]
+      If $A_1\Imp A_2\in\Gamma_3$, one more contraction will yield
+      $\Gamma'$ such that $\Gamma' \subseteq \Gamma$.  Otherwise set $\Gamma'=\Gamma_3$.
+    \end{description}
+  \end{description}
+\end{proof}
+
+\begin{theorem}
+  \label{prop.thm.subsume-goal}
+  \begin{itemize}
+  \item[]
+  \item There is no derivation of $\FSeq{\cdot}{\cdot}$
+  \item There is no derivable sequent that subsumes $\FSeq{\cdot}{\xi}$
+  \end{itemize}
+\end{theorem}
+
+\begin{proof}
+  \begin{itemize}
+  \item[]
+  \item By Theorem~\ref{prop.thm.forward-sound},
+    a derivation of $\FSeq{\cdot}{\cdot}$ would yield a derivation of
+    $\Seq{\cdot}{\Bot}$.  But this contradicts Theorem~\ref{prop.thm.consistent}.
+  \item There is no sequent besides $\FSeq{\cdot}{\cdot}$ that subsumes
+    $\FSeq{\cdot}{\xi}$.
+  \end{itemize}
+\end{proof}
+
+\begin{remark}
+Figure~\ref{prop.forward} shows a forward calculus $\LPF$ that is sound and
+complete with respect to the backward rules.  There are some surprises.  Unlike
+$\LPB$, contraction is not admissible, and is thus needed as an explicit rule.
+The single rule $\Imp$-R becomes three rules %$\PFImpRa$, $\PFImpRb$, $\PFImpRc$, depending on whether the backward rule uses the antecedent
+(consequent) or not.  (Consider, for example, trying to prove $\Bot\Imp A$.)
+Figure~\ref{prop.backward-der} shows a derivation in $\LPB$ and
+Figure~\ref{prop.forward-der} its corresponding derivation in $\LPF$.
+\end{remark}
+
+\subsection{Rule specialization}
+\label{prop.sec.specialization}
+
+$\LPF$ still does not satisfy the finite rule property.  There are still an
+infinite number of instances of the \emph{Init} rule. The second part also fails.
+For example, the subformula $A_2$
+in \[\PBOrRLRule\] is unrestricted.  Here we are saved by the subformula
+property. We can instantiate the rules with (the finite number of)
+subformulas of the goal sequent.  Fix a formula $\xi$ to be checked for
+provability for the remainder of this section.  Define $\LPFx$ to be $\LPF$
+restricted to signed subformulas of $\xi$.  Then $\LPFx$ satisfies the finite
+rule property.  For example, if $\xi=p_1\And p_2\Imp p_2\And p_1$
+then
+
+\[
+\LPFx =
+\begin{cases}
+  \begin{array}{c@{\hspace{2em}}c@{\hspace{2em}}c}
+    \Infer{\FSeq{p_1}{p_1}}{}
+    &
+    \Infer{\FSeq{p_2}{p_2}}{}
+    &
+    \Infer{\FSeq{\Gamma_1\Union\Gamma_2}{p_2\And p_1}}{\FSeq{\Gamma_1}{p_2} & \FSeq{\Gamma_2}{p_1}}
+    \\[2em]
+    \Infer{\FSeq{\Gamma,p_1\And p_2}{\gamma}}{\FSeq{\Gamma,p_1,p_2}{\gamma}}
+    &
+    \Infer{\FSeq{\Gamma}{\xi}}{\FSeq{\Gamma,p_1\And p_2}{p_2\And p_1}}
+    &
+    \Infer{\FSeq{\Gamma}{\xi}}{\FSeq{\Gamma}{p_2\And p_1}}
+  \end{array}
+\end{cases}
+\]
+
+\begin{theorem}[Soundness and completeness of $\LPFx$]
+  {\ \\}
+  \begin{quote}
+    $\Seq{\cdot}{\xi}$ is derivable in $\LPB$
+    iff $\FSeq{\cdot}{\xi}$ is derivable in $\LPFx$
+  \end{quote}
+\end{theorem}
+
+\begin{proof}
+  Theorems~\ref{prop.thm.forward-sound}, \ref{prop.thm.forward-complete},
+  and \ref{prop.thm.subformula}.
+\end{proof}
+
+\section{The Inverse Method}
+
+\begin{quote}
+  \textit{
+    We define the inverse method, a process for obtaining a forward
+    proof search strategy from the forward calculus.
+  }
+\end{quote}
+
+\subsection{Rule generation}
+
+We now describe a systematic method for simplifying a set of
+forward inference rules into
+
+\begin{definition}
+
+\end{definition}
+
+\begin{definition}
+  Let $A^s\in\subfs(\xi)$, $s\in\Set{+,-}$.  Define
+
+  \[
+  \rules(A^s) \EqDef
+  \begin{cases}
+    \Infer{\FSeq{p}{p}}{} &
+    \mbox{$A=p$, $p$ is two-sided}
+    \\[1em]
+    \Infer
+    {\FSeq{\cdot}{A_1\And A_2}}
+    {\FSeq{\cdot}{A_1} & \FSeq{\cdot}{A_2}} &
+    \mbox{$A=A_1\And A_2$, $s=+$}
+    \\[1em]
+    \Infer
+    {\FSeq{A_1\And A_2}{\cdot}}
+    {\FSeq{A_1, A_2}{\cdot}} &
+    \mbox{$A=A_1\And A_2$, $s=-$}
+    \\[1em]
+    \Infer
+    {\FSeq{\cdot}{\Top}}
+    {} &
+    \mbox{$A=\Top$, $s=+$}
+    \\[1em]
+    \Infer
+    {\FSeq{\cdot}{A_1\Or A_2}}
+    {\FSeq{\cdot}{A_1}}
+    ,\hspace{1em}
+    \Infer
+    {\FSeq{\cdot}{A_1\Or A_2}}
+    {\FSeq{\cdot}{A_2}} &
+    \mbox{$A=A_1\Or A_2$, $s=+$}
+    \\[1em]
+    \Infer
+    {\FSeq{A_1\Or A_2}{\cdot}}
+    {\FSeq{A_1}{\cdot} & \FSeq{A_2}{\cdot}} &
+    \mbox{$A=A_1\Or A_2$, $s=-$}
+    \\[1em]
+    \Infer
+    {\FSeq{\Bot}{\cdot}}
+    {} &
+    \mbox{$A=\Bot$, $s=-$}
+    \\[1em]
+    \Infer
+    {\FSeq{\cdot}{A_1\Imp A_2}}
+    {\FSeq{A_1}{A_2}} &
+    \mbox{$A=A_1\Imp A_2$, $s=+$}
+    \\[1em]
+    \Infer
+    {\FSeq{A_1\Imp A_2}{\cdot}}
+    {\FSeq{\cdot}{A_1} & \FSeq{A_2}{\cdot}} &
+    \mbox{$A=A_1\Imp A_2$, $s=-$}
+   \end{cases}
+  \]
+\end{definition}
+
+\begin{definition}
+  \[
+  \LPFs = \bigcup_{A\in\subfs(\xi)} \rules(A)
+  \]
+\end{definition}
+
+\noindent
+Our running example becomes
+
+\[
+\LPFs =
+\begin{cases}
+  \begin{array}{ccc}
+    \Infer{\FSeq{p_1}{p_1}}{}
+    &
+    \hspace{2em}
+    \Infer{\FSeq{p_2}{p_2}}{}
+    &
+    \hspace{2em}
+    \Infer{\FSeq{}{p_2\And p_1}}{\FSeq{\cdot}{p_2} & \FSeq{\cdot}{p_1}}
+    \\[2em]
+    \Infer{\FSeq{p_1\And p_2}{\cdot}}{\FSeq{p_1,p_2}{\cdot}}
+    &
+    \hspace{2em}
+    \Infer{\FSeq{\cdot}{\xi}}{\FSeq{p_1\And p_2}{p_2\And p_1}}
+  \end{array}
+\end{cases}
+\]
+
+% \subsection{Rule matching}
+
+% To simplify the calculus $\LPFx$, we can define rule matching
+% in such a way that parametric antecedents are absent from the
+% rules, and the three rules $\PFImpRa$, $\PFImpRb$, $\PFImpRc$
+% can be handled by the single rule.
+
+% \[
+% \Infer[\Imp\mbox{-R}]
+% {\FSeq{\cdot}{A_1 \Imp A_2}}
+% {\FSeq{A_1}{A_2}}
+% \]
+
+% \noindent
+% Because we will use the following definition in later
+% sections when inference rules can have more than two hypotheses
+% (cf. Section~\ref{prop.sec.derived}), we define matching in a
+% more general way than is currently required.
+
+% \begin{definition}[Rule Matching]
+%   \label{prop.def.match1}
+
+%   Sequents
+%   \[
+%   \begin{array}{c}
+%     q_1 = \FSeq{\Delta_1}{\delta_1} \\
+%     \vdots \\
+%     q_n = \FSeq{\Delta_n}{\delta_n} \\
+%   \end{array}
+%   \]
+%   \emph{match} rule
+
+%   \[
+%   R = \Infer
+%   {\FSeq{\Gamma}{A}}
+%   {\FSeq{\Gamma_1}{A_1} & \cdots & \FSeq{\Gamma_n}{A_n}}
+%   \]
+
+%   \noindent if the following condition holds for all $1\leq i\leq n$:
+%   either $\delta_i = A_i$ or $\delta_i = \cdot$.  In that case, the resulting sequent is
+
+%   \[
+%   q=\FSeq{\Gamma\Union (\Delta_1\Diff\Gamma_1)\Union \ldots \Union (\Delta_n\Diff\Gamma_n)}{A}
+%   \]
+
+%   \noindent If there is a premise with an empty succedent in the rule, then the
+%   conclusion also has an empty succedent.  In this case, we can rearrange the
+%   premises so that the first $k$ premises have an empty antecedent.  Then we can
+%   use the following definition of matching. Sequents
+%   \[
+%   \begin{array}{c}
+%     q_1 = \FSeq{\Delta_1}{\delta_1} \\
+%     \vdots \\
+%     q_n = \FSeq{\Delta_n}{\delta_n} \\
+%   \end{array}
+%   \]
+%   \emph{match} rule
+
+%   \[
+%   R = \Infer
+%   {\FSeq{\Gamma}{\cdot}}
+%   {\FSeq{\Gamma_1}{\cdot} & \cdots & \FSeq{\Gamma_k}{\cdot} & \FSeq{\Gamma_{k+1}}{\gamma_{k+1}} & \cdots & \FSeq{\Gamma_n}{\gamma_n}}
+%   \]
+
+%   \noindent if one of the following conditions holds:
+
+%   \begin{enumerate}
+%   \item
+%     \begin{itemize}
+%     \item For all $1\leq i\leq k$, $\delta_i = \cdot$.
+%     \item For all $k+1\leq i\leq n$, $\delta_i = \cdot$ or $\delta_i = \gamma_i$.
+%     \end{itemize}
+%     In this case the resulting sequent is
+%     \[
+%     q = \FSeq{\Gamma\Union (\Delta_1\Diff\Gamma_1)\Union \ldots \Union (\Delta_n\Diff\Gamma_n)}{\cdot}
+%     \]
+%   \item
+%     \begin{itemize}
+%     \item There exists $1\leq i\leq k$, $\delta_i = A$.
+%     \item For all $1\leq i\leq k$, $\delta_i = \cdot$ or $\delta_i = A$.
+%     \item For all $k+1\leq i\leq n$, $\delta_i = \cdot$ or $\delta_i = A_i$.
+%     \end{itemize}
+%     In this case the resulting sequent is
+%     \[
+%     q = \FSeq{\Gamma\Union (\Delta_1\Diff\Gamma_1)\Union \ldots \Union (\Delta_n\Diff\Gamma_n)}{A}
+%     \]
+%   \end{enumerate}
+
+%   In the second case, we say the empty consequent has been \emph{instantiated}.
+%   In both cases, we write $\match(R, q_1,\ldots,q_n) = q$.
+%   The sequents $q_i$ are called the \emph{matched sequents} and the
+%   rule $R$ is called the \emph{matched rule}.  We can also lift matching to sets.
+%   Let $\cR$ be a set of rules and let $\cD$ be a set of sequents.
+%   Define
+%   \[
+%   \match(\cR, \cD) = \Set{q\sst q=\match(R, q_1, \ldots, q_n), R\in\cR, q_i\in\cD}
+%   \]
+% \end{definition}
+
+% \noindent
+% To see how this eliminates the distinction between the three implication
+% right rules, consider matching the three sequents
+
+% \[
+% \begin{array}{ccc}
+%   \FSeq{a, c}{b}
+%   &
+%   \hspace{2em}
+%   \FSeq{a, c}{\cdot}
+%   &
+%   \hspace{2em}
+%   \FSeq{c}{b}
+% \end{array}
+% \]
+
+% \noindent to the rule
+
+% \[
+% \Infer
+% {\FSeq{\cdot}{a\Imp b}}
+% {\FSeq{a}{b}}
+% \]
+% \noindent
+% All resulting sequents are $\FSeq{c}{a\Imp b}$ as expected.
+
+% \begin{remark}
+% The inference systems $\LPFx$ and $\LPFs$ are very similar. Sequents
+% have identical structure, and the rules of $\LPFs$ are a subset of those of
+% $\LPFx$ with parametric formulas removed.  We will write
+% $\SSeq{\Gamma}{\gamma}$ for sequents of $\LPFs$ in the soundness
+% and completeness proofs below to distinguish the two kinds of
+% sequents.  After those proofs are complete we will use
+% $\FSeq{\Gamma}{\gamma}$ since $\LPFx$ is of no further interest in
+% the chapter.
+% \end{remark}
+
+\subsection{Derivations and proof search}
+\label{prop.sec.search}
+
+\begin{definition}
+  \begin{itemize}
+  \item[]
+  \item The \emph{goal} is $\FSeq{\cdot}{\xi}$.
+  \item A \emph{database} is a set of sequents.
+  \end{itemize}
+\end{definition}
+
+\noindent
+Proof search in $\LPFx$ proceeds by
+maintaining a database of provable sequents.  The database initially contains
+only the initial sequents.  At each step, we use the matching
+algorithm defined above to match hypotheses of the rules to sequents
+in the existing database, thereby producing new sequents.  In time, we either generate
+the goal, or no new sequents can be generated.  In the later case, $\cD$ is said
+to be \emph{saturated}, and $\xi$ is unprovable.
+
+We formalize this method of proof search following Voronkov~\cite[Section
+7.4]{Voronkov.2001.Handbook}.  There are two operations on databases, adding
+sequents via rule matching, and removing sequents by subsumption.
+
+\begin{definition}
+  We define a relation $\cD\steps\cD'$ between databases with the following
+  properties.
+  \begin{itemize}
+  \item If $R$ is an inference rule,
+    and $q_1, \ldots, q_n\in\cD$, and $q = \match(R, q_1,\ldots, q_n)$, then
+    $\cD\steps\cD\Union{q}$.  Such an inference is called an
+    \emph{inference step}.
+
+  \item If$\Set{q_1,q_2}\subseteq\cD$ and  $q_1\Subsumes q_2$
+    then $\cD\steps\cD\Diff\Set{q_2}$.
+    Such an inference is called a \emph{subsumption step}.
+
+  \item A \emph{step} is an inference step or a subsumption step.
+
+  \item A \emph{derivation} is a sequence $\cD_0\steps\cD_1\steps\cdots$
+    of databases, where $\cD_0$
+    are the initial sequents and for each $i$, $\cD_i\steps\cD_{i+1}$.
+
+  \item A derivation \emph{succeeds} if some $\cD_i$ contains the goal.
+  \item A derivation \emph{fails} if it doesn't succeed.
+  \end{itemize}
+\end{definition}
+
+\noindent
+A technical problem arises due to the possibility of a derivation where
+a sequent is repeatedly added and deleted, e.g. by an inference step followed
+by a subsumption step.
+
+\[
+\cD\Union\Set{q_1,q_2}\steps\cD\Union\Set{q_1}\steps\cD\Union\Set{q_1,q_2}\steps\cdots
+\]
+
+\noindent We wish to rule out these sorts of derivations, which motivates the
+notion of \emph{fair} derivations.
+
+\begin{definition}
+  The \emph{limit} of a derivation $\cD$ is
+  \[
+  \Dlimit = \bigcup_i\bigcap_{j\geq i}\cD_j
+  \]
+
+  \noindent
+  A derivation is called \emph{fair} if for every inference rule $R$
+  if $q_1$, \ldots, $q_n$, belong to the limit of the derivation, and
+  $q = \match(R, q_1, \ldots, q_n)$ then there is some $i$ such that
+  the inference $\cD_i\steps\cD_{i+1}$ where $\cD_{i+1}=\cD\Union\Set{q}$
+  is a step in the derivation.
+\end{definition}
+
+\subsection{Soundness and completeness}
+
+\begin{lemma}
+  \label{prop.thm.initial-same}
+  \begin{itemize}
+  \item[]
+  \item $q$ is initial in $\LPFs$ iff $\FB{q}$ is initial in $\LPFx$.
+  \item $q$ is initial in $\LPFx$ iff $\FB{q}$ is initial in $\LPF$.
+  \end{itemize}
+\end{lemma}
+
+\begin{proof} Inspection of the rules.
+  Each antecedent is either a singleton or empty, thus a set does not
+  differ from a multiset.
+\end{proof}
+
+% \begin{theorem}
+%   \label{prop.thm.irule-sound}
+%   Let $\cD_0 \steps\cD_1\steps\cdots$ be a derivation.
+%   If $\FSeq{\Gamma}{\gamma}\in\cD_i$ then there exists
+%   $\FSeq{\Gamma'}{\gamma'}\Subsumes \FSeq{\Gamma}{\gamma}$
+%   and a derivation of $\FSeq{\Gamma'}{\gamma'}$ in $\LPFx$.
+% \end{theorem}
+
+% \begin{proof}
+%   Since $\FSeq{\Gamma}{\gamma}\in\cD_i$, there exists a least $n$ such that
+%   $q\in\cD_n$.  We proceed by induction on $n$.
+%   If $n=0$ then $q$ is an initial sequent and $\FB{q}$ is thus derivable
+%   in $\LPFx$ by Lemma~\ref{prop.thm.initial-same}.
+%   Otherwise, $\FSeq{\Gamma}{\gamma} = \match(R, q_1,\ldots,q_n)$ where $q_i\in\cD_{n-1}$.
+%   We show some representative cases.
+%   \begin{description}
+%   \item[Case:]
+%     \[
+%     R=\Infer
+%     {\FSeq{\cdot}{A_1\And A_2}}
+%     {\FSeq{\cdot}{A_1} & \FSeq{\cdot}{A_2}}
+%     \]
+%     Let $\FSeq{\Gamma_1}{\gamma_1}, \FSeq{\Gamma_2}{\gamma_2}$ be the
+%     matched sequents.  Then there are $\Gamma_1',\gamma_1',\Gamma_2',\gamma_2'$
+%     where
+%     \begin{tabbing}
+%       $\gamma=A_1\And A_2$ \` Case. \\
+%       $\Gamma=\Gamma_1\Union\Gamma_2$ \` Case. \\
+%       $\FSeq{\Gamma_1'}{\gamma_1'}$ \` IH\\
+%       $\Gamma_1' \subseteq \Gamma_1$ \` IH\\
+%       $\gamma_1' \subseteq \gamma_1$ \` IH\\
+%       $\FSeq{\Gamma_2'}{\gamma_2'}$ \` IH\\
+%       $\Gamma_2' \subseteq \Gamma_2$ \` IH\\
+%       $\gamma_2' \subseteq \gamma_2$ \` IH\\
+%     \end{tabbing}
+%     If $\gamma_1' =\cdot$, then set $\gamma'=\gamma_1'$, $\Gamma'=\Gamma_1'$.
+%     If $\gamma_2' =\cdot$, then set $\gamma'=\gamma_2'$, $\Gamma'=\Gamma_2'$.
+%     In either case we have $\FSeq{\Gamma'}{\gamma'}\Subsumes \FSeq{\Gamma}{\gamma}$
+%     as required.    Otherwise set $\Gamma'=\Gamma_1'\Union\Gamma_2'$.
+%     \begin{tabbing}
+%       $\FSeq{\Gamma_1'}{A_1}$ \` $\gamma_1=\Set{A_1}$\\
+%       $\FSeq{\Gamma_2'}{A_2}$ \` $\gamma_2=\Set{A_2}$\\
+%       $\FSeq{\Gamma_1'\MultiUnion\Gamma_2'}{A_1\And A_2}$ \` $\PFAndR$ \\
+%       $\FSeq{\Gamma'}{A_1\And A_2}$ \` Sequence of contractions \\
+%     \end{tabbing}
+%     and we have $\FSeq{\Gamma'}{q}\Subsumes \FSeq{\Gamma}{\gamma}$ as required.
+%   \item[Case:]
+%     \[
+%     R=\Infer
+%     {\FSeq{\cdot}{A_1\Imp A_2}}
+%     {\FSeq{A_1}{A_2}}
+%     \]
+%     Let $\FSeq{\Gamma_1}{\gamma_1}$ be the matched sequent.
+%     Then $\gamma=A_1\Imp A_2$, $\Gamma=\Gamma_1\Diff\Set{A}$, and
+%     $\gamma_1 \subseteq \Set{A_2}$.
+%     By the induction hypothesis we have $\FSeq{\Gamma_1'}{\gamma_1'}$ with
+%     $\Gamma_1' \subseteq \Gamma_1$ and $\gamma_1' \subseteq \gamma$.
+%     \begin{description}
+%     \item[Case:]
+%       $\gamma'=\cdot$ and $A_1\not\in \Gamma'$.
+%       Then $\FSeq{\Gamma'}{\gamma'}\Subsumes \FSeq{\Gamma}{\gamma} $.
+%     \item[Case:]
+%       $\gamma'= \Set{A_2}$ and $A_1\not\in\Gamma_1'$.
+%       Apply $\PFImpRb$ to get
+%       $\FSeq{\Gamma_1'}{A_1\Imp A_2}\Subsumes\FSeq{\Gamma}{\gamma}$.
+%     \item[Case:]
+%       $\gamma'=\cdot$ and $\Gamma_1'=\Gamma_1'', A_1$.
+%       Apply $\PFImpRc$ to get
+%       Then $\FSeq{\Gamma_1''}{\gamma'}\Subsumes\FSeq{\Gamma}{\gamma}$.
+%     \item[Case:]
+%       $\gamma'= \Set{A_2}$ and $A_1\in\Gamma_1'$.
+%       We can use $\PFImpRa$ to get a derivation of
+%       $\FSeq{\Gamma_1'\Diff\Set{A_1}}{A_1\Imp A_2}$
+%       which has the required properties.
+%     \end{description}
+%   \end{description}
+% \end{proof}
+
+\begin{corollary}[Soundness]
+  \label{prop.thm.lpfs-sound}
+  If a derivation is successful, then $\xi$ is provable in $\LPFx$.
+\end{corollary}
+
+\begin{proof}
+  In a successful derivation, $\FSeq{\cdot}{\xi}\in\cD_i$ for some $i$.
+  So there is some derivable sequent $q$ such that
+  $q\Subsumes\FSeq{\cdot}{\xi}$.
+  By Theorem~\ref{prop.thm.subsume-goal}
+  $q = \FSeq{\cdot}{\xi}$.
+\end{proof}
+
+\begin{lemma}
+  \label{prop.thm.limit1}
+  In a derivation, for any $i$, if $q\in\cD_i$ then there is a sequent
+  $q'\in\Dlimit$ such that $q'\Subsumes q$.
+\end{lemma}
+\begin{proof}
+  If $q\not\in\Dlimit$ then it was removed by a subsumption step in
+  step $j>i$.  Thus there is a sequent $q'\in\cD_{j-1}$ such that $q'\Subsumes q$.
+  Since there is no infinite sequence $q_0\Subsumed q_1\Subsumed \ldots$ there
+  is some $q_i\Subsumes q\in\Dlimit$
+\end{proof}
+
+\begin{lemma}
+  \label{prop.thm.limit}
+  $\Set{q_1,\ldots,q_n}\subseteq\Dlimit$, $R\in\LPFs$, and
+  $\match(R, q_1,\ldots, q_n)=q$, then there is a $q'\in\Dlimit$
+  such that $q'\Subsumes q$.
+\end{lemma}
+
+\begin{proof}
+  Lemma~\ref{prop.thm.limit1} and the definition of limit.
+\end{proof}
+
+\begin{theorem}[Completeness]
+  \label{prop.thm.irule-complete}
+  If $q$ is derivable in $\LPFx$, then
+  the limit of every fair derivation includes a sequent $q'$
+  such that $q'\Subsumes \FB{q}$.
+\end{theorem}
+
+\begin{proof}
+  Induction on the derivation of $q$.  Initial rules are elements of $\cR_0$.
+  If $q$ is initial then $\FB{q}\in\cD_0$ by Lemma~\ref{prop.thm.initial-same}.
+  Otherwise $q$ results from a rule application.  We show some representative cases.
+  \begin{description}
+  \item[Case:]
+    \[
+    \Infer[\PFAndR]
+    {\FSeq{\Gamma_1\MultiUnion\Gamma_2}{A_1 \And A_2}}
+    {\FSeq{\Gamma_1}{A_1} & \FSeq{\Gamma_2}{A_2}}
+    \]
+    So $q=\FSeq{\Gamma_1\MultiUnion\Gamma_2}{A_1\And A_2}$.
+    By IH, there are sequents
+    $q_1=\FSeq{\Gamma_1'}{\gamma_1'}$ and $q_2=\FSeq{\Gamma_2'}{\gamma_2'}$ such
+    \begin{itemize}
+    \item $q_1,q_2\in \Dlimit$
+    \item $q_1\Subsumes \FB{\FSeq{\Gamma_1}{A_1}}$
+    \item $q_2\Subsumes \FB{\FSeq{\Gamma_2}{A_2}}$
+    \end{itemize}
+
+    Therefore
+
+    \begin{itemize}
+    \item $\Gamma_1' \subseteq \dedup(\Gamma_1)$
+    \item $\Gamma_2' \subseteq \dedup(\Gamma_2)$
+    \end{itemize}
+
+    Since $(A_1\And A_2)^r$ is a subformula of $\xi$, the rule
+    \[
+    \begin{array}{ccc}
+      R= &
+      \Infer
+      {\FSeq{\cdot}{A_1\And A_2}}
+      {\FSeq{\cdot}{A_1} & \FSeq{\cdot}{A_2}}
+      & \in \LPFs
+    \end{array}
+    \]
+    Let $q_0=\match(R, q_1, q_2)=\FSeq{\Gamma_1'\Union\Gamma_2'}{A_1\And A_2}$.
+    Clearly $q_0\Subsumes\FB{q}$.
+    By Lemma~\ref{prop.thm.limit},
+    there is a sequent $q'\in\Dlimit$ such that
+    $q'\Subsumes q_0\Subsumes \FB{q}$ as required.
+  \item[Case:]
+    \[
+    \Infer[\PFImpRa]
+    {\FSeq{\Gamma}{A_1 \Imp A_2}}
+    {\FSeq{\Gamma, A_1}{A_2}}
+    \]
+    By IH, there is a sequent
+    $q_0=\FSeq{\Gamma_0}{\gamma_0}$ such that
+    \begin{itemize}
+    \item $q_0\in \Dlimit$
+    \item $q_0\Subsumes \FB{\FSeq{\Gamma, A_1}{A_2}}$
+    \end{itemize}
+    Therefore $\Gamma_0 \subseteq \dedup(\Gamma, A_1)$.
+    Since $(A_1\Imp A_2)^r$ is a subformula of $\xi$, the rule
+
+    \[
+    \begin{array}{ccc}
+      R= &
+      \Infer
+      {\FSeq{\cdot}{A_1\Imp A_2}}
+      {\FSeq{A_1}{A_2}}
+      & \in \LPFs
+    \end{array}
+    \]
+
+    Let $q_1=\match(R, q_0)=\FSeq{\Gamma_0\Diff\Set{A_1}}{A_1\Imp A_2}$.
+    Clearly $q_1\Subsumes\FB{q}$.
+    By Lemma~\ref{prop.thm.limit},
+    there is a sequent $q'\in\Dlimit$ such that
+    $q'\Subsumes q_1\Subsumes \FB{q}$ as required.
+
+  \item[Case:] The cases for $\PFImpRb$ and $\PFImpRc$ are similar.
+  \item[Case:]
+    \[
+    \Infer[\PFOrL]
+    {\FSeq{\Gamma_1\MultiUnion\Gamma_2, A_1 \Or A_2}{\gamma_1 \Union \gamma_2}}
+    {\FSeq{\Gamma_1, A_1}{\gamma_1} & \FSeq{\Gamma_2, A_2}{\gamma_2}}
+    \]
+    where $\gamma_1\Union\gamma_2$ has cardinality at most 1.
+
+    By IH, there are sequents
+    $q_1=\FSeq{\Gamma_1'}{\gamma_1'}$ and $q_2=\FSeq{\Gamma_2'}{\gamma_2'}$ such
+    \begin{itemize}
+    \item $q_1,q_2\in \Dlimit$
+    \item $q_1\Subsumes \FB{\FSeq{\Gamma_1, A_1}{\gamma_1}}$
+    \item $q_2\Subsumes \FB{\FSeq{\Gamma_2, A_2}{\gamma_2}}$
+    \end{itemize}
+
+    Therefore
+
+    \begin{itemize}
+    \item $\Gamma_1' \subseteq \dedup(\Gamma_1,A_1)$
+    \item $\gamma_1' \subseteq \gamma_1$
+    \item $\Gamma_2' \subseteq \dedup(\Gamma_2,A_2)$
+    \item $\gamma_2' \subseteq \gamma_2$
+    \end{itemize}
+
+    Since $(A_1\Or A_2)^l$ is a subformula of $\xi$, the rule
+    \[
+    \begin{array}{ccc}
+      R= &
+      \Infer
+      {\FSeq{\cdot}{A_1\And A_2}}
+      {\FSeq{\cdot}{A_1} & \FSeq{\cdot}{A_2}}
+      & \in \LPFs
+    \end{array}
+    \]
+    Let $q_0=\match(R, q_1, q_2)=\FSeq{\Gamma_1'\Diff\Set{A_1}\Union\Gamma_2'\Diff\Set{A_2}}{\gamma_1'\Union\gamma_2'}$.
+    Clearly $q_0\Subsumes\FB{q}$.
+    By Lemma~\ref{prop.thm.limit},
+    there is a sequent $q'\in\Dlimit$ such that
+    $q'\Subsumes q_0\Subsumes \FB{q}$ as required.
+  \end{description}
+\end{proof}
+
+\begin{corollary}
+  \label{prop.thm.inverse-complete}
+  If any fair derivation fails, $\xi$ is not provable in $\LPFx$.
+\end{corollary}
+
+\begin{proof}
+  If $\xi$ is provable, then there is some sequent
+  $q\Subsumes\FB{\FSeq{\cdot}{\xi}}=\FSeq{\cdot}{\xi}$
+  in the limit of every fair derivation.
+  By Theorem~\ref{prop.thm.subsume-goal}, $q=\FSeq{\cdot}{\xi}$.
+  So the derivation is successful.
+\end{proof}
+
+\subsection{Paths}
+
+Using $\LPFs$ to do forward search is possible.  As a practical matter though,
+working directly with subformulas is clumsy.  In order to match an inference
+rule to a sequent we need to compare formulas for equality.  This is
+inefficient.  Instead, we invent a short alias, called a label, for each
+subformula and work with labels rather than subformulas.  Before we define
+labels, we use \emph{paths} to uniquely specify subformula occurrances.
+
+\begin{definition}[Paths]
+  \begin{itemize}
+  \item[]
+  \item A \emph{path component} is one of the symbols $L$ or $R$.
+  \item A \emph{path} is a finite ordered sequence of path components.
+  \item The \emph{subformula of $A$ at path $\pi$},
+    written $\subf(A, \pi)$ is defined as follows.
+    \[
+    \subf(A, \pi) \EqDef
+    \begin{cases}
+      A & \pi = []\\
+      \subf(A_1, \pi') & \pi = L : \pi', A\in\Set{A_1\And A_2, A_2\Or A_2, A_1\Imp A_2}\\
+      \subf(A_2, \pi') & \pi = R : \pi', A\in\Set{A_1\And A_2, A_2\Or A_2, A_1\Imp A_2}\\
+      \mbox{undefined} & \emph{otherwise} \\
+    \end{cases}
+    \]
+  \item For a fixed formula $\xi$ and set of paths $\Pi$,
+    $\subf(\xi, \Pi) \EqDef \Set{A\sst\subf(\xi, \pi) = A, \pi\in\Pi}$
+  \end{itemize}
+\end{definition}
+
+\noindent
+For example, the paths and corresponding subformulas of $p \Imp q\Imp p$ are
+
+\[
+\begin{array}{c|c}
+  \mbox{Path} & \mbox{Subformula} \\
+  \hline \\
+  \left[\right]  & p\Imp q\Imp p \\
+  \left[L\right] & p \\
+  \left[R\right] & q\Imp p \\
+  \left[L,R\right] & q \\
+  \left[R,R\right] & p \\
+\end{array}
+\]
+
+\noindent
+Note that $p$ has two distinct corresponding paths.  We thus need to
+distinguish between a subformula and a subformula occurrance.
+
+\begin{definition}
+  \begin{itemize}
+  \item[]
+  \item A \emph{subformula occurrance} in $A$ is a path $\pi$ such that $\subf(A, \pi)$ is
+    defined.
+  \item The \emph{sign} of a subformula occurrance is the sign of the corresponding
+    subformula.
+  \item A subformula occurrance $\pi$ is \emph{atomic} if $\subf(A, \pi)$ is
+    atomic.
+  \item Let $\occs(\xi)$ be the set of subformula occurrances in $\xi$.
+  \end{itemize}
+\end{definition}
+
+\subsection{Labels}
+
+Now we are in a position to define mappings between subformula occurrances
+and short labels.
+
+\begin{definition}[Labeling]
+  A function $\lab : \occs(\xi)\to\cP$ is called a \emph{labeling function} if
+  it has the following properties
+  \begin{itemize}
+  \item $\lab(\pi) = \subf(\xi, \pi) = p$ if $\pi$ is atomic.
+  \item For $\pi,\pi'$, if $\subf(\xi, \pi) = \subf(\xi, \pi') = \Top$
+    then $\lab(\pi) = \lab(\pi')$.
+  \item For $\pi,\pi'$, if $\subf(\xi, \pi) = \subf(\xi, \pi') = \Bot$
+    then $\lab(\pi) = \lab(\pi')$.
+  \item for any non-atomic subformula occurrance $\pi$, where
+    $\subf(\xi, \pi)\not\in \Set{\Top,\Bot}$ and any subformula occurrance $\pi'$,
+    $\lab(\pi) \neq \lab(\pi')$.
+  \end{itemize}
+  Since $\cP$ is infinite, labeling functions exist for any fixed $\xi$.  Fix
+  a labeling function.
+  \begin{itemize}
+  \item A label $p$ is called \emph{atomic} if $p\in\atoms(\xi)$.
+  \item $\lab(A)$ is called the \emph{label} of $A$.
+  \item In a slight abuse of notation, we write $\lab(\Top)$ and $\lab(\Bot)$,
+    since each subformula occurrance of $\Top$ and $\Bot$ gets the same label.
+  \item For a set of formulas $X$, $\labs(X) = \Set{l\sst \lab(A) = l, A\in X}$
+  \item $\cL = \labs(\subfs(\xi))$.
+  \end{itemize}
+\end{definition}
+
+\noindent
+Note that $\lab$ is not injective, as it may map different occurrances of
+atomic formulas, $\Top$ and $\Bot$ to the same label.  Thus there is
+no inverse function to $\lab$.  However, restricted to labels of non-atomic
+subformulas not equal to $\Top$ or $\Bot$, the function is injective, so
+has an inverse.  Call this inverse $\Path : \cL\to\occs(\xi)$.
+Now we can define a function from labels to subformulas:
+
+\begin{definition}[Unlabeling]
+  \begin{itemize}
+  \item[]
+  \item Define
+    \[
+    \unlab(p) \EqDef
+    \begin{cases}
+      p & p \mbox{ is atomic } \\
+      \Top & p = \lab(\Top) \\
+      \Bot & p = \lab(\Bot) \\
+      \subf(\xi, \Path(p)) & \mbox{otherwise}
+    \end{cases}
+    \]
+  \item For a set of labels $X$, $\unlab(X) \EqDef \Set{A\sst \unlab(p) = A, p\in X}$
+  \end{itemize}
+\end{definition}
+
+\noindent
+Now we can revisit the previous example using labels.
+Again, let $\xi=A_1\And A_2\Imp A_2\And A_1$, and define the following
+labeling function:
+
+\[
+\begin{array}{c|l|c}
+  \mbox{label} & \mbox{path} & \mbox{subformula} \\
+  \hline
+  l_1 & [] & p_1\And p_2\Imp p_2\And p_1\\
+  l_2 & [L] & p_1\And p_2\\
+  p_1 & [L,L] & p_1\\
+  p_2 & [R,L] & p_2\\
+  l_3 & [R] & p_2\And p_1\\
+  p_2 & [L,R] & p_2\\
+  p_1 & [R,R] & p_1\\
+\end{array}
+\]
+
+\noindent
+The inference rules become\footnote{Because the correspondence between
+subformulas and labels is so simple, we do not invent a new name for the labeled
+calculus.}
+
+\[
+\LPFs =
+\begin{cases}
+  \begin{array}{c@{\hspace{2em}}c@{\hspace{2em}}c}
+    \Infer{\FSeq{p_1}{p_1}}{}
+    &
+    \Infer{\FSeq{p_2}{p_2}}{}
+    &
+    \Infer[r_1]{\FSeq{\cdot}{l_3}}{\FSeq{\cdot}{p_2} & \FSeq{\cdot}{p_1}}
+    \\[2em]
+    \Infer[r_2]{\FSeq{l_2}{\gamma}}{\FSeq{p_1,p_2}{\gamma}}
+    &
+    \Infer[r_3]{\FSeq{\cdot}{l_1}}{\FSeq{l_2}{l_3}}
+  \end{array}
+\end{cases}
+\]
+
+\noindent
+leading to an easy derivation:
+
+\[
+\begin{array}{lr@{\hspace{2em}}l}
+  1. & \FSeq{p_1}{p_1}& \mbox{Init} \\
+  2. & \FSeq{p_2}{p_2}& \mbox{Init}\\
+  3. & \FSeq{p_1,p_2}{l_3}& \mbox{$r_1$ with 1,2}\\
+  4. & \FSeq{l_2}{l_3}&\mbox{$r_2$ with 3}\\
+  5. & \FSeq{}{l_1}&\mbox{$r_3$ with 4}\\
+\end{array}
+\]
+
+\paragraph{A note on subformulas vs. subformula occurrances.}
+
+Suppose $\xi$ has a subformula of the form $A\And A$, where $A$ is large.
+The paths corresponding to the subformulas of the two copies of $A$
+differ.  We
+made a choice to generate rules for both occurrances.  It is easy to imagine
+generating rules for a single occurrance and then modifying the other rules
+accordingly, yielding many fewer inference rules during proof search.  It seems
+clear that on, say, the formula $A\Imp A\And A$, a set of rules so generated
+would be more efficient than the ones we generate using the path/label method;
+with our choice we need to prove $A$ twice with totally different sets of
+inference rules.  The main justification for our choice is that merging the
+inference rules for identical subformulas would prevent a number of the
+optimizations we discuss in Section~\ref{prop.sec.optimize}.  While it is an
+empirical question we have not tested, we hypothesize that the performance
+improvements due to the optimizations generally outweigh redundant
+work due to the loss of potential sharing in the inference rules.
+
+\subsection{The Inverse Method}
+\label{prop.sec.inverse}
+
+\begin{definition} A set of sequents $X$ is called \emph{minimal} if there do
+not exist $q,q'\in X$ such that $q\Subsumes q'$.  It is clear any finite set $X$
+can be made minimal by removing subsumed sequents. Fix some procedure for doing
+so, called $\clear(X)$.
+\end{definition}
+
+With the rules and axioms of $\LPFs$ in hand, we can develop a simple proof
+search algorithm as follows.  Let $\cD_0$ be the axioms of $\LPFs$, and let
+$\cR$ be the rules.  Let $\cD_{i+1}=\clear(\cD_i\Union\match(\cR, \cD_i))$.
+This corresponds to a derivation.  The move from $\cD_i$ to $\cD_{i+1}$ is
+equivalent to some sequence of inference steps followed by some sequence of
+subsumption steps.  The derivation is obviously fair.  Since there are only a
+finite number of search sequents consisting of subformulas of $\xi$, and the
+databases don't contain duplicates, this process terminates.  This procedure is
+therefore decision procedure for IPL.
+
+We have described a process called the inverse method whereby
+a sequent calculus for backward search is transformed into a
+calculus for forward search.  The main steps are
+
+\begin{enumerate}
+\item Find a set of forward rules that are sound and complete with
+  respect to the backward rules.
+\item Specialize the rules to subformulas of a goal formula.
+\item Label subformulas so matching is efficient.
+\item\label{prop.enum.rules}
+  Use the rules to create a derivation for $\xi$.  $\xi$ is
+  provable iff the sequent occurs in some database in the derivation.
+\end{enumerate}
+
+\subsection{Example}
+
+We give an example of an inverse method proof of
+
+\[
+\xi = (\Bot \Or b) \Imp ((a \Imp b) \Imp c) \Imp (a \Or c)
+\]
+
+\paragraph{Labeling.}
+
+First we label the signed subformulas of $\xi$.
+
+\[
+\begin{array}{c@{\hspace{2em}}c@{\hspace{2em}}c}
+p_1^r = a^r \Or c^r & p_2^r = a^l \Imp b^r & p_3^l = p_2^r \Imp c^l \\
+p_4^r = p_3^l \Imp p_1^r & p_5^l = \Bot^l \Or b^l & p_6^r = p_5^l \Imp p_4^r
+\end{array}
+\]
+
+\paragraph{Rule Specialization.}
+
+Now we specialize the rules for the labels $p_1, \ldots, p_6$.
+
+\[
+\begin{array}{c@{\hspace{2em}}c@{\hspace{2em}}c@{\hspace{2em}}c}
+\Infer[r_1]{\FSeq{\cdot}{p_1}}{\FSeq{\cdot}{a}} &
+\Infer[r_2]{\FSeq{\cdot}{p_1}}{\FSeq{\cdot}{c}} &
+\Infer[r_3]{\FSeq{\cdot}{p_2}}{\FSeq{a}{b}} &
+\Infer[r_4]{\FSeq{p_3}{\cdot}}{\FSeq{\cdot}{p_2} & \FSeq{c}{\cdot}}
+\\\\
+\multicolumn{4}{c}{
+  \begin{array}{c@{\hspace{2em}}c@{\hspace{2em}}c}
+    \Infer[r_5]{\FSeq{\cdot}{p_4}}{\FSeq{p_3}{p_1}} &
+    \Infer[r_6]{\FSeq{p_5}{\cdot}}{\FSeq{\Bot}{\cdot} & \FSeq{b}{\cdot}} &
+    \Infer[r_7]{\FSeq{\cdot}{p_6}}{\FSeq{p_5}{p_4}}
+  \end{array}
+}
+\end{array}
+\]
+
+\noindent
+The initial axioms are
+
+\[
+\begin{array}{c@{\hspace{2em}}c@{\hspace{2em}}c@{\hspace{2em}}c}
+\FSeq{a}{a} & \FSeq{b}{b} & \FSeq{c}{c} & \FSeq{\Bot}{\cdot}
+\end{array}
+\]
+
+\input{prop/trace}
+
+We show a run of the algorithm in Figure~\ref{prop.trace}.
+Each sequent in the database is numbered.  The non-axioms have the
+rule and sequents from which they are derived in the right column.
+The grayed-out sequents are either forward or backward subsumed.
+Forward subsumed sequents are marked by $\FSubsumed$ and
+backward by $\BSubsumed$.  (Also note, a forward subsumed sequent
+is not assigned a number since it never enters the database.)
+
+% \section{Proof terms}
+% \label{prop.sec.proofterms}
+
+% Soundness and
+% completeness of $\LPB$ with respect to natural deduction are due
+% to Gentzen, and the proof for our variation is effectively identical.  We
+% will discuss natural deduction in section~\ref{prop.sec.proofterms} when we
+% discuss proof terms.
+
+% Theorem provers are complicated programs, and like any other
+% program they are rife with bugs.  One way to gain more confidence
+% in the result is for the program to produce a \emph{proof term},
+% and efficiently verifiable certificate of the correctness of a
+% derivation.  Our implementation traces deduction steps and
+% upon success, builds a proof term in natural deduction from the
+% trace.
+
+% \subsection{Natural Deduction}
+
+% Gentzen's natural deduction calculus is shown in Figure~\ref{prop.ndp}.
+
+% Given a proof term, we can easily normalize it and
+% check that it is a valid proof for a
+% formula (E.g., Pfenning~\cite{Pfenning.2004.TheoremProvingLectureNotes}).
+
+% \input{prop/nd}
+
+% \subsection{Proof Trace}
+
+% Proof traces are maintained with the database of sequents.
+
+% Define
+% \[
+% \Let{x}{t_1}{t_2} = (\lambda x.\ t_2) t_1
+% \]
+
+% \input{prop/sc}
+
+% \section{Focused proofs}
+% \label{prop.sec.polar}
+
+% \begin{quote}
+%   \textit{
+%     We revisit the backward calculus $\LPB$ for IPL
+%     and demonstrate some redundancies.  A subset of $\LPB$ proofs called
+%     \emph{focused proofs} are shown to be complete.}
+% \end{quote}
+
+% \subsection{Polarized formulas}
+% \ednote{Note that polariteis and subformula signs are unrelated}
+% Logical connectives have a \emph{polarity}, either positive or negative.  In
+% linear logic, the polarity of each connective is uniquely determined.  Positive
+% connectives are asynchronous on the left and synchronous on the right.  Negative
+% connectives are synchronous on the left and asynchronous on the right.  This
+% symmetry breaks down for intuitionistic logic where conjunction and truth are
+% inherently ambiguous.  For example, both
+
+% \[
+% \Infer
+% {\Seq{\Gamma, A_1 \And A_2}{C}}
+% {\Seq{\Gamma, A_1, A_2}{C}}
+% \]
+
+% \noindent and the pair of rules
+
+% \[
+% \begin{array}{cc}
+%   \Infer
+%   {\Seq{\Gamma, A_1 \And A_2}{C}}
+%   {\Seq{\Gamma, A_1}{C}}
+%   &
+%   \hspace{2em}
+%   \Infer
+%   {\Seq{\Gamma, A_1 \And A_2}{C}}
+%   {\Seq{\Gamma, A_2}{C}}
+% \end{array}
+% \]
+
+% \noindent
+% are sound and complete.  In linear logic (see Section~\ref{chapter.linear}),
+% there are two different conjunctions corresponding to the two possibilities:
+
+% \[
+% \begin{array}{ccc}
+%   \Infer
+%   {\Seq{\Gamma, A_1 \Tensor A_2}{C}}
+%   {\Seq{\Gamma, A_1, A_2}{C}}
+%   &
+%   \hspace{2em}
+%   \Infer
+%   {\Seq{\Gamma, A_1 \With A_2}{C}}
+%   {\Seq{\Gamma, A_1}{C}}
+%   &
+%   \hspace{2em}
+%   \Infer
+%   {\Seq{\Gamma, A_1 \With A_2}{C}}
+%   {\Seq{\Gamma, A_2}{C}}
+% \end{array}
+% \]
+
+% \noindent
+% Since antecedents are combined and weakening is admissible, the distinction
+% between the two forms of conjunction is lost.
+% However, assigning polarities to the connectives is
+% still a useful tool. In particular, we can take advantage of
+% \emph{focusing}, described in the next section.  Thus, we will
+% refine the structure of intuitionistic formulas by assigning polarities,
+% yielding \emph{polarized formula}~\cite{Lamarche.1995.LICS} where immediately
+% nested formulas always have the same polarity, unless an explicit
+% polarity-shifting connective $\Up$ or $\Down$ is encountered.  These coercions
+% are called \emph{shifts}.  Implication has slightly special status, in that its
+% left-hand side has opposite polarity from its right-hand side.  This is because
+% in the sequent calculus for intuitionistic logic, the focusing behavior of
+% connectives on the left-hand side is the opposite of their behavior on the
+% right-hand side. (Here the meta-variable $P$ ranges over atomic propositions.)
+
+% \begin{align*}
+%   \mbox{Positive formulas } A^+ &::= p^+ \Sep A^+ \Sum A^+ \Sep \Zero \Sep A^+ \Tensor A^+ \Sep \One \Sep \Down A^- \\
+%   \mbox{Negative formulas } A^- &::= p^- \Sep A^+ \Lolli A^- \Sep A^- ~ \With ~A^- \Sep \Top \Sep \Up A^+
+% \end{align*}
+
+% \noindent The translation $A^-$ of an (unpolarized) formula $F$ in IPL
+% is nondeterministic, subject only to the constraints that
+% polarity is assigned to atomic formulas consistently (i.e., you can't have both
+% $p^-$ and $p^+$ in the same translation), and $|A^-| = F$.  The arbitrary
+% assignment of polarity to atomic formula is called a \emph{bias}.
+
+% \[
+% \begin{aligned}
+%   |p^+| &= p \\
+%   |p^-| &= p \\
+%   |A^- \With B^-| &= |A^-| \And |B^-| \\
+%   |\Top| &= \top \\
+%   |A^+ \Tensor B^+| &= |A^+| \And |B^+|\\
+%   |\One| &= \top \\
+%   |A^+ \Sum B^+| &= |A^+| \Or |B^+| \\
+%   |\Zero| &= \Bot \\
+%   |A^+ \Lolli B^-| &= |A^+| \Imp |B^-| \\
+%   |\Down A^-| &= |A^-| \\
+%   |\Up A^+| &= |A^+| \\
+% \end{aligned}
+% \]
+
+% \noindent
+% For example, the formula $((a \Or c) \And (b \Imp c)) \Imp (a \Imp b) \Imp c$
+% can be interpreted as any of the following polarized formulas (among others):
+
+% \begin{align*}
+%   &((\Down a^- \Sum \Down c^-) \Tensor \Down(\Down b^- \Lolli c^-)) \Lolli (\Down (\Down a^- \Lolli b^-) \Lolli c^-) \\
+%   &\Down\Up((\Down a^- \Sum \Down c^-) \Tensor \Down(\Down b^- \Lolli c^-)) \Lolli (\Down\Up\Down (\Down a^- \Lolli b^-) \Lolli c^-) \\
+%   &\Down(\Up (a^+ \Sum c^+) \With (b^+ \Lolli \Up c^+)) \Lolli (\Down (a^+ \Lolli \Up b
+%   ^+) \Lolli \Up c^+)
+% \end{align*}
+
+% \noindent
+% Shift operators have highest binding precedence in our presentation of the
+% examples.  As we will see, the choice of translation determines the search
+% behavior on the resulting polarized formula.  Different choices can lead to
+% search spaces with radically different structure~\cite{Chaudhuri.2006.IJCAR}.
+
+% \subsection{Backward Focused Sequent Calculus}
+
+% The backward calculus is a refinement of $\LPB$ that eliminates
+% don't-care nondeterministic choices, and manages don't-know
+% nondeterminism by chaining such inferences in sequence.  Andreoli was
+% the first to define this \emph{focusing} strategy and prove it
+% complete~\cite{Andreoli.1992.JLC} for linear logic.  Similar proofs for other logics
+% soon followed~\cite{Howe.1998.Thesis,Chaudhuri.2005.CSL,Chaudhuri.2006.IJCAR,Miller.2007.CSL,Zeilberger.2008.POPL},
+% demonstrating that polarization and focusing can be applied to
+% optimize search in a wide variety of logics.
+
+% The polarized calculus is defined via four mutually recursive
+% judgments.  In the judgments, we separate the antecedents into positive
+% and negative zones.  We write $\Gamma$ for an unordered collection
+% of negative formulas or positive atoms.  Dually, $C$ stands for
+% a positive formula or a negative atom.
+
+% The first two judgments, shown in Figure~\ref{prop.invert}
+% concern formulas with invertible rules on the right and
+% left.  Together, the two judgments form the \emph{inversion phase} of focusing.
+% The context $\Delta^+$ is consists entirely of positive formulas and is ordered
+% so that inference rules can only be applied to the rightmost formula,
+% eliminating don't-care nondeterminism.
+
+% \input{prop/focus}
+
+% The next two judgments, shown in Figure~\ref{prop.focus}
+% are concerned with non-invertible rules.  These
+% two judgments make up the \emph{focusing phase}.
+% Backward search for a proof of $A^-$ starts with an inversion from
+% $\CSeq{\cdot}{A^-}$.  The proof then alternates between focusing and
+% inversion phases.  The
+% sequents at the boundary of the inversion and focusing phases
+% have the form $\Seq{\Gamma}{C}$.  We call such
+% sequents \emph{stable}.  There are two rules, shown in Figure~\ref{prop.neutral}
+% that control the phase changes at stable sequents (the block boundaries) by
+% selecting which subformula gains focus.
+
+% \begin{theorem}[Soundness]
+%   \begin{itemize}
+%   \item[]
+%   \item If $\CSeq{\Gamma}{A}$ then $\Seq{\Gamma}{A}$
+%   \end{itemize}
+% \end{theorem}
+
+% \begin{proof}
+%   Routine induction on the derivations.
+% \end{proof}
+
+% \begin{theorem}[Completeness]
+%   If $\Seq{\cdot}{A}$ then $\CSeq{\cdot}{A}$
+% \end{theorem}
+% \begin{proof}
+%   There are a number of proofs in the literature for intuitionistic
+% linear logic, e.g.~\cite{Chaudhuri.2006.Thesis} and via translation
+% for intuitionistic logic~\cite{Miller.2007.Focusing,Liang.2009.TCS}.
+% IPL is a subset of the logic in Chapter~\ref{chapter.constraints}, so
+% this is an instance of Theorem~\ref{constr.thm.complete} as well.
+% \end{proof}
+
+% \subsection{Synthetic Connectives and Derived Rules}
+% \label{prop.sec.derived}
+
+% We have already observed that backward proofs have the
+% property that the proof is broken into blocks, with stable sequents at
+% the boundary.  The only rules applicable to stable sequents are the
+% rules that select a formula on which to focus.  It is the formulas
+% occurring in stable sequents that form the primary objects of our further
+% inquiry.
+
+% It helps to think of such formulas, abstracted over their free
+% variables, as \emph{synthetic connectives}~\cite{Andreoli.2001.APAL}.
+% Define the synthetic connectives of a formula $A$ as all subformulas
+% of $A$ that could appear in stable sequents in a focused backward proof.
+% In a change of perspective, we can consider each block of a proof as
+% the application of a left or right rule for a synthetic connective.
+% The rules operating on synthetic connectives are derived from the
+% rules for its constituent formulas.  We can thus consider a
+% backward proof as a proof using only these synthetic (derived) rules.
+% Each derived rule then corresponds to a block of the original proof.
+
+% Since we need only consider stable sequents and synthetic connectives,
+% we can simplify notation, and ignore the (empty) positive left and
+% negative right zones in the derived rules.
+% Write $\Seq{\Gamma}{C}$ as
+% \renewcommand{\Seq}[2]{\ensuremath{#1 \Longrightarrow #2}}
+% $\Seq{\Gamma}{C}$.
+% As a further simplification, we can give formulas a predicate label
+% and abstract over its free variables.  This labeling technique is described in
+% detail in~\cite{Voronkov.2001.Handbook}.  For the remainder, we assume
+% this labeling has been carried out.  Define an \emph{atomic formula}
+% as either a label or a predicate applied to a (possibly
+% empty) list of terms.  After labeling, our sequents consist entirely
+% of atomic formulas.
+
+% \begin{example}
+% Figure~\ref{prop.blocks} shows a focused proof.
+% Here the inversion phases are colored blue and the focusing phases
+% are purple.  The stable sequents, on the boundary, are colored red.
+% While it looks rather complex for such a simple formula, keep in
+% mind that the only choices are made at stable sequents.  Note
+% that the bias of the atoms is essential to the shape of the proof.
+% A different choice would lead to a proof with a much different structure.
+
+% The synthetic connectives are $a \Imp b$
+% and $(a \Imp b)\Imp c$.  There is a single derived rule for each
+% synthetic connective (though this is not the case in general).  The
+% atoms are assigned negative polarity.  We implicitly carry the
+% principal formula of a left rule to all of its premises.
+
+% \[
+% \begin{array}{cc}
+%   \Infer[r_1]{\Seq{a, a\Imp b}{b}}{}
+%   &\hspace{2em}
+%   \Infer[r_2]{\Seq{\Down (a\Imp b)\Imp c}{c}}{\Seq{a}{b}}
+% \end{array}
+% \]
+
+% \noindent
+% Using the derived rules, Figure~\ref{prop.blocks} can be compressed to the succinct
+
+% \[
+% \Infer[r_2]
+% {\Seq{\Down (a\Imp b)\Imp c, a\Imp b}{c}}
+% {\Infer[r_1]{\Seq{a, a\Imp b}{b}}{}}
+% \]
+
+% %\input{prop/blocks}
+
+% \end{example}
+
+% \section{Implementation}
+
+
+
+% \section{Derivation strategies}
+
+% Let $\cR$ be the set of derived rules for a goal sequent.
+% Step~\ref{prop.enum.rules} of the inverse method
+% (Section~\ref{prop.sec.inverse}) is to generate a derivation from $\cR$.
+% Any derivation will find the goal
+% (Corollary~\ref{prop.thm.inverse-complete}) so we have considerable flexibility
+% in choosing a strategy for applying the rules.  We need only assure that
+% the derivation we devise is fair.
+
+% \subsection{A Generic Otter Loop}
+
+% We maintain two separate
+% databases of facts, $\cD_i^k$ and $\cD_i^a$ where
+% $\cD_i=\cD_i^a\Union\cD_i^k$.  $\cD^k$ is called the \emph{kept}
+% database and $\cD^a$ is called the \emph{active} database.
+% We maintain the invariant that $\match(\cR, \cD_i^a)\subseteq \cD_i$.
+% If $\cD_i^k=\emptyset$ then by the invariant we have
+% $\match(\cR, \cD_i)\subseteq \cD_i$, and the database is saturated.
+
+% \begin{align*}
+%   \cD_0^a &= \emptyset\\
+%   \cD_0^k &= \mbox{the initial sequents of $\cR$}\\
+%   \mu(i) &= \mbox{some element of $\cD_i^k$}\\
+%   \cD_{i+1}^a &= \Closure{\cD_i^a\Union\Set{\mu(i)}}\\
+%   \cD_{i+1}^k &= \Closure{(\cD_i^k\Diff\Set{\mu(i)})\Union\match(\cR, \cD_{i+1}^a)}\\
+%   \cD_i &= \cD_i^k\Union \cD_i^a\\
+% \end{align*}
+
+% \noindent $cD$ can be made a derivation by arbitrarily sequentializing the
+% set operations into inference and subsumption steps.  However, we still are not
+% guaranteed the derivation is fair.
+
+% \begin{definition}
+%   Given a derivation $\cD$, a function $\mu$ is called
+% a \emph{selection function} if for all $i$, $f(i)\in \cD_i^k$.
+% $\mu$ is \emph{fair} if for any $x\in\Dlimit$ there exists an $i$ such
+% that $\mu(i)=x$.
+% \end{definition}
+
+% \begin{theorem}
+%   If $\mu$ is fair then the derivation $\cD$ defined above is fair.
+% \end{theorem}
+% \begin{proof}
+%   Let $q_1,\ldots,q_n\in\Dlimit$ and $q\in\match(R,q_1,\ldots,q_n)$.
+% For each $i$, there is an $f(i)$ such
+% that $q_i = \mu(f(i))$.  Let $k=\max(f(i))$.  Then some inference step in
+% the sequentialization from $\cD_k$ to $\cD_{k+1}$ will add $q$ to the derivation (though
+% it may be subsumed by other sequents in $\cD_{k+1}$ and thus not appear
+% there).
+% \end{proof}
+
+% \noindent The general strategy of maintaining a kept and active database
+% and selecting elements from kept by some fair process is called
+% the \emph{Otter loop} after McCune's
+% Otter\footnote{Otter is the successor of Prover9~\cite{McCune:2010:Prover9}}
+% theorem prover described in~\cite{McCune.1990.CADE}.
+
+% \subsection{Partial-application}
+
+% In partial-application, instead of being fixed, the set of inference rules grows
+% during rule application.  We maintain not only kept and active databases of
+% sequents, as described
+
+% \subsubsection{Cascading}
+
+% vs. partial application:
+
+% 1) easier to subsume rules
+% 2) Many fewer matches.
+% 3) partial application forces an ordering on the premises.
+%    Cascading does not.
+
+% e.g. H1 H2
+%      -----
+%        H
+
+% Match r with q1, q2, q3
+
+% H2
+% __
+%  H1
+
+% H2
+% __
+%  H2
+
+% H2
+% __
+%  H3
+
+% Now you must match H2 at least 3 times with some sequent q.
+
+
+% \subsection{Optimizations}
+% \label{prop.sec.optimize}
+
+% \paragraph{Globalization.}
+
+% Proof search in the inverse method begins with an inversion phase which produces
+% stable sequents.  These sequents are proved independently.  Fix a stable sequent
+% $\Seq{\Gamma}{A}$.  The inverse method will continually test whether new
+% facts subsume the goal.  I.e., for $\FSeq{\Gamma'}{\gamma'}$ to subsume the
+% goal, we must have $\Gamma' \subseteq \Gamma$.  This is equivalent to $\Gamma'
+% \Diff \Gamma = \emptyset$.  Thus, it is sufficient to remove $\Gamma$ from the
+% antecedents of any generated sequent.  It is justified by modifying the
+% invariant of a database $\cD$. If $\FSeq{\Gamma'}{\gamma}\in\cD$ and $\Set{A}
+% \subseteq \gamma$ then $\Seq{\Gamma\Union\Gamma'}{A}$, is provable in $\LPB$.
+% This optimization saves space and reduces the complexity of matching and
+% subsumption during proof search.
+
+% \paragraph{Bi-implication lengthening.}
+
+% Bi-implication, as a derived connective, derives its focusing behavior from that
+% of its constituent connectives.  The right derived rule is
+
+% {\small
+%   \noindent
+%   \[
+%   \begin{array}{lr}
+%     \\[2em]
+%     \Infer[\With$-L$]
+%     {\Nseq{\Delta}{\Gamma}{(\Down A_1^-\Imp A_2^-)\With(\Down A_2^-\Imp A_1^-)}}
+%     {
+%       \Infer[\Imp$-R$]
+%       {\Nseq{\Delta}{\Gamma}{\Down A_1^-\Imp A_2^-}}
+%       {
+%         \Infer[\Down$-L$*]
+%         {\Nseq{\Delta}{\Gamma, \Down A_1^-}{A_2^-}}
+%         {\Nseq{\Delta, A_1^-}{\Gamma}{A_2^-}}
+%       }
+%       &
+%       \Infer[\Imp$-R$]
+%       {\Nseq{\Delta}{\Gamma}{\Down A_2^-\Imp A_1^-}}
+%       {
+%         \Infer[\Down$-L$*]
+%         {\Nseq{\Delta}{\Gamma, \Down A_2^-}{A_1^-}}
+%         {\Nseq{\Delta, A_2^-}{\Gamma}{A_1^-}}
+%       }
+%     }
+%     &
+%     \hspace{2em}
+%     \Infer[\Iff$-R$]
+%     {\Nseq{\Delta}{\Gamma}{A_1^-\Iff A_2^-}}
+%     {\Nseq{\Delta, A_1^-}{\Gamma}{A_2^-} & \Nseq{\Delta, A_2^-}{\Gamma}{A_1^-}}
+%     \\[2em]
+%   \end{array}
+%   \]
+% }
+
+% \noindent
+% The rules marked * are not part of the given inversion system because
+% in a focused proof we would continue decomposing on the right until we
+% reached a positive formula or a negative atom, but since the order
+% is irrelevant for completeness this is a valid derived rule.
+% The left rules are
+
+% {\small
+%   \noindent
+%   \[
+%   \begin{array}{lr}
+%     \\[2em]
+%     \Infer[\With$-L$_1]
+%     {\Lfoc{\Delta}{(\Down A_1^-\Imp A_2^-)\With(\Down A_2^-\Imp A_1^-)}{C}}
+%     {
+%       \Infer[\Imp$-L$]
+%       {\Lfoc{\Delta}{\Down A_1^-\Imp A_2^-}{C}}
+%       {
+%         \Lfoc{\Delta}{A_2^-}{C}
+%         &
+%         \Infer[\Down$-R$]
+%         {\Rfoc{\Delta}{\Down A_1^-}}
+%         {\Nseq{\Delta}{\cdot}{A_1^-}}
+%       }
+%     }
+%     &
+%     \hspace{2em}
+%     \Infer[\Iff$-L$_1]
+%     {\Lfoc{\Delta}{A_1^-\Iff A_2^-}{C}}
+%     {\Lfoc{\Delta}{A_2^-}{C} & \Nseq{\Delta}{\cdot}{A_1^-}}
+%     \\[2em]
+%     \Infer[\With$-L$_2]
+%     {\Lfoc{\Delta}{(\Down A_1^-\Imp A_2^-)\With(\Down A_2^-\Imp A_1^-)}{C}}
+%     {
+%       \Infer[\Imp$-L$]
+%       {\Lfoc{\Delta}{\Down A_2^-\Imp A_1^-}{C}}
+%       {
+%         \Lfoc{\Delta}{A_1^-}{C}
+%         &
+%         \Infer[\Down$-R$]
+%         {\Rfoc{\Delta}{\Down A_2^-}}
+%         {\Nseq{\Delta}{\cdot}{A_2^-}}
+%       }
+%     }
+%     &
+%     \hspace{2em}
+%     \Infer[\Iff$-L$_1]
+%     {\Lfoc{\Delta}{A_1^-\Iff A_2^-}{C}}
+%     {\Lfoc{\Delta}{A_1^-}{C} & \Nseq{\Delta}{\cdot}{A_2^-}}
+%   \end{array}
+%   \]
+% }
+
+% \noindent
+% We generally want focusing phases to be as long as possible;
+% we can always shorten focusing phases with explicit shifts, but cannot
+% extend them. The loss of focus on the right premise can be avoided when
+% $A_2^-= \Up A^+$, e.g.
+
+% {\small
+%   \[
+%   \Infer[\Iff$-L$_1]
+%   {\Lfoc{\Delta}{A_1^-\Iff \Up A_2^+}{C}}
+%   {\Lfoc{\Delta}{A_1^-}{C} & \Rfoc{\Delta}{A_2^+}}
+%   \]
+% }
+
+% \noindent
+% Optimizing bi-implication is important in the ILTP benchmark, as
+% over 66\% of the problems involve the connective.
+
+% \paragraph{Rule subsumption.}
+
+% \paragraph{Exact matching.}
+
+% \paragraph{Branch disabling.}
+
+% \section{Experimental Results}
+
+% \subsection{Simulations}
+
+% Weak focusing, weak inversion, single step
+
+% \section{Notes}
+
+% A brief history of the inverse method occurs in~\cite{Voronkov.2001.Handbook}.
+% It was first described (without labeling) by Gentzen~\cite{Gentzen.1934.MZ}, who
+% noticed it forms a decision procedure for IPL.  The term ``inverse method'' was
+% coined by Maslov~\cite{Maslov.1964.Inverse}.
+
+% \cite{Howe.1998.Thesis}
+
+% Focusing
+
+% \subsection{Related Work}
+% \label{prop.sec.related}
+
+% In this section we discuss other techniques for theorem proving in
+% IPL.  Work that prove theorems in first-order intuitionistic
+% logic (and thus to IPL as well) is reviewed in Chapter~\ref{chapter.fol}.
+
+% \paragraph{Contraction-free calculi.}
+
+% There are a number of different methods for theorem proving in IPL in
+% the literature.  Most early work
+% revolves around the following observation: In the
+% rules of Figure~\ref{prop.backward}, the only rule that can confound
+% a bounded backward search is the rule $\PBImpL$:
+% \[
+% \PBImpLRule
+% \]
+% \noindent Indeed, the backtracking implicit in this rule can not be
+% avoided; IPL is PSPACE-complete~\cite{Statman.1979.TCS}.
+% Some attempts at attenuate the problem are~\cite{Franzen.1987.SICS,Franzen.1989.SICS}.
+% Dyckhoff~\cite{Dyckhoff.1992.JSL}, rediscovering earlier work of Vobor'ev~\cite{Vorobev.1952.Doklady},
+% discards $\PBImpL$ in favor of the following four rules
+
+% \[
+% \begin{array}{cc}
+%   \Infer[\Imp$-L$_1]
+%   {\Seq{\Gamma,p\Imp A, p}{C}}
+%   {\Seq{\Gamma, A, p}{C}}
+%   &
+%   \hspace{2em}
+%   \Infer[\Imp$-L$_2]
+%   {\Seq{\Gamma,(A_1\And A_2)\Imp A}{C}}
+%   {\Seq{\Gamma, A_1\Imp (A_2\Imp A)}{C}}
+%   \figline
+%   \Infer[\Imp$-L$_3]
+%   {\Seq{\Gamma,(A_1\Or A_2)\Imp A}{C}}
+%   {\Seq{\Gamma, A_1\Imp A, A_2\Imp A}{C}}
+%   &
+%   \hspace{2em}
+%   \Infer[\Imp$-L$_4]
+%   {\Seq{\Gamma,(A_1\Imp A_2)\Imp A}{C}}
+%   {\Seq{\Gamma, A_2\Imp A}{A_1\Imp A_2} & \Seq{\Gamma, A}{C}}
+% \end{array}
+% \]
+% \noindent
+% He shows that this ``contraction-free'' calculus is terminating, and does
+% not require loop checking.  (Note that it does not satisfy the subformula property,
+% and is thus not naievly amenable to implementation via the inverse method.)
+% Implementations of the calculus LJT are~\cite{Dyckhoff.1997.LJT} and
+% \emph{Porgi}~\cite{Stoughton.1996.CADE}.
+
+% Hudelmaier~\cite{Hudelmaier.1993.JLC} noticed that because of the duplications
+% of formulae in the rules $\Imp$-L$_3$, $\Imp$-L$_4$, the procedure uses space
+% exponential in the size of the input formula.  He improves on
+% Dyckhoff by developing a calculus that uses at most $N\log(N)$ space.
+% A space-efficient implementation is STRIP~\cite{LarcheyWendling.2001.STRIP}.
+
+% Probably the most mature implementation of a theorem prover for IPL is
+% PITP~\cite{Avellone.2004.Goedel,Avellone.2007.PITP,Avellone.1996.Tableaux,Avellone.2008.TCS}.
+% It essentially follows the ideas of Hudelmaier, with a number of optimizations
+% based on the underlying Kripke semantics.  (IPTP~\cite{Avellone.2003.IPTP} is an
+% earlier incarnation.)  PITP generates neither proofs nor countermodels, though
+% their method is is capable of producing either~\cite{Dyckhoff.1995.SG}.
+
+% \paragraph{A model-theoretic approach.}
+
+% A totally different approach is taken in~\cite{Gore.2012.IJCAR}.
+% Because the IPL with Kripke semantics satisfies the finite model
+% property, it is theoretically possible to construct all potential
+% models of a formula and simply check whether they satisfy the formula.
+% If they all do, the formula is a theorem.  Otherwise you have a
+% concrete countermodel.  As a practical technique this seems unwieldy,
+% as the number of models is exponential in the size of the formula.
+% The authors demonstrate it is possible to use BDDs to concisely
+% represent the models and check satisfiability efficiently.
+
+
+% \section{Future Work}
+
+% \paragraph{Countermodels.}
+
+% One weakness of our implementation is the inability to produce
+% countermodels, Kripkean or otherwise.  It seems clear that a saturated
+% database is evidence of the non-provability of a formula;  if the
+% database subsumes the initial sequents, no further (non-subsumed)
+% inferences are possible, and the database does not subsume the goal
+% formula, the formula is not provable.  This is not entirely satisfying.
+% For example, it relies on correctly implementing subsumption, which is
+% easy in the propositional case but is increasingly complicated in
+% later chapters.  Software bugs can (and have) led Imogen to report false
+% negatives.
+
+% A more satisfying solution would be to generate countermodels, such
+% as those generated by STRIP et al.  It is an open question whether
+% such a model can be extracted from a saturated database.  Even if that
+% is not possible, could the failed state of an inverse method proof
+% guide counterexample generation in a less direct way?
+
+% \paragraph{Polarization heuristics.}
+
+% As we have seen, there are infinitely many choices of a polarization for
+% an input formula.  We found some that worked particularly well for the
+% ILTP problems, but do not yet have a good general theory of how polarization
+% affects the search space.  While some steps have been taken in this direction,
+% e.g. associating SLD-resolution and hyperresolution with the assignment of
+% atoms as positive or negative respectively, a more thorough understanding is
+% called for.
+
+% \paragraph{Optimizations.}
+
+
+% \subsection{Notes}
+
+% \begin{remark}
+%   Most presentations of sequent calculus use multisets rather
+%   than sets.  Indeed, using sets is not ideal in the meta-theory
+%   of sequent calculus.  For example,
+%   there should be two different proofs of $a\Imp a\Imp a$.
+%   Using sets, there is only one.
+% \end{remark}
+
+% \begin{theorem}
+%   If
+% \end{theorem}
+% \begin{proof}
+
+%  However, using sets is sound and
+%   complete with respect to the multiset system in the sense that
+%   given a sequent in the multiset system, you can always derive
+%   a sequent that subsumes it in the set system.
+%   (Since contraction is an admissible rule in the multiset system,
+%   you can prove this trivially by induction, where after ever inference
+%   you use the contraction rule as many times as possible.)
+%   Using sets eases the notational burdon of our many transitions between
+%   forward and backward, focused and unfocused calculi.
+% \end{proof}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "thesis"
+%%% End:

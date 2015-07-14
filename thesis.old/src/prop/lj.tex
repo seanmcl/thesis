@@ -1,0 +1,122 @@
+
+\newcommand{\LJInit}
+{\Infer[$Init$]
+  {\PBSeq{\Gamma,p}{p}}
+  {}
+}
+
+\newcommand{\LJAndR}{
+  \Infer[\And$-R$]
+  {\PBSeq{\Gamma}{A_1 \And A_2}}
+  {\PBSeq{\Gamma}{A_1} & \PBSeq{\Gamma}{A_2}}
+}
+
+\newcommand{\LJAndL}{
+  \Infer[\And$-L$]
+  {\PBSeq{\Gamma, A_1 \And A_2}{C}}
+  {\PBSeq{\Gamma, A_1, A_2}{C}}
+}
+
+\newcommand{\LJImpR}{
+  \Infer[\Imp$-R$]
+  {\PBSeq{\Gamma}{A_1 \Imp A_2}}
+  {\PBSeq{\Gamma, A_1}{A_2}}
+}
+
+\newcommand{\LJImpL}{
+  \Infer[\Imp$-L$]
+  {\PBSeq{\Gamma, A_1\Imp A_2}{C}}
+  {\PBSeq{\Gamma, A_1\Imp A_2}{A_1} & \PBSeq{\Gamma, A_2}{C}}
+}
+
+\newcommand{\LJOrRL}{
+  \Infer[\Or$-R$_1]
+  {\PBSeq{\Gamma}{A_1 \Or A_2}}
+  {\PBSeq{\Gamma}{A_1}}
+}
+
+\newcommand{\LJOrRR}{
+  \infer[\Or$-R$_2]
+  {\PBSeq{\Gamma}{A_1 \Or A_2}}
+  {\PBSeq{\Gamma}{A_2}}
+}
+
+\newcommand{\LJOrL}{
+  \infer[\Or$-L$]
+  {\PBSeq{\Gamma, A_1 \Or A_2}{C}}
+  {\PBSeq{\Gamma, A_1}{C} & \PBSeq{\Gamma, A_2}{C}}
+}
+
+\newcommand{\LJTopR}{
+  \infer[\Top$-R$]
+  {\PBSeq{\Gamma}{\Top}}
+  {}
+}
+
+\newcommand{\LJTopL}{\mbox{No rule for $\Top$-L}}
+
+\newcommand{\LJBotL}{
+  \infer[\Bot$-L$]
+  {\PBSeq{\Gamma, \Bot}{C}}
+  {}
+}
+
+\newcommand{\LJBotR}{\mbox{No rule for $\Bot$-R}}
+
+\begin{figure}[H]
+  \begin{center}
+    {\small
+      \fbox{
+        \begin{tabular}{c}
+          \begin{tabular}{ccc}
+            \LJInit
+            &
+            \hspace{1cm}
+            \LJTopR
+            &
+            \hspace{1cm}
+            \LJTopL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \LJAndR
+            &
+            \hspace{1cm}
+            \LJAndL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{ccc}
+            \LJOrRL
+            &
+            \hspace{10pt}
+            \LJOrRR
+            &
+            \hspace{10pt}
+            \LJOrL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \LJBotR
+            &
+            \hspace{20pt}
+            \LJBotL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \LJImpR
+            &
+            \hspace{20pt}
+            \LJImpL
+          \end{tabular}
+        \end{tabular}
+      }
+    }
+  \end{center}
+  \caption{The backward calculus $\LJ$}
+  \label{prop.lj}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

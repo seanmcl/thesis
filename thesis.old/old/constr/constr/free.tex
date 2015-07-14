@@ -1,0 +1,93 @@
+
+\newcommand{\CEInit}{
+  \Infer[$Init$]
+  {\CFSeq{p \doteq p'}{p}{p'}}
+  {}
+}
+
+\newcommand{\CEAllR}{
+  \Infer[\All$-R$^x]
+  {\CFSeq{\All x.~\Psi(x)}{\Gamma}{\All x.~A(x)}}
+  {\CFSeq{\Psi(x)}{\Gamma}{A(x)}}
+}
+
+\newcommand{\CEAllL}{
+  \Infer[\All$-L$]
+  {\CFSeq{\Psi}{\Gamma, \All x.~A(x)}{\gamma}}
+  {\CFSeq{\Psi}{\Gamma, A(x)}{\gamma}}
+}
+
+\newcommand{\CECon}{
+  \Infer[$Contract$]
+  {\CFSeq{\Psi \And A \doteq A'}{\Gamma, A}{\gamma}}
+  {\CFSeq{\Psi}{\Gamma, A, A'}{\gamma}}
+}
+
+\newcommand{\CEExC}{
+  \Infer[\Ex$-C$]
+  {\CFSeq{\Ex x.~\Psi(x)}{\Gamma}{\gamma}}
+  {\CFSeq{\Psi(x)}{\Gamma}{\gamma} & x\not\in\Vars(\Gamma,\gamma)}
+}
+
+\newcommand{\CEExR}{
+  \Infer[\Ex$-R$]
+  {\CFSeq{\Psi}{\Gamma}{\Ex x.~A(x)}}
+  {\CFSeq{\Psi}{\Gamma}{A(x)}}
+}
+
+\newcommand{\CEExL}{
+  \Infer[\Ex$-L$^a]
+  {\CFSeq{\Psi}{\Gamma, \Ex x.~A(x)}{\gamma}}
+  {\CFSeq{\Psi}{\Gamma, A(x)}{\gamma}}
+}
+
+\newcommand{\CEAndR}{
+  \Infer[\And$-R$]
+  {\CFSeq{\Psi_1\And\Psi_2}{\Gamma_1\Union\Gamma_2}{A_1\And A_2}}
+  { \CFSeq{\Psi_1}{\Gamma_1}{A_1} & \CFSeq{\Psi_2}{\Gamma_2}{A_2} }
+}
+
+\begin{figure}
+
+  In Init, the terms occurring in $p$ and $p'$ are distinct variables.
+  \begin{center}
+    {\small
+      \fbox{
+        \begin{tabular}{c}
+          \begin{tabular}{ccc}
+            \CEInit
+            &
+            \hspace{2em}
+            \CEExR
+            &
+            \hspace{2em}
+            \CEExL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \CEAllR
+            &
+            \hspace{2em}
+            \CEAllL
+            \\[2em]
+            \CECon
+            &
+            \hspace{2em}
+            \CEExC
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{c}
+            \CEAndR
+          \end{tabular}
+        \end{tabular}
+      }
+    }
+  \end{center}
+  \caption{The free-variable calculus.}
+  \label{constr.free}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

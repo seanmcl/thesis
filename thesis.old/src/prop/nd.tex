@@ -1,0 +1,119 @@
+
+\renewcommand{\ND}[3][\Gamma]{#1 \vdash #2 : #3}
+
+\newcommand{\NDAndI}{
+  \Infer[\And$-I$]
+  {\ND{\left<H_1, H_2\right>}{A_1\And A_2}}
+  {\ND{H_1}{A_1} & \ND{H_2}{A_2}}
+}
+
+\newcommand{\NDAndEa}{
+  \Infer[\And$-E$_1]
+  {\ND{\Fst(H)}{A_1}}
+  {\ND{H}{A_1 \And A_2}}
+}
+
+\newcommand{\NDAndEb}{
+  \Infer[\And$-E$_2]
+  {\ND{\Snd(H)}{A_2}}
+  {\ND{H}{A_1 \And A_2}}
+}
+
+\newcommand{\NDOrIa}{
+  \Infer[\Or$-I$_1]
+  {\ND{\Inl(H)}{A_1\Or A_2}}
+  {\ND{H}{A_1}}
+}
+
+\newcommand{\NDOrIb}{
+  \Infer[\Or$-I$_1]
+  {\ND{\Inr(H)}{A_1\Or A_2}}
+  {\ND{H}{A_2}}
+}
+
+\newcommand{\NDOrE}{
+  \Infer[\Or$-E$]
+  {\ND{\Case\ H\ \Of\ x \to H_1 \Sep y \to H_2}{C}}
+  {\ND{H}{A_1\Or A_2} & \ND[\Gamma, x:A_1]{H_1}{C} & \ND[\Gamma, y:A_2]{H_2}{C}}
+}
+
+\newcommand{\NDBotE}{
+  \Infer[\Bot$-E$]
+  {\ND{\Abort(H)}{C}}
+  {\ND{H}{\Bot}}
+}
+
+\newcommand{\NDTopI}{
+  \Infer[\Top$-I$]
+  {\ND{\left<\right>}{\Top}}
+  {}
+}
+
+\newcommand{\NDImpI}{
+  \Infer[\Imp$-I$]
+  {\ND{\lambda x.\ H}{A_1\Imp A_2}}
+  {\ND[\Gamma, x:A_1]{H}{A_2}}
+}
+
+\newcommand{\NDImpE}{
+  \Infer[\Imp$-E$]
+  {\ND{H_1\ H_2}{A_2}}
+  {\ND{H_1}{A_1\Imp A_2} & \ND{H_2}{A_1}}
+}
+
+\newcommand{\NDAx}{
+  \Infer[$Ax$]
+  {\ND[\Gamma, x:A]{x}{A}}
+}
+
+\newcommand{\NDTopE}{
+  \mbox{No rule for $\Top$-E}
+}
+
+\newcommand{\NDBotI}{
+  \mbox{No rule for $\Bot$-I}
+}
+
+\begin{figure}
+  \begin{center}
+    \fbox{
+      \begin{tabular}{cccccc}
+        \NDAndI
+        &
+        \NDAndEa
+        &
+        \NDAndEb
+        \figline
+        \NDOrIa
+        &
+        \NDOrIb
+        &
+        \NDBotE
+        \figline
+        \multicolumn{3}{c}{
+          \NDOrE
+        }
+        \figline
+        \NDImpI
+        &
+        \NDImpE
+        &
+        \NDTopI
+        \figline
+        \NDAx
+        &
+        \NDTopE
+        &
+        \NDBotI
+      \end{tabular}
+    }
+  \end{center}
+  \caption{Natural deduction with proof terms}
+  \label{prop.nd}
+  \index{$\ND{H}{A}$}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

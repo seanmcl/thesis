@@ -1,0 +1,118 @@
+
+\newcommand{\PBInitRule}{
+  \Infer[$Init$]
+  {\NSeq{\Left{p},\Right{p}}}
+  {}
+}
+
+\newcommand{\PBAndRRule}{
+  \Infer[\And$-F$]
+  {\NSeq{\Right{A_1 \And A_2}}}
+  {\NSeq{\Right{A_1}} & \NSeq{\Right{A_2}}}
+}
+
+\newcommand{\PBAndLRule}{
+  \Infer[\And$-T$]
+  {\NSeq{\Left{A_1 \And A_2}}}
+  {\NSeq{\Left{A_1}, \Left{A_2}}}
+}
+
+\newcommand{\PBImpRRule}{
+  \Infer[\Imp$-F$]
+  {\NSeq{\Right{A_1 \Imp A_2}}}
+  {\NSeq{\Left{A_1},\Right{A_2}}}
+}
+
+\newcommand{\PBImpLRule}{
+  \Infer[\Imp$-T$]
+  {\NSeq{\Left{A_1\Imp A_2}}}
+  {\NSeq{\Left{A_1\Imp A_2},\Right{A_1}} & \NSeq{\Left{A_2}}}
+}
+
+\newcommand{\PBOrRLRule}{
+  \Infer[\Or$-F$_1]
+  {\NSeq{\Right{A_1 \Or A_2}}}
+  {\NSeq{\Right{A_1}}}
+}
+
+\newcommand{\PBOrRRRule}{
+  \Infer[\Or$-F$_2]
+  {\NSeq{\Right{A_1 \Or A_2}}}
+  {\NSeq{\Right{A_2}}}
+}
+
+\newcommand{\PBOrLRule}{
+  \Infer[\Or$-T$]
+  {\NSeq{\Left{A_1 \Or A_2}}}
+  {\NSeq{\Left{A_1}} & \NSeq{\Left{A_2}}}
+}
+
+\newcommand{\PBTopRRule}{
+  \Infer[\Top$-F$]
+  {\NSeq{\Right{\Top}}}
+  {}
+}
+
+\newcommand{\PBBotLRule}{
+  \Infer[\Bot$-T$]
+  {\NSeq{\Left{\Bot}}}
+  {}
+}
+
+\renewcommand{\figline}{\\[2em]}
+
+\begin{figure}
+  \begin{center}
+    \fbox{
+      \begin{tabular}{c}
+        \begin{tabular}{ccc}
+          \PBInitRule
+          &
+          \hspace{1cm}
+          \PBTopRRule
+          &
+          \hspace{1cm}
+          \mbox{No rule for $\Top$-T}
+        \end{tabular}
+        \figline
+        \begin{tabular}{cc}
+          \PBAndRRule
+          &
+          \hspace{1cm}
+          \PBAndLRule
+        \end{tabular}
+        \figline
+        \begin{tabular}{ccc}
+          \PBOrRLRule
+          &
+          \hspace{10pt}
+          \PBOrRRRule
+          &
+          \hspace{10pt}
+          \PBOrLRule
+        \end{tabular}
+        \figline
+        \begin{tabular}{cc}
+          \mbox{No rule for $\Bot$-F}
+          &
+          \hspace{20pt}
+          \PBBotLRule
+        \end{tabular}
+        \figline
+        \begin{tabular}{cc}
+          \PBImpRRule
+          &
+          \hspace{20pt}
+          \PBImpLRule
+        \end{tabular}
+      \end{tabular}
+    }
+  \end{center}
+  \caption{Backward inference rule schemas}
+  \label{prop.backward}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

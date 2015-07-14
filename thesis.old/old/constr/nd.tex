@@ -1,0 +1,157 @@
+
+\newcommand{\CNPair}{
+  \Infer[\And$-I$]
+  {\CNd{\Gamma}{\ASet{H_1,H_2} : A_1\And A_2}}
+  {\CNd{\Gamma}{H_1 : A_1} & \CNd{\Gamma}{H_2 : A_2}}
+}
+
+\newcommand{\CNFst}{
+  \Infer[\And$-E$_1]
+  {\CNd{\Gamma}{\Fst(H) : A_1}}
+  {\CNd{\Gamma}{\ASet{H_1,H_2} : A_1\And A_2}}
+}
+
+\newcommand{\CNSnd}{
+  \Infer[\And$-E$_1]
+  {\CNd{\Gamma}{\Snd(H) : A_2}}
+  {\CNd{\Gamma}{\ASet{H_1,H_2} : A_1\And A_2}}
+}
+
+\newcommand{\CNInl}{
+  \Infer[\Or$-I$_1]
+  {\CNd{\Gamma}{\Inl(H) : A_1\Or A_2}}
+  {\CNd{\Gamma}{H : A_1}}
+}
+
+\newcommand{\CNInr}{
+  \Infer[\Or$-I$_2]
+  {\CNd{\Gamma}{\Inr(H) : A_1\Or A_2}}
+  {\CNd{\Gamma}{H : A_2}}
+}
+
+\newcommand{\CNCase}{
+  \Infer[\Or$-E$]
+  {\CNd{\Gamma}{\Case~H~\Of~\Inr(x_1)\to H_1~|~\Inl(x_2)\to H_2 : C}}
+  {
+    \CNd{\Gamma}{H : A_1\Or A_2}
+    &
+    \CNd{\Gamma, x_1:A_1}{H_1 : C}
+    &
+    \CNd{\Gamma, x_2:A_2}{H_2 : C}
+  }
+}
+
+\newcommand{\CNLam}{
+  \Infer[\Imp$-I$]
+  {\CNd{\Gamma}{\Lam x.~H : A_1\Imp A_2}}
+  {\CNd{\Gamma, x:A_1}{H : A_2}}
+}
+
+\newcommand{\CNApp}{
+  \Infer[\Imp$-E$]
+  {\CNd{\Gamma}{H_1~H_2 : A_2}}
+  {
+    \CNd{\Gamma}{H_1 : A_1\Imp A_2}
+    &
+    \CNd{\Gamma}{H_2 : A_1}
+  }
+}
+
+\newcommand{\CNLamt}{
+  \Infer[\All$-I$]
+  {\CNd{\Gamma}{\Lamt x:\sigma.~H : \All x.~A}}
+  {\CNd[\Delta,x:\sigma]{\Gamma, x:A_1}{H : A_2}}
+}
+
+\newcommand{\CNAppt}{
+  \Infer[\All$-E$]
+  {\CNd{\Gamma}{H~t : A(t)}}
+  {\CNd{\Gamma}{H : \All x:\sigma.~A(x)} & \Delta\Entails t:\sigma}
+}
+
+\newcommand{\CNPack}{
+  \Infer[\Ex$-I$]
+  {\CNd{\Gamma}{\ASet{H, t}\As~\Ex x:\sigma.~A(x):\Ex x:\sigma.~A(x)}}
+  {\CNd{\Gamma}{H : A(t)} & \Delta\Entails t:\sigma}
+}
+
+\newcommand{\CNUnpack}{
+  \Infer[\Ex$-E$]
+  {\CNd{\Gamma}{\Let\ASet{x, y} = H_1~\In~H_2} : C}
+  {
+    \CNd{\Gamma}{H_1 : \Ex x:\sigma.~A(x)}
+    &
+    \CNd[\Delta,y:\sigma]{\Gamma, x:A(y)}{H_2 : C}
+  }
+}
+
+\begin{figure}
+  \begin{center}
+    {\footnotesize
+      \fbox{
+        \begin{tabular}{c}
+          \begin{tabular}{ccc}
+            \CNHyp
+            &
+            \hspace{2em}
+            \CNAscribe
+            &
+            \hspace{2em}
+            \CNDomain
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{c}
+            \CNPair
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{ccc}
+            \CNFst
+            &
+            \hspace{2em}
+            \CNSnd
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{c}
+            \CNCase
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \CNInl
+            &
+            \hspace{2em}
+            \CNInr
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \CNLam
+            &
+            \hspace{2em}
+            \CNApp
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \CNLamt
+            &
+            \hspace{2em}
+            \CNAppt
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{c}
+            \CNPack
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{c}
+            \CNUnpack
+          \end{tabular}
+        \end{tabular}
+      }
+    }
+  \end{center}
+  \caption{Natural deduction.}
+  \label{constr.nd}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

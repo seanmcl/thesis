@@ -1,0 +1,47 @@
+% add xcolor options here (dvipsnames).  They raise exceptions when used
+% directly at the cite of importing xcolor.
+\documentclass[12pt, dvipsnames]{cmuthesis}
+
+\input{packages}
+\input{commands}
+
+%\includeonly{intro}
+\includeonly{prop}
+
+\begin{document}
+
+%\frontmatter
+
+\include{title}
+\include{abstract}
+%\include{quotes}
+
+%\tableofcontents
+%\listoffigures
+
+%\include{acknowledgments}
+
+%\mainmatter
+
+%\include{intro}
+%\include{prop}
+% \include{fol}
+% \include{constr}
+% \include{modal}
+% \include{linear}
+% \include{ordered}
+% \include{concl}
+%\part{Appendix}
+%\appendix
+
+%\backmatter
+
+%\printindex
+% \addcontentsline{toc}{chapter}{Index}
+
+\bibliographystyle{plainnat}
+\bibliography{thesis}
+\addcontentsline{toc}{chapter}{Bibliography}
+
+\ednotemessage
+\end{document}

@@ -1,0 +1,51 @@
+
+\renewcommand{\Si}{\CSeq{\Psi}{\MAt{\Box p}{w_0},\MLe{w_0}{w_2}\Imp p(w_2)}{\MLe{w_0}{w_2}}}
+\renewcommand{\Qi}{\Infer{\Si}{\Psi\Entails\MLe{w_0}{w_2}}}
+
+\renewcommand{\Sh}{\CSeq{\Psi}{\MAt{\Box p}{w_0}, p(w_2)}{p(w_2)}}
+\renewcommand{\Qh}{\Infer{\Sh}{}}% \Qi & \Qj}}
+
+\renewcommand{\Sg}{\CSeq{\Psi}{\MAt{\Box p}{w_0},\MLe{w_0}{w_2}\Imp p(w_2)}{p(w_2)}}
+\renewcommand{\Qg}{\Infer[\Imp$-L$]{\Sg}{\Qh & \Qi}}
+
+\renewcommand{\Sf}{\CSeq{\Psi}{\MAt{\Box p}{w_0}}{p(w_2)}}
+\renewcommand{\Qf}{\Infer[\All$-L$]{\Sf}{\Qg & \Delta\Entails w_2:\MWorld}}
+
+\renewcommand{\Se}{\CSeq[w_1:\MWorld]{\MLe{w_0}{w_1}}{\MAt{\Box p}{w_0}}{\MAt{\Box p}{w_1}}}
+\renewcommand{\Qe}{\Infere{\Se}{\Qf}}
+
+\renewcommand{\Sd}{\CSeq[w_1:\MWorld]{\cdot}{\MLe{w_0}{w_1},\MAt{\Box p}{w_0}}{\MAt{\Box p}{w_1}}}
+\renewcommand{\Qd}{\Infer[$E-L$]{\Sd}{\Qe}}
+
+\renewcommand{\Sc}{\CSeq[w_1:\MWorld]{\cdot}{\MAt{\Box p}{w_0}}{\MLe{w_0}{w_1}\Imp\MAt{\Box p}{w_1}}}
+\renewcommand{\Qc}{\Infer[\Imp$-R$^{w_1}]{\Sc}{\Qd}}
+
+\renewcommand{\Sb}{\CSeq[\cdot]{\cdot}{\MAt{\Box p}{w_0}}{\MAt{\Box\Box p}{w_0}}}
+\renewcommand{\Qb}{\Infer[\All$-R$]{\Sb}{\Qc}}
+
+\renewcommand{\Sa}{\CSeq[\cdot]{\cdot}{\cdot}{\MAt{\Box p\Imp \Box\Box p}{w_0}}}
+\renewcommand{\Qa}{\Infer[\Imp$-R$]{\Sa}{\Qb}}
+
+% \begin{figure}
+%   \begin{center}
+% %    {\footnotesize
+%       \fbox{
+%         \begin{array}{c}
+%           \begin{array}{rl}
+%             \Delta&=w_1:\MWorld,w_2:\MWorld\\
+%             \Psi&=\MLe{w_0}{w_1}\And\MLe{w_1}{w_2}\\
+%           \end{array}
+%           \\[2em]
+%           \Qa
+%         \end{array}
+%       }
+% %    }
+%   \end{center}
+%   \caption{Translation example.}
+%   \label{modal.trans-ex}
+% \end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

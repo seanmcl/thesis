@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Make sure all references in the bibliography are used
+
+bib=thesis.bib
+
+refs=$(grep @ $bib | grep -v string | sed 's/@.*{//' | sed 's/,//' | sort -r)
+
+n=0
+unused=""
+
+for ref in $refs; do
+  grep $ref *.tex &> /dev/null
+  if [ $? -eq 1 ]; then
+    n=$(( $n + 1 ))
+    unused="$ref $unused"
+  fi
+done
+
+printf "%d references not used:\n" $n
+
+for ref in $unused; do
+  echo "   $ref"
+done

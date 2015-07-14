@@ -1,0 +1,94 @@
+
+\newcommand{\MBInit}{
+  \Infer[$Init$]
+  {\MSeq{\Gamma,\MAt{p}{w}}{\MAt{p}{w}}}
+  {\Delta\Entails \Gamma,\MAt{p}{w}~\Ok}
+}
+
+\newcommand{\MBBoxR}{
+  \Infer[\Box$-R$]
+  {\MSeq{\Gamma}{\MAt{\Box A}{w}}}
+  {\MSeq[\Delta,w':\MWorld]{\Gamma,\MLe{w}{w'}}{\MAt{A}{w'}}}
+}
+
+\newcommand{\MBBoxL}{
+  \Infer[\Box$-L$]
+  {\MSeq{\Gamma, \MAt{\Box A}{w}}{\gamma}}
+  {
+    \MSeq{\Gamma, \MAt{A}{w'}}{\gamma}
+    &
+    \Gamma\Entails\MLe{w}{w'}
+  }
+}
+
+\newcommand{\MBDiaR}{
+  \Infer[\Dia$-R$]
+  {\MSeq{\Gamma}{\MAt{\Dia A}{w}}}
+  {
+    \MSeq{\Gamma}{\MAt{A}{w'}}
+    &
+    \Gamma\Entails\MLe{w}{w'}
+  }
+}
+
+\newcommand{\MBDiaL}{
+  \Infer[\Dia$-L$]
+  {\MSeq{\Gamma, \MAt{\Dia A}{w}}{\gamma}}
+  {
+    \MSeq[\Delta,w':\MWorld]{\Gamma, \MLe{w}{w'},\MAt{A}{w'}}{\gamma}
+  }
+}
+
+\newcommand{\MBAndR}{
+  \Infer[\And$-R$]
+  {\MSeq{\Gamma}{A_1\And A_2}}
+  { \MSeq{\Gamma}{A_1} & \MSeq{\Gamma}{A_2} }
+}
+
+\newcommand{\MBImpL}{
+  \Infer[\Imp$-L$]
+  {\MSeq{\Gamma,\MAt{A_1\Imp A_2}{w}}{\gamma}}
+  {\MSeq{\Gamma,\MAt{A_1\Imp A_2}{w}}{\MAt{A_1}{w}} & \MSeq{\Gamma,\MAt{A_2}{w}}{\gamma}}
+}
+
+\begin{figure}[H]
+  \begin{center}
+    {\small
+      \fbox{
+        \begin{tabular}{c}
+          \begin{tabular}{cc}
+            \MBInit
+            &
+            \hspace{2em}
+            \MBAndR
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \MBBoxR
+            &
+            \hspace{2em}
+            \MBBoxL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \MBDiaR
+            &
+            \hspace{2em}
+            \MBDiaL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{c}
+            \MBImpL
+          \end{tabular}
+      \end{tabular}
+      }
+    }
+  \end{center}
+  \caption{Backward calculus.}
+  \label{modal.backward}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

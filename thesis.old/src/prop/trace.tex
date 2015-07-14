@@ -1,0 +1,81 @@
+
+\newcommand{\FSubsumed}{\sqsubset}
+\newcommand{\BSubsumed}{\sqsupset}
+\newcommand{\MarkSub}[2]{\color{gray}#1 \` \color{gray} #2}
+
+\begin{figure}
+  \begin{center}
+    \fbox{
+      \begin{tabular}{c@{\hspace{2cm}}c}
+        \begin{minipage}[b]{0.4\linewidth}
+          \begin{tabbing}
+            \textbf{Goal} \\
+            \\
+            \FSeq{\cdot}{p_6} \\
+            \\
+            \textbf{Stage 0} \\
+            \\
+            $q_0$. \FSeq{a}{a} \\
+            $q_1$. \FSeq{b}{b} \\
+            $q_2$. \FSeq{c}{c} \\
+            $q_3$. \FSeq{\Bot}{\cdot} \\
+            \\
+            \textbf{Stage 1} \\
+            \\
+            $q_4$. \FSeq{a}{p_1} \` ($r_1$, $q_0$) \\
+            $q_5$. \FSeq{b}{p_2} \` ($r_3$, $q_1$) \\
+            $q_6$. \FSeq{c}{p_1} \` ($r_2$, $q_2$) \\
+            $q_7$. \FSeq{p_5}{b} \` ($r_6$, $q_3, q_1$)) \\
+            \\
+            \textbf{Stage 2} \\
+            \\
+            $q_8$. \FSeq{p_5}{p_2} \` ($r_3$, $q_7$) \\
+            $q_9$. \FSeq{b, p_3}{c} \` ($r_4$, $q_5, q_2$) \\
+            $q_{10}$. \FSeq{b, p_3}{p_1} \` ($r_4$, $q_5, q_6$) \\
+            $q_{11}$. \FSeq{a}{p_4} \` ($r_5$, $q_4$) \\
+            $q_{12}$. \FSeq{c}{p_4} \` ($r_5$, $q_6$) \\
+            \MarkSub{\FSeq{p_5}{p_2}}{$(r_6, q_3, q_5) \BSubsumed q_8$} \\
+          \end{tabbing}
+        \end{minipage}
+        &
+        \begin{minipage}[b]{0.4\linewidth}
+          \begin{tabbing}
+            \textbf{Stage 3} \\
+            \\
+            \MarkSub{\FSeq{b, p_3}{p_1}}{$(r_2, q_9) \BSubsumed q_{10}$} \\
+            $q_{13}$. \FSeq{p_5, p_3}{p_4} \` ($r_4$, $q_8, q_{12}$) \\
+            $q_{14}$. \FSeq{p_5, p_3}{p_1} \` ($r_4$, $q_8, q_{6}$) \\
+            $q_{15}$. \FSeq{p_5, p_3}{c} \` ($r_4$, $q_8, q_{2}$) \\
+            \MarkSub{$q_{16}$.{\FSeq{b, p_3}{p_4}}}{($r_4$, $q_5, q_{12}) \FSubsumed q_{17}$} \\
+            $q_{17}$. \FSeq{b}{p_4} \` ($r_5$, $q_{14}$) \\
+            \MarkSub{{\FSeq{p_5, p_3}{c}}}{$r_6$, $q_3, q_{9}. \FSubsumed q_{15}$} \\
+            \MarkSub{{\FSeq{p_5, p_3}{p_1}}}{$r_6$, $q_3, q_{10}. \FSubsumed q_{14}$} \\
+            $q_{18}$. \FSeq{a}{p_6} \` ($r_7$, $q_{11}$) \\
+            $q_{19}$. \FSeq{c}{p_6} \` ($r_7$, $q_{12}$) \\
+            \\
+            \textbf{Stage 4} \\
+            \\
+            \MarkSub{\FSeq{p_5, p_3}{p_1}}{$(r_2, q_{15}) \BSubsumed q_{14}$} \\
+            \MarkSub{$q_{20}$. \FSeq{p_5, p_3}{p_6}}{$(r_4, q_8, q_{19}) \FSubsumed q_{22}$} \\
+            $q_{21}$. \FSeq{p_5}{p_4} \` ($r_4$, $q_{14}$) \\
+            \MarkSub{\FSeq{p_5}{p_4}}{$(r_6, q_{17}) \BSubsumed q_{21}$} \\
+            $q_{22}$. \FSeq{p_3}{p_6} \` ($r_7$, $q_{13}$)) \\
+            $q_{23}$. \FSeq{b}{p_6} \` ($r_7$, $q_{17}$)) \\
+            \\
+            \textbf{Stage 5} \\
+            \\
+            $q_{24}$. \FSeq{p_5}{p_6} \` ($r_6$, $q_{23}$)) \\
+            $q_{25}$. \FSeq{\cdot}{p_6} \` ($r_7$, $q_{21}$)) \\
+          \end{tabbing}
+        \end{minipage}
+      \end{tabular}
+    }
+  \end{center}
+  \caption{Example}
+  \label{prop.trace}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

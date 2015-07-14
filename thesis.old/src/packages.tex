@@ -1,0 +1,139 @@
+
+% ------------------------------------------------------------------------------
+%  Misc
+% ------------------------------------------------------------------------------
+
+\usepackage{alltt} % for \begin{comment}
+\usepackage{amsmath,amssymb,amsthm,amsfonts}
+\usepackage{array}
+\usepackage{dcolumn}
+\usepackage{epigraph}
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage[numbers,sort]{natbib}
+\usepackage{pdfsync}
+\usepackage{rotating}
+% \usepackage{stmaryrd} % for squares
+\usepackage{subfigure}
+\usepackage{times}
+\usepackage{url}
+\usepackage{verbatim} % for \begin{comment}
+\usepackage{calc}
+\usepackage{mathrsfs} % for \textsubring
+
+% Approximately 1" margins, more space on binding side
+%\usepackage[letterpaper,twoside,vscale=.8,hscale=.75,nomarginpar]{geometry}
+%for general printing (not binding)
+\usepackage[letterpaper,twoside,vscale=.8,hscale=.75,nomarginpar,hmarginratio=1:1]{geometry}
+\numberwithin{equation}{section}
+
+% ------------------------------------------------------------------------------
+%  Ednotes
+% ------------------------------------------------------------------------------
+
+\usepackage[show]{ed}
+%\usepackage[hide]{ed}
+
+% ------------------------------------------------------------------------------
+%  Tikz
+% ------------------------------------------------------------------------------
+
+\usepackage{pgf}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes}
+\usepackage{pgfplots}
+
+% ------------------------------------------------------------------------------
+%  Verbatim
+% ------------------------------------------------------------------------------
+
+% \usepackage{fancyvrb}
+% \DefineVerbatimEnvironment{code}{Verbatim}{fontsize=\small,frame=single}
+% \DefineVerbatimEnvironment{example}{Verbatim}{fontsize=\small}
+
+% ------------------------------------------------------------------------------
+%  Proof
+% ------------------------------------------------------------------------------
+
+%\usepackage{xhfill}
+\usepackage{dashrule}
+\usepackage{proof-dashed}
+\inferLineSkip=5pt
+
+% ------------------------------------------------------------------------------
+%  Index
+% ------------------------------------------------------------------------------
+
+\usepackage{makeidx}
+\makeindex
+
+% ------------------------------------------------------------------------------
+%  Hyperref
+% ------------------------------------------------------------------------------
+
+% float must be loaded before hyperref for algorithmic to work
+\usepackage{float}
+\usepackage[
+backref,
+bookmarks,
+bookmarksnumbered,
+citecolor=Plum,
+colorlinks=true,
+filecolor=red,
+linkcolor=blue,
+pageanchor=true,
+pdfpagelabels,
+plainpages=false,
+urlcolor=purple,
+% pagebackref
+]{hyperref}
+
+% ------------------------------------------------------------------------------
+%  Theorems
+% ------------------------------------------------------------------------------
+
+\newtheoremstyle{thesis}
+  {5pt}% measure of space to leave above the theorem. E.g.: 3pt
+  {5pt}% measure of space to leave below the theorem. E.g.: 3pt
+  {}% name of font to use in the body of the theorem
+  {}% measure of space to indent
+  {}% name of head font
+  {}% punctuation between head and body
+  {5pt}% space after theorem head; " " = normal interword space
+  {\thmname{\textbf{#1}}\thmnumber{\textbf{ #2}}.\thmnote{ (#3)}}% Manually specify head
+
+\setlength{\topsep}{8pt}
+%\theoremstyle{plain}
+\theoremstyle{thesis}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem*{theorem*}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
+% Definition style
+%\theoremstyle{definition}
+\newtheorem{example}{Example}[section]
+\newtheorem{definition}[theorem]{Definition}
+
+%\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+% ------------------------------------------------------------------------------
+%  Algorithms
+% ------------------------------------------------------------------------------
+
+\usepackage{algorithmic}
+\usepackage[section]{algorithm}
+% \usepackage{algorithmic-fix}
+% \newcommand{\theHalgorithm}{\arabic{algorithm}}
+% \usepackage[lined,algonl,boxed]{algorithm2e}
+
+% ------------------------------------------------------------------------------
+%  Spacing
+% ------------------------------------------------------------------------------
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "thesis"
+%%% End:

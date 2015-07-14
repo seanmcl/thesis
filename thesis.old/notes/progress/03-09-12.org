@@ -1,0 +1,17 @@
+
+* Coding
+
+Working on recursive backward subsumption bug in old Imogen, found
+by Jimmy Thomson.
+
+Hacked on indentation
+
+Adding dot support to proofterm database
+
+* Writing
+
+* Studying
+
+Working on a proof for recursive backward subsumption.
+
+* Tomorrow

@@ -1,0 +1,134 @@
+
+\chapter{First-order Logic}\label{chapter.fol}
+
+\begin{remark}\label{fol.remark.multiset}
+Using sets would yield the same free variable calculus, since
+unlike in the propositional case contraction is still necessary.
+Moreover, it complicates the completeness proof XXX more.
+\end{remark}
+
+Intuitionistic logic (IL) was conceived in the beginning of the 20th century as a
+response to Brouwer's rejection~\cite{Brouwer.1907.Thesis} of the reasoning
+principles used in mathematics at the time.  In particular, he rejected the
+tautological status of the law of the excluded middle $P\Or\Not P$.  The next
+three decades saw increasing interest in the subject, with advances made by
+Glivenko, Heyting, and Kolmogorov among others.  The most important early
+development for our purposes was made in 1934 by Gentzen~\cite{Gentzen.1934.MZ},
+where he defined a \emph{sequent calculus}.
+
+\section{Gentzen's LJ}
+
+It is Gentzen's sequent calculus $\LJ$ that forms the basis for proof search
+in IL.  Formulas of IL are built from variables $x$, function symbols $f$,
+and predicate symbols $p$ according to the following grammar:
+
+\[
+\begin{array}{lll}
+  &\mbox{Terms } T &::= x \Sep f(\vec{T})\\
+  &\mbox{Formulas } A &::= p(\vec{T}) \Sep A \And A \Sep \Top \Sep A \Or A
+  \Sep \Bot \Sep A \Imp A \Sep \All x.\ A \Sep \Ex x.\ A\\
+\end{array}
+\]
+
+\input{fol/subformulas}
+\input{fol/lj}
+
+Here $\vec{T}$ is a list of zero or more terms.  We call formulas $p(t_1,
+\ldots, t_n)$ where $p$ is a predicate symbol \emph{atomic} formulas.
+We define $\Not A$ as $A\Imp\Bot$ and $A \Iff B$ as $(A\Imp B)
+\And (B\Imp A)$.
+
+\begin{remark}
+Unlike classical logic, the remaining connectives are not
+inter-definable.  For instance, $A\Imp B$ is not equivalent to $\Not A\Or B$.
+Nor is Skolemization a valid transformation on IL; it lacks the convenient
+normal forms of classical logic.  The theorem proving problem is correspondingly
+more difficult.  The propositional fragment is PSPACE-complete,
+compared with the mere NP-completeness of classical propositional logic.
+\end{remark}
+
+A formula without variables is called \emph{ground}.
+
+A variable $x$ is called
+\emph{bound} if it occurs in the subtree of a $\All$ or $\Ex$.
+
+Sequents have the form $\Seq{\Gamma}{A}$ where
+$\Gamma$ is a multiset of formulas and $A$ is a formula.  The elements of
+$\Gamma$ are called the \emph{antecedents} and $A$ is the \emph{consequent}.
+The rules of inference are defined in Figure~\ref{fol.rules.lj}.  In a given rule,
+the sequent below the line is called the \emph{conclusion} and the sequents
+above the line are the \emph{hypotheses}.  We assume that antecedents of the
+conclusion of a rule are always a subset of the antecedents of the hypotheses.
+For example, in $\LJImpL$ the formula $A_1\Imp A_2$ is assumed to occur in
+$\Gamma$.  This is essential for the completeness of the system.
+
+The rules inductively define the proofs of $\LJ$.  A
+\emph{proof} of a sequent $S$ is a tree rooted at $S$ created from the rules of
+$\LJ$ such that the leaves are all instances of $\LJInit$, $\LJTopR$, or
+$\LJBotL$.  Note that in the rules $\LJAllR$ and $\LJExL$,
+$a$ does not occur free in $\Gamma, C$.
+
+\begin{remark}
+Figure~\ref{fol.rules.lj} is not strictly speaking Gentzen's LJ
+of~\cite{Gentzen.1934.MZ}.  One difference is that Gentzen used \emph{lists} of
+hypotheses rather than multisets.  One example of the consequences of this
+choice is that to capture the requirement that the order of the antecedents does
+not matter, he added \emph{structural} rules that allowed moving formulas around
+the antecedent list.  Another difference is that his conjunction left rule was
+
+\[
+\infer[$\RuleNameSize$ \LJAndL]
+{\Seq{\Gamma, A_1 \And A_2}{C}}
+{\Seq{\Gamma, A_1, A_2}{C}}
+\]
+
+\noindent There are numerous choices for the details of the sequent calculus
+that make no difference to the provability of a sequent.  Many of the
+technical differences in such presentations are described
+in~\cite{Troelstra.2000.ProofTheory}, Chapter 3.  Our system is essentially
+their \emph{G3i}.  We chose this equivalent presentation to be consistent with later
+chapters.
+\end{remark}
+
+\section{The Inverse Method}\label{fol.inverse}
+
+\begin{remark}
+  Say something about Decarte's proof of the existence of God here.
+\end{remark}
+
+\section{Related Work}
+FT~\cite{Sahlin.1992.FT}
+\cite{Sahlin.1989.SICS}
+
+JProver~\cite{Schmitt.2001.IJCAR}
+Gandalf~\cite{Tammet.1996.CADE}
+
+Wallen~\cite{Wallen.1990.Book}, in its summary of
+proof-search method in modal and intuitionistic logic, does not mention the
+inverse method.
+\cite{Shankar.1992.CADE}
+
+\section{Notes}
+
+Troelstra and Schwichtenberg discuss the proof theory of intuitionistic
+logic in detail in~\cite{Troelstra.2000.ProofTheory} including the
+crucial cut-elimination theorem.  Indeed, Gentzen's $\LJ$ originally
+contained the cut rule as primitive, which he later showed (in the same
+paper) to be redundant.
+
+Section~\ref{fol.inverse} relies heavily on Degtyarev and Voronkov's detailed
+presentation of the inverse method in~\cite{Voronkov.2001.Handbook}.  In
+particular their proof of \cite{Lifschitz.1989.JAR}
+  \item[Case:]
+    \[ \PFContractRule \]
+    \begin{tabbing}
+      $\FB{\FSeq{\Gamma,A,A}{\gamma}}$ \` IH \\
+      $\Seq{\Gamma, A, A}{\FB{\gamma}}$ \` Def. \\
+      $\Seq{\Gamma, A}{\FB{\gamma}}$ \` Contract (Lemma~\ref{prop.thm.contract})\\
+      $\FB{\FSeq{\Gamma,A}{\gamma}}$ \` Def. \\
+    \end{tabbing}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "thesis"
+%%% End:

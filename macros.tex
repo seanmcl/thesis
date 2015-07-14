@@ -1,0 +1,238 @@
+\usepackage{fancyvrb}
+\usepackage{times}
+\usepackage{dashrule}
+\usepackage{proof-dashed}
+\usepackage[show]{ed}
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{rotating}
+\usetikzlibrary{arrows,decorations.pathmorphing,backgrounds,fit}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{amssymb}            % for \multimap (-o)
+\usepackage{stmaryrd}           % for \binampersand (&), \bindnasrepma (\paar)
+\usepackage{wasysym}            % for \ocircle
+\usepackage[numbers,sort]{natbib}
+\usepackage[backref,pageanchor=true,plainpages=false, pdfpagelabels, bookmarks,bookmarksnumbered,
+%pdfborder=0 0 0,  %removes outlines around hyper links in online display
+]{hyperref}
+\usepackage{doi}
+\usepackage{subfigure}
+
+% Approximately 1" margins, more space on binding side
+%\usepackage[letterpaper,twoside,vscale=.8,hscale=.75,nomarginpar]{geometry}
+%for general printing (not binding)
+\usepackage[letterpaper,twoside,vscale=.8,hscale=.75,nomarginpar,hmarginratio=1:1]{geometry}
+
+% Provides a draft mark at the top of the document.
+
+\definecolor{grayout}{rgb}{.6,.6,.6}
+\definecolor{plesantgreen}{rgb}{.1,.5,0}
+\newcommand{\gr}[1]{\textcolor{plesantgreen}{\ensuremath{{#1}}}}
+
+\definecolor{lfblue}{rgb}{.5,.2,0}
+\newcommand{\lf}[1]{\textcolor{lfblue}{\ensuremath{{#1}}}}
+
+
+
+\definecolor{justblack}{rgb}{0,0,0}
+\newcommand{\no}[1]{\textcolor{justblack}{\ensuremath{{#1}}}}
+
+\definecolor{objgreen}{rgb}{0,.3,.5}
+\newcommand{\obj}[1]{\textcolor{objgreen}{\ensuremath{{#1}}}}
+
+\hypersetup{colorlinks=true,citecolor=blue,urlcolor=blue,linkcolor=black}
+
+\newcommand{\robnote}[1]{\footnote{{\bf NOTE TO SELF:} ~~ {#1}}}
+\newcommand{\futurework}[1]{}
+
+\newcommand{\ollll}{OL$_3$}
+\newcommand{\sls}{SLS}
+\newcommand{\simplearrow}{\rightarrow}
+\newcommand{\rowan}{${\lambda}^{\ocircle}$}
+
+\newcommand{\mb}{Coq}
+
+\renewcommand{\labelitemi}{$\ast$}
+
+
+
+% Theorems
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem*{lemma}{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{definition}[theorem]{Definition}
+
+% symbols of linear logic
+\newcommand{\lolli}{\multimap}
+\newcommand{\tensor}{\otimes}
+\newcommand{\with}{\mathbin{\binampersand}}
+\newcommand{\paar}{\mathbin{\bindnasrepma}}
+\newcommand{\one}{\mathbf{1}}
+\newcommand{\zero}{\mathbf{0}}
+\newcommand{\bang}{{!}}
+\newcommand{\pbang}{\mbox{\hspace{2pt}$\mathbb !$\hspace{-4.44pt}$^\wedge$\hspace{-1pt}}}
+\newcommand{\whynot}{{?}}
+\newcommand{\bilolli}{\mathrel{\raisebox{1pt}{\ensuremath{\scriptstyle\circ}}{\lolli}}}
+% \oplus, \top, \bot
+\newcommand{\deupdown}{\mbox{${\uparrow}{\downarrow}\hspace{-11.4pt}\diagup$}}
+\newcommand{\dedownup}{\mbox{${\downarrow}{\uparrow}\hspace{-11.4pt}\diagdown$}}
+
+\newcommand{\restrictto}[2]{\ensuremath{{#1}{\upharpoonright}_{#2}}}
+\newcommand{\restrictsig}[2]{\ensuremath{{#1}{\mbox{\lightning}}_{#2}}}
+\newcommand{\restrictfrom}[2]{\ensuremath{{#1}{\downharpoonright}^{#2}}}
+
+% symbols of ordered logic
+\newcommand{\fuse}{\mathbin{\bullet}}
+\newcommand{\righti}{\twoheadrightarrow}
+\newcommand{\lefti}{\rightarrowtail}
+\newcommand{\gnab}{\mbox{\textexclamdown}}
+\newcommand{\scriptgnab}{\mbox{\scriptsize{\textexclamdown}}}
+
+\newcommand{\mconc}{{\it true}}
+\newcommand{\mvalid}{{\it valid}}
+
+\newcommand{\mlax}{{\it lax}}
+\newcommand{\mtrue}{{\it ord}}
+\newcommand{\meph}{{\it eph}}
+\newcommand{\mpers}{{\it pers}}
+\newcommand{\mlvl}{{\it lvl}}
+
+\newcommand{\isconc}[1]{{#1}\,{\mconc}}
+\newcommand{\isvalid}[1]{{#1}\,{\mvalid}}
+
+\newcommand{\islax}[1]{{#1}\,{\mlax}}
+\newcommand{\istrue}[1]{{#1}\,{\mtrue}}
+\newcommand{\iseph}[1]{{#1}\,{\meph}}
+\newcommand{\ispers}[1]{{#1}\,{\mpers}}
+\newcommand{\islvl}[1]{{#1}\,{\mlvl}}
+
+% judgments of linear logic
+\newcommand{\altv}{\Longrightarrow}
+\newcommand{\seq}[3]{{#1};{#2} \longrightarrow {#3} \mathstrut}
+\newcommand{\altseq}[3]{{#1};{#2} \altv {#3} \mathstrut}
+\newcommand{\pseq}[2]{{#1} \longrightarrow {#2} \mathstrut}
+
+\newcommand{\mildseq}[3]{{#1};{#2} \vdash {#3} \mathstrut}
+\newcommand{\andseq}[3]{{#1};{#2} \Vdash {#3} \mathstrut}
+\newcommand{\mildrfoc}[3]{{#1};{#2} \vdash [{#3}] \mathstrut}
+\newcommand{\mildinv}[3]{{#1};{#2} \vdash {#3} \mathstrut}
+\newcommand{\mildlfoc}[4]{{#1};{#2}, [{#3}] \vdash {#4} \mathstrut}
+
+\newcommand{\foc}[3]{{#1};{#2} \vdash {#3} \mathstrut}
+\newcommand{\focx}[3]{{#1};{#2} \vdash_{\Sigma,\subord} {#3} \mathstrut}
+\newcommand{\rfoc}[3]{{#1};{#2} \vdash [{#3}] \mathstrut}
+\newcommand{\ifoc}[4]{{#1};{#2} {\mid} {#3} \vdash {#4} \mathstrut}
+\newcommand{\lfoc}[4]{{#1};{#2}[{#3}] \vdash {#4} \mathstrut}
+
+\newcommand{\foct}[4]{{#1}; {#2} \vdash {#3} : {#4} \mathstrut}
+\newcommand{\foctx}[4]{{#1}; {#2} \vdash_{\Sigma,\subord} {#3} : {#4}
+ \mathstrut}
+\newcommand{\rfoct}[4]{{#1};{#2} \vdash {#3} : [{#4}] \mathstrut}
+\newcommand{\lfoct}[4]{{#1};{#2}[{#3}] \vdash {#3} : [{#4}] \mathstrut}
+
+\newcommand{\focsx}[5]{{#1}; {#2} \vdash_{\Sigma,\subord} \{{#3}\}{#4} : {#5}
+ \mathstrut}
+
+\newcommand{\slss}[4]{{#2}; {#3} \vdash_{#1} {#4}}
+\newcommand{\slst}[5]{{#2}; {#3} \vdash_{#1} {#4} : {#5}}
+
+
+\newcommand{\tfocusr}[1]{{#1}}
+\newcommand{\tfocusl}[2]{{#1} \cdot {#2}}
+\newcommand{\tetan}[1]{\langle {#1} \rangle}
+\newcommand{\tetapp}[2]{\langle {#1} \rangle_p . {#2} }
+\newcommand{\tetapl}[2]{\langle {#1} \rangle_l . {#2} }
+\newcommand{\tetap}[2]{\langle {#1} \rangle . {#2}}
+\newcommand{\tupr}[1]{{\uparrow}{#1}}
+\newcommand{\tupl}[1]{{\uparrow}{#1}}
+\newcommand{\tlaxr}[1]{\{{#1}\}}
+\newcommand{\tlaxl}[1]{\{{#1}\}}
+\newcommand{\tdownr}[1]{{\downarrow}{#1}}
+\newcommand{\tdownl}[2]{{\downarrow}{#1}.{#2}}
+\newcommand{\tbangr}[1]{{!}{#1}}
+\newcommand{\tbangl}[2]{{!}{#1}.{#2}}
+\newcommand{\tgnabr}[1]{{\gnab}{#1}}
+\newcommand{\tgnabl}[2]{{\gnab}{#1}.{#2}}
+\newcommand{\tnil}{\textsc{nil}}
+\newcommand{\tabort}{\textsc{abort}}
+\newcommand{\tinl}[1]{\textsc{inl}({#1})}
+\newcommand{\tinr}[1]{\textsc{inr}({#1})}
+\newcommand{\toplusl}[2]{[{#1},{#2}]}
+\newcommand{\toner}{()}
+\newcommand{\ttopr}{\top}
+\newcommand{\tfuser}[2]{{#1} \fuse {#2}}
+\newcommand{\twithr}[2]{{#1} \with {#2}}
+\newcommand{\tpione}[1]{\pi_1;{#1}}
+\newcommand{\tpitwo}[1]{\pi_2;{#1}}
+\newcommand{\tfusel}[1]{{\fuse}{#1}}
+\newcommand{\tlamr}[1]{{\lambda}^{>}{#1}}
+\newcommand{\tappr}[2]{{#1}{^{>}}{#2}}
+\newcommand{\tlaml}[1]{{\lambda}^{<}{#1}}
+\newcommand{\tappl}[2]{{#1}{^{<}}{#2}}
+\newcommand{\tonel}[1]{().{#1}}
+\newcommand{\Sp}{{\it Sp}}
+\newcommand{\texistsr}[2]{{#1},{#2}}
+\newcommand{\texistsl}[2]{{#1}.{#2}}
+\newcommand{\tforallr}[2]{[{#1}].{#2}}
+\newcommand{\tforalll}[2]{[{#1}]; {#2}}
+\newcommand{\tunifr}{\textsc{refl}}
+
+\newcommand{\spi}{{\it sp}}
+\newcommand{\lfnil}{\lf{()}}
+\newcommand{\lflam}[2]{\lf{\lambda {#1}.{#2}}}
+\newcommand{\lfapp}[2]{\lf{{#1};{#2}}}
+\newcommand{\lfroot}[2]{{{#1} \cdot \lf{#2}}}
+\newcommand{\lfpi}[3]{\Pi{\lf{{#1}}{:}{#2}.{#3}}}
+
+\newcommand{\susp}[1]{\langle {#1} \rangle}
+
+\newcommand{\ofirstseq}[5]{{#1};{#2};{#3};{#4} \altv {#5} \mathstrut}
+\newcommand{\oseq}[4]{{#1};{#2};{#3} \altv {#4} \mathstrut}
+\newcommand{\oiseq}[2]{\oseq{#1}{\cdot}{/{#2}/}{\islvl{#2}}}
+\newcommand{\orseq}[4]{\oseq{#1}{#2}{{#3}}{\islvl{#4}}}
+\newcommand{\orfseq}[4]{\ofirstseq{\Psi}{#1}{#2}{{#3}}{\islvl{#4}}}
+\newcommand{\otseq}[4]{\oseq{#1}{#2}{{#3}}{\isconc{#4}}}
+\newcommand{\olseq}[5]{\oseq{#1}{#2}{{#3}/{#4}/{#5}}{U}}
+\newcommand{\olfseq}[5]{\ofirstseq{\Psi}{#1}{#2}{{#3}/{#4}/{#5}}{U}}
+\newcommand{\opseq}[4]{\oseq{#1}{#2}{{#3},{#4}}{U}}
+\newcommand{\opfseq}[4]{\ofirstseq{\Psi}{#1}{#2}{{#3},{#4}}{U}}
+
+\newcommand{\mkunit}{\cdot}
+\newcommand{\matchunit}{\cdot}
+\newcommand{\mkconj}[2]{{#1},{#2}}
+\newcommand{\matchconj}[2]{{#1},{#2}}
+
+\newcommand{\invoff}[2]{{#1}\{{#2}\mbox\}}
+\newcommand{\tackon}[2]{{#1}\{{#2}\}}
+\newcommand{\frameoff}[2]{{#1}\mbox{$\{\hspace{-4pt}\{$}{#2}\mbox{$\}\hspace{-4pt}\}$}}
+
+\newcommand{\tackonstart}{\{}
+\newcommand{\tackonstop}{\}}
+\newcommand{\frameoffstart}{\mbox{$\{\hspace{-4pt}\{$}}
+\newcommand{\frameoffstop}{\mbox{$\}\hspace{-4pt}\}$}}
+
+\newcommand{\urfoc}[3]{{#1};{#2} \longrightarrow [{#3}] \mathstrut}
+\newcommand{\ulfoc}[4]{{#1};{#2} \,[#3] \longrightarrow {#4} \mathstrut}
+\newcommand{\uinv}[4]{{#1};{#2};{#3} \longrightarrow {#4} \mathstrut}
+
+\newcommand{\stableR}[1]{{#1}\,\mathit{stable_R} \mathstrut}
+\newcommand{\stableL}[1]{{#1}\,\mathit{stable_L} \mathstrut}
+
+\newcommand{\etana}[2]{\eta_{#2}({#1})}
+\newcommand{\etapa}[3]{\eta_{#3}({#1}.{#2})}
+
+\newcommand{\subst}[2]{{#1} \circ {#2}}
+\newcommand{\rsubsta}[4]{\llbracket {#1}/{#2} \rrbracket^{#4} {#3}}
+\newcommand{\lsubsta}[3]{\llbracket {#1} \rrbracket^{#3} {#2}}
+\newcommand{\rsubst}[3]{\rsubsta{#1}{#2}{#3}{}}
+\newcommand{\lsubst}[2]{\lsubsta{#1}{#2}{}}
+
+\newcommand{\arb}{\mathbin{\mbox{$\ocircle$\hspace{-7pt}{\footnotesize ?}\hspace{3pt}}}}
+\newcommand{\softinterp}[1]{{{\ulcorner{{#1}}\urcorner}}}
+\newcommand{\interp}[1]{{\no{\ulcorner\obj{{#1}}\urcorner}}}
+\newcommand{\ctxinterp}[1]{\no{\mbox{$\ulcorner\!\!\ulcorner$}\obj{{#1}}\mbox{$\urcorner\!\!\urcorner$}}}
+\newcommand{\foo}[1]{{\it Foo}({#1})}

@@ -1,0 +1,247 @@
+Hi Taus,
+
+I'm going to answer your questions slightly out of order.
+
+> Put differently, is the inverse method able to detect "saturation"
+> with respect to the second conjunct above, without also saturating
+> with respect to the first conjunct?
+
+No.  Right now it tries the goals in order, since they would all need
+to be proved eventually, and Imogen uses a single thread.  I've
+considered using MLton.Thread to try goals in parallel, but this would
+hose portability with SML/NJ, which is what I normally use to compile
+and test since it's so much faster.
+
+> Note that the above example is ridiculously fragile, and almost any
+> change will enable Imogen to saturate (without proof) on the above
+> example. Even seemingly irrelevant things like changing the final
+> s(z) to z enables Imogen to terminate. This makes me inclined to
+> think that there may be some bug in Imogen (or at the very least in
+> my understanding of the focused polarized inverse method).
+
+> forall Y. sum(z,Y,Y),
+> forall X,Y,Z. sum(X,Y,Z) -> sum(s(X),Y,s(Z)).
+> . ==> (exists X. sum(s(X),s(X),X)) & sum(s(z),s(z),z)
+
+This example immediatly saturates becauese there are no initial
+sequents in one of the goals.  In particular, sum(s(z),s(z),z)
+(occurring in negative position) does not unify with either of
+the atomic terms in positive position, namely
+
+  sum(z,Y,Y) and sum(s(X),Y,s(Z))
+
+It may seem peculiar, (and I often am annoyed at how wildly different
+statements of essentially the same formula can perform), but it is
+not a bug.
+
+It would certainly be interesting to have a more robust way of
+proving goals, but I think that would again require a multi-threaded
+approach.  This would be a considerable investment in time.
+
+> Acting on a hunch, I tried the following query instead:
+>
+> (a -> b) ->
+> (forall X. sum(z,X,X)) ->
+> (forall X. forall Y. forall Z. sum(X,Y,Z) -> sum(s(X),Y,s(Z))) ->
+> (exists X. sum(s(X),s(X),X)) & b
+>
+> This still fails to terminate. Maybe something weird is going on with
+> subsumption or fairness? Note that in the absence of the (a -> b)
+> assumption, it _does_ terminate.
+
+This example adds a positive occurrance of b, so all subgoals are
+feasible (i.e. not obviously non-provable).
+
+> From my (admittedly weak) understanding of the inverse method, the
+> prover doesn't actually know it's proving a conjunction until it has
+> separately proved each conjunct, at which point it is permitted to
+> derive the conjunction (assuming it is an appropriately signed
+> subformula of the goal, of course).
+
+That's not quite right.  After focusing, it has a list of 'top-level'
+goals that all must be proven (and the proof terms combined) for
+a proof to be successful.  In that sense, Imogen 'knows' it's proving
+a (generalized) conjunction.  Thus the possibility to use a
+multi-threaded approach.
+
+> (I wonder if it's possible to make this notion of "local saturation"
+> more rigorous. It would almost certainly require a notion of
+> subordination to be able to deduce that no further inferences for a
+> given atom may be done.)
+
+This is slightly harder.  I've given it some thought on and off over
+the last year.  The problem is you have some goal, and some inference
+rules.  You'd like to show that there's no way to yield a sequent of
+the right 'shape' such that one of the branches of any rule is
+available.  For example, given database
+
+         p(z)
+
+and rules
+
+       |- p(X)
+    ------------
+      |- p(s(X))
+
+
+     |- p(X)  |- B(X)
+    -------------------
+         |- C
+
+with goal
+
+    |- C
+
+we'd like to fail given that it's not possible to fire the second
+premise of the second rule, which is the only way to prove the goal.
+I've done this to some extent in the propositional prover, but it
+is not clear to me how, in general, to decide when that decision can
+be made.  I've considered backchaining for some limited lenght of time
+to see if we can show rules make progress, but it gets confusing very
+quickly, especially with nonempty antecedents.
+
+> On a related note, I have the following query.
+> As you know, my recent work is about how to ensure saturation by
+> suitably weakening the assumptions (and refining this weakening when
+> an unsound proof is encountered). To test this, I would like to use
+> Imogen, but the current input format does not lend itself easily to
+> doing this sort of weakening. (Or, rather, the weakening part is
+> easy, but parsing the resulting proof term is tedious, as all
+> assumptions are given sequential names H1, H2, etc. In particular,
+> this makes it somewhat tedious to check whether the use of a given
+> hypothesis is unsound or not.)
+> I was wondering whether you would object to adding the following form
+> of input to Imogen:
+>
+> label1 : formula1,
+> label2 : formula2,
+> ...
+> labeln : formulan
+> |-
+> goal
+>
+> The idea would be that in the proofterm that Imogen produces, the
+> explicitly labeled hypotheses would be referred to by label, and not
+> by an automatically assigned variable. Any hypotheses produced by
+> decomposing the goal would of course still get named automatically.
+> (Additionally, one might consider making labels optional, and
+> automatically name everything that was not given an explicit label).
+> As far as I can see, this syntax should not interfere with the syntax
+> of formulas as it is given now, as ":", "," and "|-" don't have any
+> special meaning in this regard (although I may be mistaken --- I have
+> after all only used a small fragment of Imogen so far).
+
+I see how being able to name hypotheses would be very useful in
+analyzing the proof terms after-the-fact.  I haven't though about
+this before.  It certainly seems easy enough, since in the parse tree
+ever subformula gets a unique label.  The other syntactic stuff is
+not an issue.  I allowed a prolog-like syntax for awhile, but got
+tired of maintaining lots of different syntaxes.  This one seems
+to give a real benefit, so I'll go ahead and try to implement it.
+If it turns out to be easy I'll push a change this weekend.
+
+> Finally, would you be interested in reading the paper before we submit
+> it? Currently we are planning on submitting it to CSL on April 1st.
+> (Your help of course already warrants a mention in the
+> acknowledgements section, but it would be useful to get an expert on
+> the inverse method to weigh in on the content of the paper.)  I expect
+> to have most of the bugs eliminated and flavour text written within
+> the next week or so.
+
+Certainly!  I look forward to it.
+
+--------------------------------------------------------------------------------
+
+Hi Sean,
+
+I've encountered a bit of peculiar behaviour in Imogen, and I was
+(once again) wondering if you could shed some light on it.
+
+The setup is as follows: I have the usual axioms for triples (x,y,z)
+where x+y=z:
+
+forall Y. sum(z,Y,Y),
+forall X,Y,Z. sum(X,Y,Z) -> sum(s(X),Y,s(Z)).
+
+Now, given the goal
+
+. ==> (exists X. sum(s(X),s(X),X)) & sum(s(z),s(z),s(z))
+
+(with the above axioms as globals) Imogen fails to saturate,
+producing more and more active sequents. (At least in the same
+version I had when we last spoke.)
+
+Note that the above example is ridiculously fragile, and almost any
+change will enable Imogen to saturate (without proof) on the above
+example. Even seemingly irrelevant things like changing the final
+s(z) to z enables Imogen to terminate. This makes me inclined to
+think that there may be some bug in Imogen (or at the very least in
+my understanding of the focused polarized inverse method).
+
+More generally, given a goal of the form
+
+ . ==> A & B
+
+where A is not provable (but with infinitely many ground instances), and B
+is not provable (and this is observable in a finite amount of time),
+is it the case that the inverse method will fail either saturate or
+disprove the above sequent?
+
+Put differently, is the inverse method able to detect "saturation"
+with respect to the second conjunct above, without also saturating
+with respect to the first conjunct?
+
+From my (admittedly weak) understanding of the inverse method, the
+prover doesn't actually know it's proving a conjunction until it has
+separately proved each conjunct, at which point it is permitted to
+derive the conjunction (assuming it is an appropriately signed
+subformula of the goal, of course).
+
+(I wonder if it's possible to make this notion of "local saturation"
+more rigorous. It would almost certainly require a notion of
+subordination to be able to deduce that no further inferences for a
+given atom may be done.)
+
+On a related note, I have the following query.
+As you know, my recent work is about how to ensure saturation by
+suitably weakening the assumptions (and refining this weakening when
+an unsound proof is encountered). To test this, I would like to use
+Imogen, but the current input format does not lend itself easily to
+doing this sort of weakening. (Or, rather, the weakening part is
+easy, but parsing the resulting proof term is tedious, as all
+assumptions are given sequential names H1, H2, etc. In particular,
+this makes it somewhat tedious to check whether the use of a given
+hypothesis is unsound or not.)
+I was wondering whether you would object to adding the following form
+of input to Imogen:
+
+label1 : formula1,
+label2 : formula2,
+...
+labeln : formulan
+|-
+goal
+
+The idea would be that in the proofterm that Imogen produces, the
+explicitly labeled hypotheses would be referred to by label, and not
+by an automatically assigned variable. Any hypotheses produced by
+decomposing the goal would of course still get named automatically.
+(Additionally, one might consider making labels optional, and
+automatically name everything that was not given an explicit label).
+As far as I can see, this syntax should not interfere with the syntax
+of formulas as it is given now, as ":", "," and "|-" don't have any
+special meaning in this regard (although I may be mistaken --- I have
+after all only used a small fragment of Imogen so far).
+
+Finally, would you be interested in reading the paper before we submit
+it? Currently we are planning on submitting it to CSL on April 1st.
+(Your help of course already warrants a mention in the
+acknowledgements section, but it would be useful to get an expert on
+the inverse method to weigh in on the content of the paper.)  I expect
+to have most of the bugs eliminated and flavour text written within
+the next week or so.
+
+Cheers,
+    Taus
+
+Postscript.

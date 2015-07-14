@@ -1,0 +1,155 @@
+
+\newcommand{\PSInit}{\mbox{Init}}
+\newcommand{\PSInitRule}{
+  \infer[$\RuleNameSize$ \PSInit]{\FSeq{p}{p}}{}
+}
+
+\newcommand{\PSAndR}{\And\mbox{-R}}
+\newcommand{\PSAndRRule}{
+  \infer[$\RuleNameSize$ \PSAndR]
+  {\FSeq{\Gamma_1\Union\Gamma_2}{A_1 \And A_2}}
+  {\FSeq{\Gamma_1}{A_1} & \FSeq{\Gamma_2}{A_2}}
+}
+
+\newcommand{\PSAndL}{\And\mbox{-L}}
+\newcommand{\PSAndLRule}{
+  \infer[$\RuleNameSize$ \PSAndL]
+  {\FSeq{\Gamma, A_1 \And A_2}{\gamma}}
+  {\FSeq{\Gamma, A_1, A_2}{\gamma}}
+}
+
+\newcommand{\PSImpRa}{\Imp\mbox{-R}_1}
+\newcommand{\PSImpRaRule}{
+  \infer[$\RuleNameSize$ \PSImpRa]
+  {\FSeq{\Gamma}{A_1 \Imp A_2}}
+  {\FSeq{\Gamma, A_1}{A_2}}
+}
+
+\newcommand{\PSImpRb}{\Imp\mbox{-R}_2}
+\newcommand{\PSImpRbRule}{
+  \infer[$\RuleNameSize$ \PSImpRb]
+  {\FSeq{\Gamma}{A_1 \Imp A_2}}
+  {\FSeq{\Gamma}{A_2}}
+}
+
+\newcommand{\PSImpRc}{\Imp\mbox{-R}_3}
+\newcommand{\PSImpRcRule}{
+  \infer[$\RuleNameSize$ \PSImpRc]
+  {\FSeq{\Gamma}{A_1 \Imp A_2}}
+  {\FSeq{\Gamma, A_1}{\EmptyCons}}
+}
+
+\newcommand{\PSImpL}{\Imp\mbox{-L}}
+\newcommand{\PSImpLRule}{
+  \infer[$\RuleNameSize$ \PSImpL]
+  {\FSeq{\Gamma_1\Union\Gamma_2, A_1\Imp A_2}{\gamma}}
+  {\FSeq{\Gamma_1, A_1\Imp A_2}{A_1} & \FSeq{\Gamma_2, A_2}{\gamma}}
+}
+
+\newcommand{\PSOrRL}{\Or\mbox{-R}_1}
+\newcommand{\PSOrRLRule}{
+  \infer[$\RuleNameSize$ \PSOrRL]
+  {\FSeq{\Gamma}{A_1 \Or A_2}}
+  {\FSeq{\Gamma}{A_1}}
+}
+
+\newcommand{\PSOrRR}{\Or\mbox{-R}_2}
+\newcommand{\PSOrRRRule}{
+  \infer[$\RuleNameSize$ \PSOrRR]
+  {\FSeq{\Gamma}{A_1 \Or A_2}}
+  {\FSeq{\Gamma}{A_2}}
+}
+
+\newcommand{\PSOrL}{\Or\mbox{-L}}
+\newcommand{\PSOrLRule}{
+  \infer[$\RuleNameSize$ \PSOrL]
+  {\FSeq{\Gamma_1\Union\Gamma_2, A_1 \Or A_2}{\gamma_1 \Union \gamma_2}}
+  {\FSeq{\Gamma_1, A_1}{\gamma_1} & \FSeq{\Gamma_2, A_2}{\gamma_2}}
+}
+
+\newcommand{\PSTopR}{\Top\mbox{-R}}
+\newcommand{\PSTopRRule}{
+  \infer[$\RuleNameSize$ \PSTopR]
+  {\FSeq{\EmptyAnts}{\Top}}
+  {}
+}
+
+\newcommand{\PSBotL}{\Bot\mbox{-L}}
+\newcommand{\PSBotLRule}{
+  \infer[$\RuleNameSize$ \PSBotL]
+  {\FSeq{\Bot}{\cdot}}
+  {}
+}
+
+\renewcommand{\figline}{\\[2em]}
+
+\begin{figure}
+  \begin{center}
+    \fbox{
+      \begin{tabular}{c}
+        \begin{tabular}{cc}
+          \PSInitRule
+          &
+          \hspace{1cm}
+          \PSContractRule
+        \end{tabular}
+        \figline
+        \begin{tabular}{cc}
+          \PSAndRRule
+          &
+          \hspace{1cm}
+          \PSAndLRule
+        \end{tabular}
+        \figline
+        \begin{tabular}{ccc}
+          \PSImpRaRule
+          &
+          \hspace{1cm}
+          \PSImpRbRule
+          &
+          \hspace{1cm}
+          \PSImpRcRule
+        \end{tabular}
+        \figline
+        \begin{tabular}{cc}
+          \PSImpLRule
+          &
+          \hspace{1cm}
+          \PSOrLRule
+        \end{tabular}
+        \figline
+        \begin{tabular}{cc}
+          \PSOrRLRule
+          &
+          \hspace{1cm}
+          \PSOrRRRule
+        \end{tabular}
+        \figline
+        \begin{tabular}{cc}
+          \PSTopRRule
+          &
+          \hspace{1cm}
+          No rule for $\Top$-L
+        \end{tabular}
+        \figline
+        \begin{tabular}{cc}
+          \PSBotLRule
+          &
+          \hspace{1cm}
+          No rule for $\Bot$-R
+        \end{tabular}
+        \figline
+        In the rule $\Or$-L, $\gamma_1 \Union \gamma_2$
+        has at most one element.
+      \end{tabular}
+    }
+  \end{center}
+  \caption{The forward calculus $\LPS$}
+  \label{prop.sets}
+  \index{$\FSeq{\Gamma}{\gamma}$}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

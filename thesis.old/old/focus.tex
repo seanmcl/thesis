@@ -1,0 +1,84 @@
+
+\chapter{Polarization and Focusing}
+
+\section{Focusing}\label{prop.sec.focusing}
+\subsection{Polarized formulas}\label{prop.sec.polar}
+
+In linear logic, the polarity of each connective is uniquely
+determined.  This is not true for intuitionistic logic where
+conjunction and truth are inherently ambiguous.  We therefore
+assign polarities to formulas in a preprocessing phase.  It is
+convenient to represent the result as a \emph{polarized formula}~\cite{Lamarche.1995.LICS}
+where immediately nested formulas always have the same polarity,
+unless an explicit polarity-shifting connective $\Up$ or
+$\Down$ is encountered.  These coercions are called \emph{shifts}.
+
+Implication has slightly special status, in that its
+left-hand side has opposite polarity from its right-hand side.
+This is because in the sequent calculus for intuitionistic logic,
+the focusing behavior of connectives on the left-hand side
+is the opposite of their behavior on the right-hand side. (Here the
+meta-variable $P$ ranges over atomic propositions.)
+
+\begin{align*}
+  \mbox{Positive formulas } A^+ &::= P^+ \Sep A^+ \Sum A^+ \Sep \Zero \Sep A^+ \Tensor A^+ \Sep \One \Sep \Down A^- \\
+  \mbox{Negative formulas } A^- &::= P^- \Sep A^+ \Lolli A^- \Sep A^- ~ \With ~A^- \Sep \Top \Sep \Up A^+
+\end{align*}
+
+\noindent The translation $A^-$ of an (unpolarized) formula $F$ in IPL
+is nondeterministic, subject only to the constraint that
+the translation $|A^-| = F$.
+
+\medskip
+\begin{tabular}{c@{\hspace{15pt}}c@{\hspace{15pt}}c}
+$|A^+ \Sum B^+| = |A^+| \Or |B^+|$ & $|\Zero| = \Bot$ & $|P^+| = P$ \\
+$|A^+ \Tensor B^+| = |A^+| \And |B^+|$ & $|\One| = \top$ & $|\Down A^-| = |A^-|$ \\
+$|A^- \With B^-| = |A^-| \And |B^-|$ & $|\Top| = \top$ & $|P^-| = P$ \\
+$|A^+ \Lolli B^-| = |A^+| \Imp |B^-|$ & $|\Up A^+| = |A^+|$
+\end{tabular}
+\medskip
+
+For example, the formula $((A \Or C) \And (B \Imp C)) \Imp (A \Imp B) \Imp C$
+can be interpreted as any of the following polarized formulas (among others):
+
+{\small
+\begin{align*}
+&((\Down A^- \Sum \Down C^-) \Tensor \Down(\Down B^- \Lolli C^-)) \Lolli (\Down (\Down A^- \Lolli B^-) \Lolli C^-) \\
+&\Down\Up((\Down A^- \Sum \Down C^-) \Tensor \Down(\Down B^- \Lolli C^-)) \Lolli (\Down\Up\Down (\Down A^- \Lolli B^-) \Lolli C^-) \\
+&\Down(\Up (A^+ \Sum C^+) \With (B^+ \Lolli \Up C^+)) \Lolli (\Down (A^+ \Lolli \Up B^+) \Lolli \Up C^+)
+\end{align*}
+}
+
+Shift operators have highest binding precedence in our presentation of the
+examples.  As we will see, the choice of translation determines the search
+behavior on the resulting polarized formula.  Different choices can lead to
+search spaces with radically different structure~\cite{Chaudhuri.2006.IJCAR}.
+
+% A sequent of intuitionistic logic has the form $\Stable{\Gamma}{A}$,
+% where $\Gamma$ is a set or multiset of formulas.  For
+% purposes of Imogen it is convenient to always maintain $\Gamma$
+% as a set, without duplicates.
+% Since we can always eagerly decompose negative connectives
+% on the right of a sequent and positive connectives on the left,
+% the only sequents in our polarized calculus we need to consider
+% have negative formulas on the left or positive formulas on the
+% right, in addition to atoms which can appear with either polarity
+% on either side.  The right-hand side could also be empty if we are
+% deriving a contradiction.   We call such sequents \emph{stable}.
+% \[\begin{array}{llcl}
+% \mbox{Stable Hypotheses} & \Gamma &::= & \cdot \Sep \Gamma, A^- \Sep \Gamma, P^+ \\
+% \mbox{Stable Conclusions} & \gamma &::= & A^+ \Sep P^- \Sep \cdot \\
+% \mbox{Stable Sequents} & \multicolumn{3}{l}{\Stable{\Gamma}{\gamma}}
+% \end{array}\]
+
+\subsection{Derived rules}
+\label{prop.sec.derived}
+
+Thm: ===> A iff for any A', if |A'| = A then ===> A'
+
+\section{The Polarized Inverse Method}\label{prop.sec.pinverse}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "thesis"
+%%% End:

@@ -1,0 +1,206 @@
+-*- mode: org -*-
+
+Hi Taus,
+
+I'm not sure which old version of Imogen you're comparing the current
+version to.  Unfortunately I started this project before I knew
+anything about decent software design, and I wasn't good about keeping
+consistent version information.  I do have a hypothesis, though,
+about why the behaviors are different, and in the process can explain
+why one saturates and the other doesn't.
+
+Imogen uses an optimized version of the inverse method to prove
+theorems in first-order logic.  The optimization is called 'focusing',
+and it plays an essential role in this problem.  To go into the
+details of the focusing algorithm would be beyond the scope of an
+email, but Frank's notes on automated theorem proving
+
+    http://www.cs.cmu.edu/~fp/courses/atp/
+
+explains it in some detail.  Formulas are divided into two parts, the
+positive and negative formulas
+
+    P ::= a+(t1,...,tn) | P ∧ P | P ∨ P | ↓ N | ∃ x. P
+    N ::= a-(t1,...,tn) | N & N | P ⊃ N | ↑ P | ∀ x. N
+
+Importantly, atoms a+ and a- are either positive or negative.  
+Given an input formula F in normal first-order logic, you arbitrarily
+but consistently assign positive and negative status to the atomic
+formulae in F.  Proof search will proceed according to the
+"polarization" of the atoms (among other choices, such as the location
+of extra shifts, and conjunction, which may have either polarity.)  
+
+When you give Imogen an unpolarized formula, it picks the "smallest"
+polarization, i.e. one with the fewest shifts (↑ ↓).  It defaults to
+assigning a positive polarity to atomic formulas, though formerly 
+it assigned a negative polarity.  We will see that this difference   
+can explain the difference in behavior.
+
+The focused inverse method generates derived rules of inference
+from the input formula.  In the case of the provable formula
+
+    e(z) ⊃ 
+    (∀ X. e(X) ⊃ e(s(s(X)))) ⊃ 
+    e(s(s(z)))
+
+we generate the following rules depending on whether 'e' is 
+assigned a positive or negative polarity.
+
+--------------------------------------------------------------------------------
+ Negative atoms                                                                 
+--------------------------------------------------------------------------------
+
+Polarized formula:
+  ↓ e(z) ⊃ 
+  ↓ (∀ X. ↓ e(X) ⊃ e(s(s(X)))) ⊃ 
+  e(s(s(z)))
+
+Derived rules (were · stands for any formula):
+
+     · ⊢ e(X)
+    --------------
+     · ⊢ e(s(s(X)))
+
+     -----------
+     · ⊢ e(z)
+
+Global antecedents:
+
+    e(z), ∀ X. e(X) ⊃ ↑ e(s(s(X)))
+
+Goal:  · ⊢ e(s(s(z)))
+
+Now proof search proceeds forward from the single axiom.  It unifies 
+X with z, to yield
+
+    · ⊢ e(s(s(z)))
+
+which is the goal.  
+
+--------------------------------------------------------------------------------
+ Positive atoms                                                                 
+--------------------------------------------------------------------------------
+
+Polarized formula:
+
+    e(z) ⊃ 
+    ↓ (∀ X. e(X) ⊃ ↑ e(s(s(X)))) ⊃ 
+    ↑ e(s(s(z)))
+    
+Derived rules (were · stands for any formula):
+
+     e(s(s(X))) ⊢ · 
+    ----------------
+       e(X) ⊢ · 
+
+    ----------------------
+    e(s(s(z)) ⊢ e(s(s(z)))
+
+Global antecedents (formulas occurring in every sequent in a backward derivation):
+
+    e(z), ∀ X. e(X) ⊃ ↑ e(s(s(X)))
+
+Goal:  · ⊢ e(s(s(z)))
+
+Now proof search proceeds forward from the single axiom.  It unifies 
+X with z, to yield
+
+    e(z) ⊢ e(s(s(z)))
+
+but we can remove e(z) because it's global, and thus have found the goal
+
+    · ⊢ e(s(s(z)))
+
+While both version finish in one step, you can see that negative atoms
+tends to favor reasoning 'on the right', and positive atoms favors
+reasoning 'on the left'.  This makes a difference in the case of 
+the non-theorem:
+
+    e(z) ⊃ 
+    (∀ X. e(X) ⊃ e(s(s(X)))) ⊃ 
+    e(s(s(s(z))))
+
+--------------------------------------------------------------------------------
+ Negative atoms                                                                 
+--------------------------------------------------------------------------------
+
+Polarized formula:
+  ↓ e(z) ⊃ 
+  ↓ (∀ X. ↓ e(X) ⊃ e(s(s(X)))) ⊃ 
+  e(s(s(s(z))))
+
+Derived rules (were · stands for any formula):
+
+     · ⊢ e(X)
+    --------------
+     · ⊢ e(s(s(X)))
+
+    -----------
+     · ⊢ e(z)
+
+Global antecedents:
+
+    e(z), ∀ X. e(X) ⊃ ↑ e(s(s(X)))
+
+Goal:  · ⊢ e(s(s(s(z))))
+
+Now proof search proceeds forward from the single axiom.  It unifies 
+X with z, to yield
+
+    · ⊢ e(s(s(z)))
+    · ⊢ e(s(s(s(s(z)))))
+    · ⊢ ...
+
+which loops forever.
+
+--------------------------------------------------------------------------------
+ Positive atoms                                                                 
+--------------------------------------------------------------------------------
+
+Polarized formula:
+
+    e(z) ⊃ 
+    ↓ (∀ X. e(X) ⊃ ↑ e(s(s(X)))) ⊃ 
+    ↑ e(s(s(z)))
+    
+Derived rules (where · stands for any formula):
+
+     e(s(s(X))) ⊢ · 
+    ----------------
+       e(X) ⊢ · 
+
+    ----------------------
+    e(s(s(z)) ⊢ e(s(s(z)))
+
+Global antecedents (formulas occurring in every sequent in a backward derivation):
+
+    e(z), ∀ X. e(X) ⊃ ↑ e(s(s(X)))
+
+Goal:  · ⊢ e(s(s(s(z))))
+
+Now proof search proceeds forward from the single axiom.  It unifies 
+X with z, to yield
+
+    e(z) ⊢ e(s(s(z)))
+  
+Now e(z) does not unify with e(s(s(X))) so we can't apply the rule again.
+Thus search terminates.  
+
+The nice thing about this approach is that the opportunity for ad-hoc optimizations
+of the derived inference rules is possible.  For instance, in this case even with 
+positive atoms we can show that the size of the consequent of any rule application
+only increases.  We could use this fact to stop search when we realized all 
+axioms had size larger than the goal.  It is tricky to make observations like this
+very general though.  Finding terminating orderings on subterms represents an 
+interesting area to investigate.
+
+Please don't hesitate to contact me with further questions, and I will do my best
+to respond more promptly.
+
+Best,
+
+Sean
+
+e(X1) ⊢ e(X1)
+e(X2) ⊢ e(s(s(X2))
+e(X3) ⊢ e(s(s(s(s(X3)))))

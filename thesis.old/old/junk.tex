@@ -1,0 +1,281 @@
+
+% ------------------------------------------------------------------------------
+%  Junk
+% ------------------------------------------------------------------------------
+\section{Junk}
+
+\subsection{Optimizations}
+
+  There are obviously many improvements that can be made to the naive
+algorithm.  Much of the work of this proposal will be pruning the
+search space by considering a subset of possible forward derivations
+and showing that any formula with a derivation in the forward calculus
+has a derivation in the subset.  Focusing is an example of such an
+optimization which we will describe in Section~.  In
+addition to logical restrictions of the space of possible derivations,
+there are numerous non-logical optimizations that play an important
+part in the implementation of a practical and efficient theorem
+prover.  The most significant of these are discussed briefly in this
+section.
+
+\paragraph{Redundancy Elimination.}
+
+  An essential optimization in forward-chaining style theorem proving
+is redundancy elimination.  Due to the latency of memory access, the
+limiting factor in forward proof search is the size of the database of
+facts~\cite{Voronkov.2001.Indexing}.  Removing any redundant
+sequents from the database is essential to reasonable performance.  A
+newly derived sequent that is subsumed by an existing sequent of the
+database is said to be \emph{forward subsumed}.  A newly derived
+sequent can also subsume existing database sequents.  Those existing
+sequents are said to be \emph{backward subsumed}.  A sequent is called
+\emph{redundant} if is either forward or backward subsumed.  Much
+research into theorem proving implementations is directed at quickly
+checking redundancy of a sequent with respect to a database.
+
+\paragraph{Term Indexing.}
+
+Since redundancy elimination, and therefore subsumption checking in
+the database, is such an important operation, it is essential to use
+data structures for which finding possible subsumption candidates are
+efficient.  \emph{Term indexing} is the study of the efficient storage
+and retrieval of terms satisfying certain properties.  For instance,
+we may wish to retrieve all the terms that are instances, or
+generalizations of another term.  Many term indexing data structures
+have been studied for both forward and backward subsumption.  Good
+general references
+are~\cite{Graf.1996.TermIndexing,Voronkov.2001.Indexing}.
+We will see some statistics for subsumption in Sections~
+and~
+
+\subsection{Example}
+
+Here we give a concrete example of the
+Algorithm~ proving the formula
+
+\[
+\xi = (\Bot \Or B) \Imp ((A \Imp B) \Imp C) \Imp (A \Or C)
+\]
+
+\paragraph{Labeling.}
+
+First we label the signed subformulas of $\xi$.
+
+\[
+\begin{array}{c@{\Space}c@{\Space}c}
+L_1^+ = A^+ \Or C^+ & L_2^+ = A^- \Imp B^+ & L_3^- = L_2^+ \Imp C^- \\
+L_4^+ = L_3^- \Imp L_1^+ & L_5^- = \Bot^- \Or B^- & L_6^+ = L_5^- \Imp L_4^+
+\end{array}
+\]
+
+\paragraph{Rule Specialization.}
+
+% Now we specialize the rules of $\Inv{\cP}{}$ to the calculus
+% $\Inv{\cP}{\xi}$ by generating rules for the labels $L_1, \ldots,
+% L_6$.  As an implementation trick, we combine the three different
+% rules for $\Imp$-R from Figure~ into one rule by
+% following the convention that a given formula doesn't need to be
+% present for a match to succeed.  For instance, the sequents
+% $\FSeq{A}{B}$, $\FSeq{B}{B}$, and $\FSeq{A}{\cdot}$ can all match the
+% rule
+
+\[
+\infer{\FSeq{\Gamma}{L_2}}{\FSeq{\Gamma, A}{B}}
+\]
+
+\noindent For brevity we can omit the non-principal antecedents
+$\Gamma$ from the rule; it is implicit.  We also omit the conclusion
+formula when it is not a principal formula of the rule.  We call such
+$\Gamma$ and non-principal conclusions \emph{side formulas}.  Written
+in this abbreviated style, the inference rules for $\xi$ are
+
+\[
+\begin{array}{c@{\Space}c@{\Space}c@{\Space}c}
+\infer[R_{1a}]{\FSeq{\cdot}{L_1}}{\FSeq{\cdot}{A}} &
+\infer[R_{1b}]{\FSeq{\cdot}{L_1}}{\FSeq{\cdot}{C}} &
+\infer[R_2]{\FSeq{\cdot}{L_2}}{\FSeq{A}{B}} &
+\infer[R_3]{\FSeq{L_3}{\cdot}}{\FSeq{\cdot}{L_2} & \FSeq{C}{\cdot}}
+\\\\
+\multicolumn{4}{c}{
+  \begin{array}{c@{\Space}c@{\Space}c}
+    \infer[R_4]{\FSeq{\cdot}{L_4}}{\FSeq{L_3}{L_1}} &
+    \infer[R_5]{\FSeq{L_5}{\cdot}}{\FSeq{\Bot}{\cdot} & \FSeq{B}{\cdot}} &
+    \infer[R_6]{\FSeq{\cdot}{L_6}}{\FSeq{L_5}{L_4}}
+  \end{array}
+}
+\end{array}
+\]
+
+\noindent The initial axioms are
+
+\[
+\begin{array}{c@{\Space}c@{\Space}c@{\Space}c}
+\FSeq{A}{A} & \FSeq{B}{B} & \FSeq{C}{C} & \FSeq{\Bot}{\cdot}
+\end{array}
+\]
+
+We show a run of the algorithm in Figure~.
+Each sequent in the database is numbered.  The non-axioms have the
+rule and sequents from which they are derived in the right column.
+The grayed-out sequents are either forward or backward subsumed.
+Forward subsumed sequents are marked by $\FSubsumed$ and
+backward by $\BSubsumed$.  (It is also easy to tell whether a sequent
+is forward or backward subsumed because a forward subsumed sequent
+is not give a number since it never enters the database.)  A
+``stage'' corresponds to an iteration of the while loop on
+line~.
+
+  In this section we've introduced the theory of the inverse method.
+In the next section we describe the generic infrastructure we've used
+for implementing inverse method theorem provers.  This infrastructure
+is called \emph{Imogen}.
+
+\input{prop/trace}
+
+\subsection{Proof terms}
+
+The soundness of a theorem prover is always suspect.  Why should
+we trust that a complex program has no bugs that yield incorrect
+answers?  This concern is allayed in different ways.  Imogen
+produces a natural deduction proof term for any successful
+proof search attempt.  Unlike searching for a proof, checking
+one is generally a simple operation.  For instance, the proof term
+printer may easily be modified to produce terms for Coq, Twelf or
+some other that is generally trusted theorem prover.
+
+There are two parts to proof term generation.  The first is to
+build a skeleton of the sequent calculus rule applications.  The
+second is to reconstruct the natural deduction proof from the
+sequent proof skeleton.
+
+
+
+
+
+\section{Focusing}\label{prop.sec.focusing}
+
+\subsection{Derived rules}
+\label{prop.sec.derived}
+
+Thm: ===> A iff for any A', if |A'| = A then ===> A'
+
+\section{The Polarized Inverse Method}\label{prop.sec.pinverse}
+
+\section{Optimizations}\label{prop.sec.optimize}
+
+Focusing dramatically decreases the size of the forward search space.
+However, there is still much room for improvement.  In this section
+we describe the other optimizations we use in Imogen to improve
+performance.
+
+\subsection{Globalization}
+
+\subsection{Forward subsumption}
+
+\subsection{Backward subsumption}
+
+\subsection{Rule subsumption}
+
+\subsection{Conflicts}
+
+\subsection{Exactness analysis}
+
+\subsection{Branch disabling}
+
+\subsection{Bi-implication lengthening}
+
+\subsection{A remark on subformula orderings}
+
+Successful resolution systems for classical logic make use of an important
+optimization called \emph{term ordering}.  One can find a total order on
+formulas such that any application of the resolution rule only need consider the
+greatest elements of the premeses given the ordering, while remaining
+complete.  This dramatically decreases the search space.  While it is
+sometimes possible to find
+orderings for non-classical logics
+(Voronkov found such orderings for the classical modal logic
+$K$~\cite{Voronkov.2000.LICS}) it is much more difficult.  The primary
+difficulty is that unlike in classical sequent calculus, some rules
+are not invertible.  Thus making a choice on which formula to
+decompose can make a provable sequent have unprovable
+
+\section{Implementation}\label{prop.sec.imogen}
+
+\section{Proof terms}\label{prop.sec.proofterms}
+
+Traditionally, intuitionistic logic is founded
+upon its natural deduction rules, and our implementation generates
+proofs in that form.  Put proof search is far more convenient
+in the sequent calculus.
+For various technical reasons (consider, e.g., the rule $\Imp$-E), proof search
+in natural deduction is difficult.
+
+IPL is formalized by its \emph{natural deduction} rules,
+shown in Figure~\ref{prop.nd}.  In the judgment $\ND{A}$,
+$\Gamma$ is a set of formulas, the \emph{hypotheses}, and $A$ is
+the \emph{conclusion}.  Pfenning.LectureNotes.ConstructiveLogic
+
+\input{prop/nd}
+
+\begin{theorem}
+  $\Seq{\cdot}{A}$ iff there exists $H$ such that $\ND[]{H}{A}$
+\end{theorem}
+
+\input{prop/ndp}
+
+\noindent Proofs are built from the grammar
+
+\[
+\begin{array}{rl}
+\mbox{Terms } H &::= x \Sep \left<H, H\right> \Sep \left<\right> \Sep \Fst(H) \Sep \Snd(H) \Sep \Inl(H) \Sep \Inr(H) \Sep \Case\ H\ \Of x_1 \to H\ |\ x_2 \to H\\
+                & \lambda x.\ H \Sep H H \\
+\mbox{Contexts } \Gamma &::= \cdot \Sep x : A,\ \Gamma
+\end{array}
+\]
+
+where $x\in\cV$, some infinite set of names.   If $\Gamma=x_1 : A_1, \ldots, x_n : A_n$,
+the judgment $\ND{H}{A}$ asserts that $H$ is evidence for the truth of formula $A$, given
+the truth of $A_1,\ldots,A_n$.  A proof in natural deduction is a
+
+
+\section{Related Work}\label{prop.sec.related}
+
+The inverse method was first devised by Gentzen~\cite{Gentzen.1934.MZ}
+and used to prove the decidability of intuitionistic propositional
+logic.  The name ``inverse method'' was coined
+in~\cite{Maslov.1964.Inverse}.  For a more detailed history with
+copious references, see~\cite{Voronkov.2001.Handbook} Section~9.1.
+
+Tabling backward search
+
+\section{Future Work}\label{prop.sec.future}
+
+In \cite{Gentzen.1934.MZ}, Gentzen describes the decision procedure
+for the propositional fragment which we described in section XXX.
+
+Work seeking a tableau-style solution, originally published in
+1952~\cite{Vorobev.1952.Doklady}, was rediscovered independently
+in~\cite{Dyckhoff.1992.JSL}.  The authors make the observation that
+reading the rules from consequent to antecedents, the rule
+
+Dyckhoff/Hudelmaier don't have the subformula property
+
+Make conflicts optimization consider rule applications, not
+only subformulas.
+
+\cite{Hudelmaier.1993.JLC}
+\cite{Hudelmaier.1993.JLC}
+\cite{Voronkov.1999.CADE}
+
+\cite{Shankar.1992.CADE}
+
+
+A saturated database is
+evidence for the unprovability of $\xi$.
+
+\begin{proof}
+  The proof is by induction on $i$.  If $i=0$, then $Q$ is initial
+  and $\unlab(Q)$ is also initial (Theorem~\ref{prop.thm.initial}).
+  Otherwise there is an $R\in\irules$ and $Q_1, \ldots, Q_n\in\cD_{i-1}$
+  such that $Q\in\match(R, Q_1,\ldots,Q_n)$.
+\end{proof}

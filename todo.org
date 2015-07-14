@@ -1,0 +1,30 @@
+* Dedication
+% COMMITTEE: Frank Robert Andr\`e Dale
+% MENTORS (who aren't also committee):
+%   - Tom Hales
+% DISCUSSERS (who aren't also readers):
+%   - Noam Zeilberger
+% READERS:
+%   - Jason Reed
+%   - Thank paper reviewers in general
+% PEOPLE:
+%   - Thomas, Emily, Nick, and the Yinzerstars
+% FAMILY: Mom, Dad,
+
+* Final formatting requirements
+% The other requirements Catherine has:
+%
+%  - avoid large margins.  She wants the thesis to use fewer pages,
+%    especially if it requires colour printing.
+%
+%  - The thesis should be formatted for double-sided printing.  This
+%    means that all chapters, acknowledgements, table of contents, etc.
+%    should start on odd numbered (right facing) pages.
+%
+%  - You need to use the department standard tech report title page.  I
+%    have tried to ensure that the title page here conforms to this
+%    standard.
+%
+%  - Use a nice serif font, such as Times Roman.  Sans serif looks bad.
+%
+% Other than that, just make it look good...

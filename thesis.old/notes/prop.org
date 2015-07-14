@@ -1,0 +1,65 @@
+
+* Syntax
+
+* Semantics
+
+** Sequent calculus
+
+multisets
+backward sequents
+backward rules
+{,non}invertible rules
+subformula property
+weakening, contraction, exchange are admissible
+
+* Inverse method
+
+forward sequents
+forward rules
+completeness
+kept and active databases (Otter loop)
+rule generation
+rule matching
+proof terms
+signed subformulas
+contraction
+can't in general prove a sequent, only one that subsumes it P, Q ===> P
+
+* Polarization
+
+* Focusing
+
+* Polarized inverse method
+
+derived rules
+rule matching
+
+* Proof term assignment
+
+* Optimizations
+
+** Globalization
+** Subsumption
+*** Forward
+*** Backward
+*** Rule
+**** Disable branch on exact match
+
+** Biimplication continuation
+** Conflicts
+
+
+* Logical optimizations
+
+problem: exponentially many stable sequents, or exponentially many hypotheses in a rule.
+simulation of focusing strategies (single step, weak, fair weak, pos/neg atoms)
+
+* Implementation
+
+** ILTP
+** Random
+** Classical
+   translations to classical logic, comparison with number
+   of connectives/shifts, Goedel-Gentzen, Gilvenko
+
+Cite new Larchy-Wedling paper on contraction-free subformula property calculus

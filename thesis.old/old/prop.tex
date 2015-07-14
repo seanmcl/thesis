@@ -1,0 +1,12 @@
+
+\begin{proof}
+  Let $\cD_0\steps\cD_1\steps\cdots$ be a fair derivation.
+  We prove the stronger statement that for every sequent $Q$ that has
+  a derivation in $\LPFx$, $Q\in\cD_i$ for some $i$.  The proof is
+  by induction on the derivation of $Q$.  If $Q$ is an initial sequent,
+  then $Q\in\cD_0$.  Otherwise $Q\in\match(R,Q_1,\ldots,Q_n)$ where
+  $Q_i\in\cD_j$ for some $j$ and $1\le i\le n$.
+  By the induction hypothesis, $Q_i$ is in some $\cD_{k_i}$.  Since
+  we don't make subsumption steps, every $Q_i$ is in the limit of the derivation.
+  Since the derivation is fair, $Q$ is in some $\cD_i$ too.
+\end{proof}

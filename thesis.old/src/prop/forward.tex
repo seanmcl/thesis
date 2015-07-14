@@ -1,0 +1,106 @@
+
+\newcommand{\PFInit}{
+  \Infer[$Init$]{\FSeq{p}{p}}{}
+}
+
+\newcommand{\PFAndR}{
+  \Infer[\And$-R$]
+  {\FSeq{\cdot}{A_1 \And A_2}}
+  {\FSeq{\cdot}{A_1} & \FSeq{\cdot}{A_2}}
+}
+
+\newcommand{\PFAndL}{
+  \Infer[\And$-L$]
+  {\FSeq{A_1 \And A_2}{\cdot}}
+  {\FSeq{A_1, A_2}{\cdot}}
+}
+
+\newcommand{\PFImpR}{
+  \Infer[\Imp$-R$]
+  {\FSeq{\cdot}{A_1 \Imp A_2}}
+  {\FSeq{A_1}{A_2}}
+}
+
+\newcommand{\PFImpL}{
+  \Infer[\Imp$-L$]
+  {\FSeq{A_1\Imp A_2}{\cdot}}
+  {\FSeq{A_1\Imp A_2}{A_1} & \FSeq{A_2}{\cdot}}
+}
+
+\newcommand{\PFOrR}{
+  \Infer[\Or$-R$_i]
+  {\FSeq{\cdot}{A_1 \Or A_2}}
+  {\FSeq{\cdot}{A_i}}
+}
+
+\newcommand{\PFOrL}{
+  \Infer[\Or$-L$]
+  {\FSeq{A_1 \Or A_2}{\cdot}}
+  {\FSeq{A_1}{\cdot} & \FSeq{A_2}{\cdot}}
+}
+
+\newcommand{\PFTopR}{
+  \Infer[\Top$-R$]
+  {\FSeq{\cdot}{\Top}}
+  {}
+}
+
+\newcommand{\PFBotL}{
+  \Infer[\Bot$-L$]
+  {\FSeq{\Bot}{\cdot}}
+  {}
+}
+
+\begin{figure}
+  \begin{center}
+    {\small
+      \fbox{
+        \begin{tabular}{c}
+          \begin{tabular}{ccc}
+            \PFInit
+            &
+            \hspace{2em}
+            \PFTopR
+            &
+            \hspace{2em}
+            No rule for $\Top$-L
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{ccc}
+            \PFAndR
+            &
+            \hspace{2em}
+            \PFAndL
+            &
+            \hspace{2em}
+            \PFBotL
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{cc}
+            \PFImpL
+            &
+            \hspace{2em}
+            \PFImpR
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{ccc}
+            \PFOrR
+            &
+            \hspace{2em}
+            \PFOrL
+            &
+            \hspace{2em}
+            No rule for $\Bot$-R
+          \end{tabular}
+        \end{tabular}
+      }
+    }
+  \end{center}
+  \caption{The forward calculus $\PF$}
+  \label{prop.forward}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

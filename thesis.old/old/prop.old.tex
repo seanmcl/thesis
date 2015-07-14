@@ -1,0 +1,715 @@
+
+From a proof search perspective, $\LJ$ is a \emph{backward calculus};
+the rules are intended to be read from bottom to top.
+This is evident
+in the rules $\And$-R where the same meta-variable
+$\Gamma$ occurs in both premises of the rule, and in Init where
+$\Gamma$ could be anything.  (In a search from the leaves, how could you
+instantiate $\Gamma$?)
+A calculus corresponding to $\LJ$ oriented toward forward search is given in
+Figure~\ref{prop.ljf}, and an example derivation in
+Figure~\ref{prop.forward-der}.  (Note that in the rule $\Or$-L,
+we must have $\Card{\gamma_1\Union\gamma_2} \leq 1$ to obey the
+definiton of sequents.)
+Relating the forward and backward system requires the following
+important way to compare the relative strength of sequents.
+
+\input{prop/ljf}
+\input{prop/ljf-der}
+
+\begin{definition}[Subsumption]
+A sequent $\PBSeq{\Gamma}{\gamma}$ \emph{subsumes}
+$\PBSeq{\Gamma'}{\gamma'}$ if $\Gamma\subseteq\Gamma'$ and
+$\gamma\subseteq\gamma'$.  We write
+$\PBSeq{\Gamma}{\gamma}\Subsumes\PBSeq{\Gamma'}{\gamma'}$.
+\end{definition}
+
+\noindent
+To see why such a measure is necessary, consider the sequent
+$\PBSeq{p, q}{p}$, initial in $\LJ$.  This sequent is not provable
+in $\LJF$.  Instead, we can prove (trivially) $\PFSeq{p}{p}$ which
+is stronger, in that it uses fewer assumptions to show the same
+consequent.
+
+\begin{theorem}
+If $q$ is derivable in $\LJ$ and $q\Subsumes q'$ then $q'$ is derivable
+in $\LJ$.
+\end{theorem}
+
+\begin{proof}
+  Easy induction on the derivation of $q$.  We can add any extra hypotheses
+in $q'$ to every sequent in the derivation.
+\end{proof}
+
+\begin{theorem}
+  \begin{itemize}
+  \item []
+  \item If $q$ is derivable in $\LJF$ then $q$ is derivable in $\LJ$.
+  \item If $q$ is derivable in $\LJ$ then there exists $q'$ such
+    that $q'\Subsumes q$ and $q'$ is derivable in $\LJF$.
+  \end{itemize}
+\end{theorem}
+
+\begin{proof}
+  \cite{Voronkov.2001.Handbook}
+\end{proof}
+
+The differences between $\LJ$ and $\LJF$ are mostly cosmetic.  The main
+substantial difference is the existence of the contraction rule.
+This rule is admissible in $\LJ$ but is needed as an explicit rule in
+$\LJF$.  Also, the single rule $\Imp$-R of $\LJ$ has three versions
+in $\LJF$, corresponding to whether either of the sides of the implication
+are present.  (For example, you couldn't prove $a\Imp b\Imp a$ with only
+$\Imp$-R$_1$.)  We can reconcile the differences by defining a single
+inference system, where the \emph{matching} of sequents to inference
+rule schemas differs between the forward and backward variants.  The
+reasons we want to do this will not become clear until later in the
+chapter, when we discuss the focused calculus.  In anticipation of
+that section, having a single inference system that is interpreted in two
+different ways will make the proofs that follow more straightforward.
+
+A combined calculus is shown in Figure~\ref{prop.p}.  It is interpreted
+in the context of forward and backward search using forward
+and backward \emph{systems}.
+
+\input{prop/p}
+
+\begin{definition}[Backward systems]
+  \begin{itemize}
+  \item[]
+  \item A \emph{backward system} is a pair $\cB=\ASet{\cR, \BMatch}$ where
+    $\cR$ is a set of inference rules and
+    $\BMatch\in\cR\times \Seqs\to\SeqSeqs$.
+    If $\BMatch(\rho, q)$ is defined, we say that $q$ \emph{matches}
+    $\rho$.
+  \item If $q$ is a sequent, a \emph{$\cB$-derivation} of $q$
+    is a tree of sequents with root $q$ where the children of
+    any node $q'$ are the elements of $\BMatch(\rho, q')$ for some
+    rule $\rho\in\cR$.
+  \item A sequent $q$ is called \emph{initial} if there exists
+    an initial rule $\rho\in\cR$ such that $q$ matches $\rho$.
+  \item An \emph{$\cB$-proof} is an $\cB$-derivation
+    where the leaves are initial sequents.
+  \end{itemize}
+\end{definition}
+
+\begin{definition}[Forward systems]
+  \begin{itemize}
+  \item[]
+  \item A \emph{forward system} is a pair $\cF=\ASet{\cR, \FMatch}$ where
+    $\cR$ is a set of inference rules and
+    $\FMatch\in\cR\times \SeqSeqs\to\SetSeqs$.
+    (Matching sequents to a rule in forward search may produce multiple
+    results.)
+  \item If $q$ is a sequent, an \emph{$\cF$-derivation} of $q$
+    is a tree of sequents
+    with root $q$ where if $\cQ$ are the parents of a
+    node $q'$, then $q'\in \FMatch(\rho, \cQ)$ for some
+    rule $\rho\in\cR$.
+  \item An \emph{$\cF$-proof} is an $\cF$-derivation where the
+    leaves are the conclusions of initial rules.
+  \end{itemize}
+\end{definition}
+
+\paragraph{Notation.}
+  We systematically use the following (possibly subscripted)
+  symbols to represent the different syntactic entities.
+  \begin{center}
+    \begin{tabular}{l@{\hspace{3em}}l}
+      $p$ & atomic formulas\\
+      $A,B$ & formulas\\
+      $\Gamma$ & antecedents of rule sequents\\
+      $\gamma$ & consequents of rule sequents\\
+      $\Delta$ & antecedents of non-rule sequents\\
+      $\delta$ & consequents of non-rule sequents\\
+      $\rho$ & inference rules\\
+      $q$ & sequents\\
+      $\cD$ & sets of sequents\\
+      $\cQ$ & sequences of sequents\\
+      $\cR$ & sets of inference rules \\
+    \end{tabular}
+  \end{center}
+  We sometimes abuse notation and write, e.g. $\cQ \subseteq \cD$.
+
+\begin{definition}[Backward rule matching]
+  \label{prop.def.backward-match}
+  Let $q=\PBSeq{\Delta}{\delta}$ be a sequent and
+  \[
+  \rho=
+  \begin{array}{c}
+    \infer
+    {\PBSeq{\Gamma}{\gamma}}
+    {\PBSeq{\Gamma_1}{\gamma_1} & \cdots & \PBSeq{\Gamma_n}{\gamma_n}}
+  \end{array}
+  \]
+
+  \noindent
+  be a rule.  $\BMatch(\rho, q)$ is defined as follows:
+
+  \begin{align*}
+    \Delta' &= \Delta\Diff\Gamma\\
+    \delta' &= \delta\Diff\gamma\\
+    \Gamma_i' &= \Gamma_i\Union\Delta'\\
+    \gamma_i' &= \gamma_i\Union\delta'\\
+    \BMatch(\rho, q) &=
+    \ASet{
+      \PBSeq{\Delta_1'}{\delta_1'},
+      \ldots,
+      \PBSeq{\Delta_n'}{\delta_n'}}
+  \end{align*}
+
+  \noindent
+  subject to the constraint that each $\delta_i$
+  has at most one formula.  Otherwise $\BMatch(\rho,q)$ is not
+  defined.
+\end{definition}
+
+\begin{definition}
+  A \emph{rule schema} is an instance of a rule with
+  $\PB$ is the backward system consiting of of all instances of
+  the rule schemas of Figure~\ref{prop.backward} and the
+  matching function $\BMatch$ defined above.
+  A backward derivation is shown in Figure~\ref{prop.backward-der}.
+\end{definition}
+
+\noindent
+
+We are being intentionally pedantic in our distinction between inference rules and
+rule schemas because our presentation is somewhat unusual.  Normally rule schemas are
+presented with meta-variables standing for the non-prinicipal formulas.  For
+example, the rule $\And$-L is normally written
+\[
+\Infer[\And$-L$]
+{\PBSeq{\Gamma, A_1 \And A_2}{C}}
+{\PBSeq{\Gamma, A_1, A_2}{C}}
+\]
+\noindent
+where the symbols $\Gamma$ and $C$ are meta-variables
+With this formulation, the following is considered to be an
+instance of the schema
+\[
+\Infer[\And$-L$]
+{\PBSeq{b, c \And d}{a}}
+{\PBSeq{b, c, d}{a}}
+\]
+\noindent
+This is not the case in our presentation.  The instance
+of the $\And$-T schema for  $c\And d$ is
+\[
+\Infer[\And$-L$]
+{\PBSeq{c \And d}{\cdot}}
+{\PBSeq{c, d}{\cdot}}
+\]
+\noindent
+The definition of \textit{$\BMatch$} makes
+\[
+\Infer[\And$-L$]
+{\PBSeq{b, c \And d}{a}}
+{\PBSeq{b, c, d}{a}}
+\]
+\noindent
+a valid \emph{derivation}, but not an instance of the rule.
+This distinction will be
+important when we create focused inference rules in
+Section~\ref{prop.sec.focus}.
+
+% \input{prop/backward}
+% \input{prop/backward-der}
+
+$\PB$ is a foundation for backward search.  Begin with the goal formula and
+repeatedly match the inference rules, generating new sequents in the derivation.
+Backtracking is necessary when there is a choice of which rule to apply.  The
+only troubling rule in the system is $\Imp$-L.  Each of the other rules
+propegate only subformulas of the principal formula, thus decreasing the
+size of the sequent by some measure.  In contrast, $\Imp$-L
+propegates the principal formula as well as its subformulas to one of the
+hypotheses.  Backward search must thus avoid looping behavior where $\Imp$-L is
+repeatedly applied to the same formula.  Various ways of addressing this issue
+have been considered (Section~\ref{prop.sec.related}).  One benefit of forward
+search is that loop detection is not requried.
+
+Before continuing, we collect some relevant
+properties of $\PB$ that we will use later.
+
+\subsection{The Subformula Property}
+
+All the calculi we will consider in this thesis satisfy \emph{the subformula
+property};  any sequent in a proof will consist entirely of signed subformulas
+of the goal sequent.  In fact, we require a slightly stronger property than is normally
+understood by the subformula property.
+  Namely, we want to distinguish
+different \emph{occurrances} of subformulas that occur in different parts of the goal
+formula.  So for instance, while there are only two distinct subformulas of
+$p\And p$, there are three subformula occurrances
+becauese of the two distinct occurrances of $p$.
+
+We also distinguish subformulas by their \emph{sign}.  The sign is either
+positive or negative; a subformula with positive sign will only occur
+as a consequent, while a negative subformula will only occur as an
+antecedent.
+
+\begin{definition}[Signed subformulas]
+  \label{prop.def.subf}
+  \index{subformula!sign of}
+  \begin{itemize}
+  \item[]
+  \item If $A$ is a formula, a \emph{signed formula} is
+    $\Left{A}$ or $\Right{A}$.
+  \item The \emph{immediate signed subformula} relation is shown in
+    Figure~\ref{prop.subformulas}.
+  \item The \emph{signed subformula} relation $\le$ is the reflexive transitive
+    closure of $<$.
+  \item If $x$ is a signed formula,
+    define
+    \[ \Subfs(x) = \Set{x'\sst x'\le x} \]
+  \item If $X$ is a multiset of signed formulas, define
+    \[
+    \Subfs(X) = \bigcup_{x\in X}\Subfs(x)
+    \]
+  \item If $\Gamma$ is a multiset of formulas, define
+    \[
+    \begin{array}{cc}
+      \Left{\Gamma} =
+      \begin{cases}
+        \emptyset & \Gamma = \emptyset\\
+        \Left{A}, \Left{\Gamma'} & \Gamma = A, \Gamma'
+      \end{cases}
+      &
+      \hspace{2em}
+      \Right{\Gamma} =
+      \begin{cases}
+        \emptyset & \Gamma = \emptyset\\
+        \Right{A}, \Right{\Gamma} & \Gamma = A, \Gamma'
+      \end{cases}
+    \end{array}
+    \]
+  \item $\Subfs(\PBSeq{\Gamma}{\gamma}) = \Subfs(\Left{\Gamma}\Union\Right{\gamma})$
+  \end{itemize}
+\end{definition}
+
+\begin{theorem}[The subformula property]
+\label{prop.thm.subformula}
+If $q'$ is a sequent in a derivation of $q$ then $\Subfs(q')
+\subseteq \Subfs(q)$.
+\end{theorem}
+
+\begin{proof} Routine inspection of the inference rules. \end{proof}
+
+In fact, a stronger subformula property holds as well.
+
+%\subsection{Admissible rules}
+
+\begin{lemma}[Weakening]
+  \label{prop.thm.weaken}
+  The rule
+  \[
+  \Infer[\mbox{Weaken}]
+  {\PBSeq{A}{\cdot}}
+  {\PBSeq{\cdot}{\cdot}}
+  \]
+  is admissible in $\PB$.
+\end{lemma}
+\begin{proof} Easy induction on the derivation. \end{proof}
+
+\begin{theorem}[Cut]
+  The rule
+  \[
+  \Infer[\mbox{Cut}]
+  {\PBSeq{\cdot}{\cdot}}
+  {\PBSeq{\cdot}{A} & \PBSeq{A}{\cdot}}
+  \]
+  is admissible in $\PB$.
+\end{theorem}
+\begin{proof} Due to Gentzen~\cite{Gentzen.1934.MZ}. \end{proof}
+
+\begin{theorem}[Identity]
+  The rule
+  \[
+  \Infer[\mbox{Id}]
+  {\PBSeq{A}{A}}
+  {}
+  \]
+  is admissible in $\PB$.
+\end{theorem}
+\begin{proof} Easy induction on $A$. \end{proof}
+
+\begin{theorem}[Contraction]
+  \label{prop.thm.contract}
+  The rule
+  \[
+  \Infer[\mbox{Contracts}]
+  {\PBSeq{A}{\cdot}}
+  {\PBSeq{A, A}{\cdot}}
+  \]
+  is admissible in $\PB$.
+\end{theorem}
+
+\begin{proof}
+  Induction on the derivation of $\PBSeq{A, A}{\cdot}$~\cite[Section 3.5.5]{Troelstra.2000.ProofTheory}.
+\end{proof}
+
+\begin{theorem}[Consistency]
+  \label{prop.thm.consistent}
+  $\PBSeq{\cdot}{\Bot}$ is not derivable.
+\end{theorem}
+\begin{proof} No inference rules apply. \end{proof}
+
+%\subsection{Subsumption}
+
+\begin{definition}[Subsumption]
+  \index{subsumes}
+  \index{subsumption}
+  \begin{itemize}
+  \item[]
+  \item $\PBSeq{\Gamma_1}{\gamma_1}$ \emph{subsumes}
+    $\PBSeq{\Gamma_2}{\gamma_2}$ if $\Gamma_1\subseteq\Gamma_2$
+    and $\gamma_1\subseteq\gamma_2$.
+  \item Write $q_1\Subsumes q_2$ if $q_1$ subsumes $q_2$.
+  \item $q_1$ \emph{properly subsumes} $q_2$ if $q_1\Subsumes q_2$
+    and $q_1\neq q_2$.  Write $q_1\ProperlySubsumes q_2$
+  \item If $\cD$ is a set of sequents $\cD\Subsumes q$ if
+    there exists $q'\in\cD$ such that $q'\Subsumes q$.
+  \end{itemize}
+\end{definition}
+
+\noindent
+(These defintions holds for forward sequents $\PFSeq{\Delta}{\delta}$ as well.
+Recall that they are identical objects, written differently to
+emphasize the context in which they appear.)
+Subsumption is a measure of the strength of a sequent
+in the following sense.
+
+\begin{theorem}
+  \label{prop.thm.subs}
+  If $q\Subsumes q'$ and there is a
+  $\PB$-derivation of $q$ then there is a $\PB$-derivation of $q'$.
+\end{theorem}
+\begin{proof}  Weaken the derivation of $q$. \end{proof}
+
+%\subsection{Atoms}
+
+Atomic formulas play an important role in forward search.
+
+\begin{definition}
+  \index{$\Atoms(A)$}
+  For a formula $A$, let
+  $\Atoms(A)=\Set{p\sst \Left{p}\in\Subfs(A) \mbox{ or } \Right{p}\in\Subfs(A)}$.
+\end{definition}
+
+\begin{definition}
+  An atomic formula $p$ is called \emph{two-sided in $A$}
+  if $\Set{\Left{p},\Right{p}} \subseteq \Subfs(A)$.
+\end{definition}
+
+\noindent For example, $p$ is two-sided in $p \Imp q \Imp p$
+but $q$ is not.
+
+\begin{theorem}
+  In every derivation of $\PBSeq{\cdot}{A}$, the atoms of all
+  occurrences of \emph{Init} are two-sided in $A$.
+\end{theorem}
+\begin{proof} Simple induction on the derivation. \end{proof}
+
+\section{Forward Sequent Calculus}
+
+\begin{quote}
+  \textit{
+    We derive a forward calculus $\PF$ from $\PB$, prove its soundness
+    and completeness, and define $\PFx$.
+  }
+\end{quote}
+
+%\subsection{Contraction}
+\noindent
+In intuitionistic logic, unlike linear logic, we can use the same antecedent an unlimited
+number of times.  (Using multisets as antecedents is primarily a technical device.)
+The admissibility of contraction (Theorem~\ref{prop.thm.contraction})
+demonstrates this fact.  In forward calculi, contraction is normally
+included as an explicit rule.  We handle contraction differently, by including
+it as part of the rule matching process.
+
+\begin{definition}[Contracts]
+  \begin{itemize}
+  \item[]
+  \item $q$ is a \emph{contract} of $q'$ if there is a (backward)
+    derivation of $q$ from $q'$ using only the contraction rule.
+    (Theorem~\ref{prop.thm.contract})
+  \item The set of contracts of a sequent $q$ is
+    written $\Contracts(q)$.
+  \item $\ASet{q_1', \ldots, q_n'}$ is a \emph{contract} of a
+    sequence $\ASet{q_1, \ldots, q_n}$ if $q_i'\in\Contracts(q)$
+    for all $i$.
+  \item The set of contracts of a sequence of sequents $\cQ$ is
+    written $\Contracts(\cQ)$.
+  \end{itemize}
+\end{definition}
+
+%\subsection{Forward rule matching}
+\noindent
+Previously we described rule matching as a function from the conclusion of a
+rule to its premises.  We can also define matching in the opposite direction, as
+a function of the premises to the conclusion.  Note that we match all contracts
+of the matching sequents to the hypotheses of the rule.  The need for this use
+of contracts will become clear in Chapter~\ref{fol.chapter}.
+
+\begin{definition}[Forward rule matching]
+  \begin{itemize}
+  \item[]
+  \item
+    Let
+    \[
+    \rho = \Infer
+    {\PFSeq{\Gamma}{\gamma}}
+    {\PFSeq{\Gamma_1}{\gamma_1} & \cdots & \PFSeq{\Gamma_n}{\gamma_n}}
+    \]
+
+    \noindent
+    be an inference rule and let
+    \[
+    \cQ = \ASet{\PFSeq{\Delta_1}{\delta_1}, \ldots, \PFSeq{\Delta_n}{\delta_n}}
+    \]
+
+    \noindent be a sequence of sequents.  Let
+    \begin{align*}
+      \Delta &= \Gamma\Union (\Delta_1\Diff\Gamma_1) \Union \dots\Union(\Delta_n\Diff\Gamma_n)\\
+      \delta &= \gamma\Union (\delta_1\Diff\gamma_1) \Union \dots\Union(\delta_n\Diff\gamma_n)\\
+    \end{align*}
+
+    \noindent
+    If $\Card{\delta}\leq 1$ then define
+    \[
+    \FMatch_1(\rho, \cQ)=\PFSeq{\Delta}{\delta}.
+    \]
+  \item Define
+    \[
+    \FMatch(\rho, \cQ)= \Set{\FMatch_1(\rho, \cQ') \sst \cQ'\in\Contracts(\cQ)}
+    \]
+
+  \item We can also lift matching to sets.
+    Let $\cR$ be a set of rules and let $\cD$ be a set of sequents.
+    Define
+    \[
+    \FMatch(\cR, \cD) =
+    \bigcup_{\rho\in\cR, \cQ \in \ASet{\cD}} \FMatch(\rho, \cQ)
+    \]
+  \end{itemize}
+\end{definition}
+
+\begin{definition}
+  $\PF$ is the forward system consiting of of all instances of
+  the rule schemas of Figure~\ref{prop.forward} and the
+  matching function $\FMatch$ defined above.
+  A forward derivation is shown in Figure~\ref{prop.forward-der}.
+\end{definition}
+
+Note that the rule schemas of $\PF$ are identical (as mathematical objects)
+to those of $\PB$.  We write them again to emphasize the forward nature
+of the rules.  The identity of forward and backward rules will not hold
+when defining the constraint calculi~(Chapter~\ref{chapter.constr}).
+
+% \input{prop/forward}
+
+\begin{remark}
+  Weakening is not admissible in $\PF$.  In $\PB$, weakening a
+  proof of $\PBSeq{\Delta}{A}$ by $B$ corresponds to adding $B$ to
+  the antecedents of every sequent in the derivation.  The augmented
+  initial sequents remain initial.  In $\PF$ the initial sequents
+  are fixed, $\PFSeq{p}{p}$, so this argument does not hold.
+\end{remark}
+
+\subsection{Soundness and Completeness}
+
+The soundness and completeness theorems justify using forward sequents for proof
+search.
+\begin{theorem}[Soundness]
+  \label{prop.thm.forward-sound}
+  If $\PFSeq{\Delta}{\delta}$ is derivable in $\PF$ then
+  $\PBSeq{\Delta}{\delta}$ is derivable in $\PB$.
+\end{theorem}
+
+\begin{proof}
+  By induction on the derivation of $\PFSeq{\Delta}{\delta}$.
+  Let $\PFSeq{\Delta}{\delta} = \FMatch(r, \cQ)$ where $r$ is the last
+  rule application.  We show some representative rules.
+  \begin{description}
+  \item[Case:]
+    $r = \mbox{Init}$.
+    Then $\Delta$ is an instance of $Init$
+    \[ \Infer[Init]{\VSeq{\Left{p},\Right{p}}}{} \]
+    and we have the identical derivation
+    \[ \Infer[Init]{\NSeq{\Left{p},\Right{p}}}{} \]
+  \item[Case:]
+    \Infer[\Imp$-R$]
+    {\VSeq{\Right{A_1 \Imp A_2}}}
+    {\VSeq{\Left{A_1},\Right{A_2}}}
+    By IH we have $\NSeq{\Delta}$.  There are a few cases, depending
+    on whether $\Left{A_1}$
+    If
+
+  \item[Case:]
+    \[ \PFImpL \]
+    \begin{tabbing}
+      $\FB{\PFSeq{\Gamma_1, A_1\Imp A_2}{A_1}}$ \` IH \\
+      $\PBSeq{\Gamma_1, A_1\Imp A_2}{A_1}$ \` Def. \\
+      $\PBSeq{\Gamma_1, \Gamma_2, A_1\Imp A_2}{A_1}$ \` Weaken \\
+      $\FB{\PFSeq{\Gamma_2, A_2}{\gamma}}$ \` IH \\
+      $\PBSeq{\Gamma_2, A_2}{\FB{\gamma}}$ \` Def. \\
+      $\PBSeq{\Gamma_1, \Gamma_2, A_2}{\FB{\gamma}}$ \` Weaken \\
+      $\PBSeq{\Gamma_1, \Gamma_2, A_1\Imp A_2}{\FB{\gamma}}$ \` $\Imp$-L\\
+      $\FB{\PFSeq{\Gamma_1, \Gamma_2, A_1\Imp A_2}{\gamma}}$
+      \` Def., possibly with contractions (Lemma~\ref{prop.thm.contract})\\
+    \end{tabbing}
+  \end{description}
+\end{proof}
+
+The completeness theorem is not totally straightforward, as the provable sequents
+are not identical.  For example, due to the inadmissibility of weakening,
+$\PBSeq{p, q}{p}$ is derivable in $\PB$ but
+$\PFSeq{p, q}{p}$ is not derivable in $\PF$.
+Instead we show we can always prove a stronger sequent.
+
+%\input{prop/forward-der}
+
+\section{Toward an efficient implementation}
+
+\begin{definition}[Paths]
+  A \emph{path} is a sequence of the set $\Set{l,r}$.
+  Define $\Paths^+(A)$, and $\Paths^-(A)$ as follows:
+  \[
+  \begin{array}{l}
+    \Paths^+(\Top) = \Paths^+(\Bot) = \Paths^+(p) = \Set{[]}\\
+    \Paths^-(\Top) = \Paths^-(\Bot) = \Paths^-(p) = \Set{[]}\\
+    \Paths^+(A\And B) = \Paths^+(A\Or B) =
+    \Set{l : \pi\ |\ \pi\in\Paths^+(A)} \Union
+    \Set{r : \pi\ |\ \pi\in\Paths^+(B)} \Union \Set{[]}\\
+    \Paths^-(A\And B) = \Paths^-(A\Or B) =
+    \Set{l : \pi\ |\ \pi\in\Paths^-(A)} \Union
+    \Set{r : \pi\ |\ \pi\in\Paths^-(B)} \Union \Set{[]}\\
+    \Paths^+(A\Imp B) =
+    \Set{l : \pi\ |\ \pi\in\Paths^-(A)} \Union
+    \Set{r : \pi\ |\ \pi\in\Paths^+(B)} \Union \Set{[]}\\
+    \Paths^-(A\Imp B) =
+    \Set{l : \pi\ |\ \pi\in\Paths^+(A)} \Union
+    \Set{r : \pi\ |\ \pi\in\Paths^-(B)} \Union \Set{[]}\\
+  \end{array}
+  \]
+\end{definition}
+
+\noindent
+If $\pi\in\Paths^\pm(A)$ then some subformula of $A$ corresponds to
+$\pi$.  Define
+
+\[
+\Subf(\pi, A) =
+\begin{cases}
+  A & \pi = []\\
+  \Subf(\pi', A_1) & \pi = l : \pi', A = A_1 * A_2\\
+  \Subf(\pi', A_2) & \pi = r : \pi', A = A_1 * A_2\\
+\end{cases}
+\]
+\noindent
+where $* \in \Set{\And,\Or,\Imp}$.
+If $\pi\in\Paths^+(A)$ we say that $\Subf(\pi)$ is
+a \emph{positive} subformula of $A$, and
+if $\pi\in\Paths^-(A)$ we say that $\Subf(\pi)$ is
+a \emph{negative} subformula of $A$.  We write either
+$\Sgn(\pi)=+$ or $\Sgn(\pi)=-$ respectively.
+If $\Subf(\pi)$ is atomic, we say that $\pi$ is an atomic path.
+
+\begin{example}
+  The paths of $(a\Imp b) \Imp ((a\Imp b) \Imp c) \Imp c$ are
+
+  \[
+  \begin{array}{lll}
+    \pi & \Subf(\pi) & \Sgn(\pi) \\
+    \hline \\
+    \LB\RB & (a\Imp b) \Imp ((a\Imp b) \Imp c) \Imp c & + \\
+    \LB l\RB & a\Imp b & - \\
+    \LB l,l\RB & a & + \\
+    \LB r,l\RB & b & - \\
+    \LB r\RB & ((a\Imp b) \Imp c) \Imp c & + \\
+    \LB l,r\RB & (a\Imp b) \Imp c & - \\
+    \LB r,r\RB & c & + \\
+    \LB l,l,r\RB & a\Imp b & + \\
+    \LB r,l,r\RB & c & - \\
+    \LB l,l,l,r\RB & a & - \\
+    \LB r,l,l,r\RB & b & + \\
+  \end{array}
+  \]
+\end{example}
+
+In all that follows, we assume a fixed goal formula $\xi$.
+Define
+
+\[
+\begin{array}{c}
+  \Paths^+ = \Paths^+(\xi)\\
+  \Paths^- = \Paths^-(\xi)\\
+  \Subf(\pi) = \Subf(\pi,\xi)\\
+\end{array}
+\]
+
+\begin{definition}[Labels]
+  A \emph{labeling function} $f$ is a surjective function from paths to atoms
+  that maps atomic paths to their corresponding atoms, and non-atomic paths
+  to fresh, distinct atoms.  More formally,
+
+  \begin{itemize}
+  \item If $\pi$ is atomic, then $f(\pi) = \Subf(\pi)$.
+  \item If $\pi$ and $\pi'$ are non-atomic, then $f(\pi) \neq f(\pi')$
+    and $f(\pi)$ is not an atom of $\xi$.
+  \end{itemize}
+
+  \noindent
+  It is easy to see that labeling functions exist.  Fix such a function $f$.  Then
+  we call $f(\pi)$ the \emph{label} of $\pi$.  If $\Subf(\pi) = A$ we sometimes
+  call $f(\pi)$ \emph{the} label of $A$, though this is actually ambiguous since there
+  could be many paths $\pi_i$ with $\Subf(\pi_i) = A$.  If any ambiguity could
+  arise in such a word choice, we will use paths rather than formulas.
+\end{definition}
+
+\section{Path calculus}
+
+\begin{definition}[Sequents]
+  A \emph{sequent} is a pair $\ASet{\Gamma,\gamma}$
+  where $\Gamma\subseteq\Paths^-$ (a multiset) and $\gamma\subseteq \Paths^+$
+  is a set of formulas with at most one element.
+  $\Gamma$ is called the \emph{antecedents}
+  and $\gamma$ the \emph{consequent}.
+  We write $\ASet{\Gamma,\gamma}$ as either $\PBSeq{\Gamma}{\gamma}$
+  or $\PFSeq{\Gamma}{\gamma}$.  The former is used when we describe
+  backward calculi, and the later for forward calculi.  Keep in mind
+  though that behind the notation the objects are identical, and we freely
+  convert between them in proofs that relate forward and backward systems.
+  If $\gamma$ is empty, we write $\PBSeq{\Gamma}{\cdot}$.
+  If $\gamma$ is a singleton $\Set{A}$, we write $\PBSeq{\Gamma}{A}$.
+  If $\Gamma$ is empty, we write $\PBSeq{\cdot}{\gamma}$.
+  We denote the set of all sequents by $\Seqs$,
+  the set of all sequences of sequents by $\SeqSeqs$, and
+  the set of all sets of sequents by $\SetSeqs$.
+  %  If $\cD$ is a set of sequents, then $\ASet{\cD}$ is the set
+  %   of sequences of sequents with elements in $\cD$.
+  Note that we will almost always abuse notation and write a sequent
+  as a list of formulas rather than paths.  When we write
+  $\PBSeq{A}{B}$ we mean a sequent $\PBSeq{\pi_A}{\pi_B}$ where
+  $\Subf(\pi_A) = A$ and $\Subf(\pi_B) = B$.
+\end{definition}
+
+\section{XXX Notes}
+or $\PFSeq{\Gamma}{\gamma}$.  The former is used when we describe
+  backward calculi, and the later for forward calculi.  Keep in mind
+  though that behind the notation the objects are identical, and we freely
+  convert between them in proofs that relate forward and backward systems.
+
+\begin{itemize}
+\item Note that polarities and subformula signs are unrelated.
+\item paragraph about positive and negative AND
+\item COMPACT proof terms
+\item (The restriction of $\gamma$ to size at most one distinguishes
+    intuitionistic from classical logic.)
+\end{itemize}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "thesis"
+%%% End:

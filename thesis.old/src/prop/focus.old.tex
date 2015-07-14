@@ -1,0 +1,260 @@
+
+\fboxsep=8pt
+
+\newcommand{\PFocusL}{
+  \Infer[$Focus-L$]
+  {\PBSeq{\Gamma,A^-}{\gamma}}
+  {\PBSeq{\Gamma, \Foc{A^-}}{\gamma}}
+}
+
+\newcommand{\PFocusR}{
+  \Infer[$Focus-L$]
+  {\PBSeq{\Gamma,A^-}{\gamma}}
+  {\PBSeq{\Gamma, \Foc{A^-}}{\gamma}}
+}
+
+\newcommand{\PIdP}{
+  \Infer[$Id$^+]
+  {\PBSeq{\Gamma,\Susp{A^+}}{\Foc{A^+}}}
+  {}
+}
+
+\newcommand{\PIdN}{
+  \Infer[$Id$^-]
+  {\PBSeq{\Gamma, \Foc{A^-}}{\Susp{A^-}}}
+  {}
+}
+
+\newcommand{\PEtaRRule}{
+  \Infer[\eta$-R$]
+  {\PBSeq{\Gamma}{p^-}}
+  {\PBSeq{\Gamma}{\Susp{p^-}}}
+}
+
+\newcommand{\PEtaLRule}{
+  \Infer[\eta$-L$]
+  {\PBSeq{\Gamma, p^+}{\gamma}}
+  {\PBSeq{\Gamma, \Susp{p^+}}{\gamma}}
+}
+
+\newcommand{\PDownRRule}{
+  \Infer[\Down$-R$]
+  {\PBSeq{\Gamma}{[\Down A^-]}}
+  {\PBSeq{\Gamma}{A^-}}
+}
+
+\newcommand{\PDownLRule}{
+  \Infer[\Down-$L$]
+  {\PBSeq{\Gamma, \Down A^-}{\gamma}}
+  {\PBSeq{\Gamma, A^-}{\gamma}}
+}
+
+\newcommand{\PUpRRule}{
+  \Infer[\Up$-R$]
+  {\PBSeq{\Gamma}{\Up A^+}}
+  {\PBSeq{\Gamma}{A^+}}
+}
+
+\newcommand{\PUpLRule}{
+  \Infer[\Up$-L$]
+  {\PBSeq{[\Up A^+]}{\gamma}}
+  {\PBSeq{A^+}{\gamma}}
+}
+
+\newcommand{\PAndNRRule}{
+  \Infer[\AndN$-R$]
+  {\PBSeq{\Gamma}{A_1^- \AndN A_2^-}}
+  {\PBSeq{\Gamma}{A_1^-} & \PBSeq{\Gamma}{A_2^-}}
+}
+
+\newcommand{\PAndNLaRule}{
+  \Infer[\AndN$-L$_1]
+  {\PBSeq{\Gamma,  \Foc{A_1^- \AndN A_2^-}}{\gamma}}
+  {\PBSeq{\Gamma, [A_1^-]}{\gamma}}
+}
+
+\newcommand{\PAndNLbRule}{
+  \Infer[\AndN$-L$_2]
+  {\PBSeq{\Gamma,  \Foc{A_1^- \AndN A_2^-}}{\gamma}}
+  {\PBSeq{\Gamma, [A_2^-]}{\gamma}}
+}
+
+\newcommand{\PTopNRRule}{
+  \Infer[\TopN$-R$]
+  {\PBSeq{\Gamma}{\TopN}}
+  {}
+}
+
+\newcommand{\PTopNLRule}{
+  \mbox{No rule for $\TopN$-L}
+}
+
+\newcommand{\PTopPLRule}{
+  \Infer[\TopP-$L$]
+  {\PBSeq{\Gamma, \TopP}{\gamma}}
+  {\PBSeq{\Gamma}{\gamma}}
+}
+
+\newcommand{\PAndPLRule}{
+  \Infer[\AndP$-L$]
+  {\PBSeq{\Gamma, A_1^+ \AndP A_2^+}{\gamma}}
+  {\PBSeq{\Gamma, A_1^+, A_2^+}{\gamma}}
+}
+
+\newcommand{\PAndPRRule}{
+  \Infer[\AndP$-R$]
+  {\PBSeq{\Gamma}{\Foc{A_1^+ \AndP A_2^+}}}
+  {\PBSeq{\Gamma}{[A_1^+]} & \PBSeq{\Gamma}{[A_2^+]}}
+}
+
+\newcommand{\PTopPRRule}{
+  \Infer[\TopP$-R$]
+  {\PBSeq{\Gamma}{[\TopP]}}
+  {}
+}
+
+\newcommand{\PImpRRule}{
+  \Infer[\Imp$-R$]
+  {\PBSeq{\Gamma}{A_1^+ \Imp A_2^-}}
+  {\PBSeq{\Gamma, A_1^+}{A_2^-}}
+}
+
+\newcommand{\PImpLRule}{
+  \Infer[\Imp$-L$]
+  {\PBSeq{\Gamma,  \Foc{A_1^+ \Imp A_2^-}}{\gamma}}
+  {\PBSeq{\Gamma, A_1^+ \Imp A_2^-}{[A_1^+]} & \PBSeq{\Gamma, [A_2^-]}{\gamma}}
+}
+
+\newcommand{\POrLRule}{
+  \Infer[\Or$-L$]
+  {\PBSeq{\Gamma, A_1^+ \Or A_2^+}{\gamma}}
+  {\PBSeq{\Gamma, A_1^+}{\gamma} & \PBSeq{\Gamma, A_2^+}{\gamma}}
+}
+
+\newcommand{\POrRaRule}{
+  \Infer[\Or$-R$_1]
+  {\PBSeq{\Gamma}{\Foc{A_1^+ \Or A_2^+}}}
+  {\PBSeq{\Gamma}{[A_1^+]}}
+}
+
+\newcommand{\POrRbRule}{
+  \Infer[\Or$-R$_2]
+  {\PBSeq{\Gamma}{\Foc{A_1^+ \Or A_2^+}}}
+  {\PBSeq{\Gamma}{[A_2^+]}}
+}
+
+\newcommand{\PBotRRule}{
+  \mbox{No rule for $\Bot$-R}
+}
+
+\newcommand{\PBotLRule}{
+  \Infer[$Init-R$]
+  {\PBSeq{\Gamma, \Bot}{\gamma}}
+  {}
+}
+
+\begin{figure}[H]
+  \begin{center}
+    \fbox{
+      \begin{tabular}{c}
+        \begin{tabular}{cc}
+          \PIdP
+          &
+          \hspace{3pt}
+          \PIdN
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{cc}
+          \PFocusL
+          &
+          \hspace{3pt}
+          \PFocusR
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{cc}
+          \PEtaRRule
+          &
+          \hspace{3pt}
+          \PEtaLRule
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{cc}
+          \PDownLRule
+          &
+          \hspace{3pt}
+          \PDownRRule
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{cc}
+          \PUpRRule
+          &
+          \hspace{0em}
+          \PUpLRule
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{ccc}
+          \PAndNRRule
+          &
+          \hspace{0em}
+          \PAndNLaRule
+          &
+          \hspace{0em}
+          \PAndNLbRule
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{cc}
+          \PTopNRRule
+          &
+          \hspace{0em}
+          \PTopNLRule
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{cc}
+          \PAndPRRule
+          &
+          \hspace{0em}
+          \PAndPLRule
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{cc}
+          \PTopPRRule
+          &
+          \hspace{0em}
+          \PTopPLRule
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{cc}
+          \PImpRRule
+          &
+          \hspace{0em}
+          \PImpLRule
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{ccc}
+          \POrRaRule
+          &
+          \hspace{0em}
+          \POrRbRule
+          &
+          \hspace{0em}
+          \POrLRule
+        \end{tabular}
+        \\[2em]
+        \begin{tabular}{cc}
+          \PBotLRule
+          &
+          \hspace{0em}
+          \PBotRRule
+        \end{tabular}
+      \end{tabular}
+    }
+  \end{center}
+  \caption{A focused calculus}
+  \label{prop.focus}
+\end{figure}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

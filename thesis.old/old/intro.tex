@@ -1,0 +1,78 @@
+
+\begin{quote}
+The aim has been to lay the groundwork for a theory of automated deduction in
+arbitrary symbolic logics by providing empirical evidence for the existence of
+a \emph{uniform} approach to efficient proof search in both truth-functional and
+non truth-functional logics.  Whilst the formulation of such a comprehensive
+theory is at the time of writing beyond the author's reach, it is intended that
+the form such a theory might take, and the ideas on which it might be based, be
+suggested by the methods brought to bear in the text.~\cite{Wallen.1990.Book}
+---\textit{Lincoln Wallen} (1990)
+\end{quote}
+
+\vspace{1cm}
+
+This thesis continues Wallen's efforts toward uniform methods for
+efficient proof search in non-classical logics.  While Wallen's framework
+was founded on matrix methods, we use a dual approach based on the
+inverse method.  Like resolution in classical
+logic, the inverse method is a bottom-up, saturation-based proof procedure.
+Unlike resolution, which relies upon strong clause normal forms for its
+effectiveness, the inverse method is based on the sequent calculus.
+Thus, it can handle logics where no clausal normal forms exist such as
+intuitionistic logic.
+
+
+Resolution  |  Inverse method |  Tableaux |
+---------------------------------------------
+
+
+
+ While automated deduction in
+classical logic is a mature field, with dozens of theorem provers and an
+annual competition, deduction in nonclassical logics has been
+comparitively neglected\footnote{A notable exception is model checking in temporal
+logic}.
+
+Why use non-classical logic?
+
+\cite{Garg.10.SSP}
+\cite{Gurevich.08.DKAL}
+\cite{Gurevich.11.TCL}
+
+Gurevich writes
+\begin{quote}
+Eventually we switched from algebra to logic that treats $x ^ y$ and $x ! y$ as
+conjunction and implication respectively. And something unexpected happened,
+a little miracle. The logic of infons happened to be a natural and conservative
+extension of disjunction-free intuitionistic logic.~\citep{Gurevich.09.DKAL2}
+\end{quote}
+
+
+Coq, Agda
+
+Modal
+
+We have only begun to explore the applications of linear logic.  Ordered
+logic is still mostly unknown.
+
+
+We represent fine-grained control of the search behavior
+by \emph{polarizing} the input formula.
+In manipulating the polarity of atoms and subformulas, we can
+often improve the search time by several orders of magnitude.
+
+
+\section{Summary}
+
+Chapter~\ref{chapter.fol} introduces the polarized inverse method for
+intuitionistic first-order logic in detail.  Chapter~\ref{chapter.constraints}
+extends first-order sequents with constraints, and extends focusing and
+the inverse method with generic constraint domains.  Chapter~\ref{chapter.modal}
+uses the constraint system to develop proof procedures for some intuitionistic
+modal logics.  Chapter~\ref{chapter.substruct} applies the constraint system
+to substructural logics.  By varying the rules of the constraint domain we
+handle linear and ordered logic.  Chapter~\ref{chapter.implementation} describes
+the details of our implementation \emph{Imogen}, and shows some experiments.
+Chapter~\ref{chapter.conclusion} concludes, surveys related work, and suggests
+directions for future research.

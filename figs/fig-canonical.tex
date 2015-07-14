@@ -1,0 +1,68 @@
+\begin{figure}
+\[
+\begin{array}{ll}
+\multicolumn{2}{l}
+{{\sf bool}\,{\sf function}\,{\it foo}(l)}\\
+{\sf f_0}{:} & {\sf if}\,l\,{\sf then}\\
+{\sf f_1}{:} & ~~ {\sf return}\,{\sf ff}\\
+       & {\sf else}\\
+{\sf f_2}{:} & ~~ {\sf return}\,{\sf tt}\\
+       & {\sf fi}\\[15pt]
+\\
+\multicolumn{2}{l}
+{{\sf procedure}\,{\it main}()}\\
+\multicolumn{2}{l}
+{{\sf global}\,b}\\
+{\sf m_0}{:} & {\sf while}\,b\,{\sf do}\\
+{\sf m_1}{:} & ~~ b := {\it foo}(b)\\
+       & {\sf od}\\
+{\sf m_2}{:} & {\sf return}\\[15pt]
+\\
+\end{array}
+~
+\begin{array}{|rcl|}
+~ \langle b \rangle\,\langle {\sf tt}, {\sf f_0} \rangle 
+  & \rightarrow & \langle b \rangle\,\langle {\sf tt}, {\sf f_1} \rangle\\
+\langle b \rangle\,\langle {\sf ff}, {\sf f_0} \rangle
+  & \rightarrow & \langle b \rangle\,\langle {\sf ff},{\sf f_2} \rangle\\
+\langle b \rangle\,\langle l, {\sf f_1} \rangle 
+  & \rightarrow & \langle {\sf ff} \rangle\\
+\langle b \rangle\,\langle l, {\sf f_2} \rangle 
+  & \rightarrow & \langle {\sf tt} \rangle\\
+  & & \\[15pt]
+  & & \\
+  & & \\
+\langle {\sf tt} \rangle\,\langle {\sf m_0} \rangle
+  & \rightarrow & \langle {\sf tt} \rangle\, \langle {\sf m_1} \rangle\\
+\langle {\sf ff} \rangle\,\langle {\sf m_0} \rangle
+  & \rightarrow & \langle {\sf ff} \rangle\,\langle {\sf m_2} \rangle\\
+\langle b \rangle\,\langle {\sf m_1} \rangle
+  & \rightarrow & \langle b \rangle\,\langle b, {\sf f_0} \rangle\,
+\langle{\sf m_0}\rangle  ~\\
+\langle b \rangle\,\langle {\sf m_2} \rangle
+  & \rightarrow & \epsilon\\
+  & &\\[15pt]
+  & &\\
+  & &\\
+\end{array}
+~
+\begin{array}{l}
+\forall b.\,{\sf gl}(b) \fuse {\sf foo}({\sf tt}, {\sf f_0}) \lefti ~\\
+\quad \{ {\sf gl}(b) \fuse {\sf foo}({\sf tt}, {\sf f_1}) \}\\[5pt]
+\forall b.\,{\sf gl}(b) \fuse {\sf foo}({\sf ff}, {\sf f_0}) \lefti ~\\
+\quad \{ {\sf gl}(b) \fuse {\sf foo}({\sf ff}, {\sf f_1}) \}\\[5pt]
+\forall b.\,{\sf gl}(b) \fuse {\sf foo}(l, {\sf f_1}) \lefti \{ {\sf gl}({\sf ff}) \}\\[5pt]
+\forall b.\,{\sf gl}(b) \fuse {\sf foo}(l, {\sf f_2}) \lefti \{ {\sf gl}({\sf tt}) \}\\
+\\
+{\sf gl}({\sf tt}) \fuse {\sf main}({\sf m_0}) \lefti ~\\
+\quad \{ {\sf gl}({\sf tt}) \fuse {\sf main}({\sf m_1}) \}\\[5pt]
+{\sf gl}({\sf ff}) \fuse {\sf main}({\sf m_0}) \lefti ~\\
+\quad \{ {\sf gl}({\sf tt}) \fuse {\sf main}({\sf m_2})\}\\[5pt]
+\forall b.\,{\sf gl}(b) \fuse {\sf main}({\sf m_1}) \lefti ~\\
+\quad \{ {\sf gl}(b) \fuse {\sf foo}(b,{\sf f_0}) \fuse {\sf main}({\sf m_0})\}\\[5pt]
+\forall b.\,{\sf gl}(b) \fuse {\sf main}({\sf m_2}) \lefti \{ \one \}
+\end{array}
+\]
+\caption{A Boolean program, encoded as a rewriting system and in \sls}
+\label{fig:canonical}
+\end{figure}

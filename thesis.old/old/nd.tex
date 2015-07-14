@@ -1,0 +1,119 @@
+
+\newcommand{\NDAndI}{
+  \Infer[\And$-I$]
+  {\ND{A_1\And A_2}}
+  {\ND{A_1} & \ND{A_2}}
+}
+
+\newcommand{\NDAndEa}{
+  \Infer[\And$-E$_1]
+  {\ND{A_1}}
+  {\ND{A_1 \And A_2}}
+}
+
+\newcommand{\NDAndEb}{
+  \Infer[\And$-E$_2]
+  {\ND{A_2}}
+  {\ND{A_1 \And A_2}}
+}
+
+\newcommand{\NDOrIa}{
+  \Infer[\Or$-I$_1]
+  {\ND{A_1\Or A_2}}
+  {\ND{A_1}}
+}
+
+\newcommand{\NDOrIb}{
+  \Infer[\Or$-I$_1]
+  {\ND{A_1\Or A_2}}
+  {\ND{A_2}}
+}
+
+\newcommand{\NDOrE}{
+  \Infer[\Or$-E$]
+  {\ND{C}}
+  {\ND{A_1\Or A_2} & \ND[\Gamma, x:A_1]{C} & \ND[\Gamma, y:A_2]{C}}
+}
+
+\newcommand{\NDBotE}{
+  \Infer[\Bot$-E$]
+  {\ND{C}}
+  {\ND{\Bot}}
+}
+
+\newcommand{\NDTopI}{
+  \Infer[\Top$-I$]
+  {\ND{\Top}}
+  {}
+}
+
+\newcommand{\NDImpI}{
+  \Infer[\Imp$-I$]
+  {\ND{A_1\Imp A_2}}
+  {\ND[\Gamma, A_1]{A_2}}
+}
+
+\newcommand{\NDImpE}{
+  \Infer[\Imp$-E$]
+  {\ND{A_2}}
+  {\ND{A_1\Imp A_2} & \ND{A_1}}
+}
+
+\newcommand{\NDAx}{
+  \Infer[$Ax$]
+  {\ND[\Gamma, A]{A}}
+}
+
+\newcommand{\NDTopE}{
+  \mbox{No rule for $\Top$-E}
+}
+
+\newcommand{\NDBotI}{
+  \mbox{No rule for $\Bot$-I}
+}
+
+\renewcommand{\figline}{\\[2em]}
+
+\begin{figure}
+  \begin{center}
+    \fbox{
+      \begin{tabular}{cccccc}
+        \NDAndI
+        &
+        \NDAndEa
+        &
+        \NDAndEb
+        \figline
+        \NDOrIa
+        &
+        \NDOrIb
+        &
+        \NDBotE
+        \figline
+        \multicolumn{3}{c}{
+          \NDOrE
+        }
+        \figline
+        \NDImpI
+        &
+        \NDImpE
+        &
+        \NDTopI
+        \figline
+        \NDAx
+        &
+        \NDTopE
+        &
+        \NDBotI
+      \end{tabular}
+    }
+  \end{center}
+  \caption{IPL. Natural deduction}
+  \label{prop.nd}
+  \index{$\ND{A}$}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

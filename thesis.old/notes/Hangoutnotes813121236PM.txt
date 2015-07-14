@@ -1,0 +1,56 @@
+﻿Γ ::= Γ, A- pers | Γ, <A+> pers 
+Ω ::= A+, Ω | [ A- ], Ω | ·
+U ::= A- | <A-> true | [ A+ ] 
+
+
+Γ; · ⊢ [ A+ ]   (Right focus)
+Γ; Ω ⊢ U        (Inversion)
+Γ; [ A- ] ⊢ U   (Left focus - Requires U stable)
+
+
+Γ; A ⊢ B
+————————————
+Γ; · ⊢ A ⊃ B 
+
+
+Suspension normal U: <A-> true implies A- = p-
+Suspension normal Γ: <A+> true ∈ Γ implies A+ = p+
+
+
+Cut: for suspension-normal Γ, U, Ω, A+, A-
+
+
+1 - Positive principal cut) 
+   If Γ ; · ⊢ [ A+ ] 
+   and Γ ; A+, Ω ⊢ U
+   then Γ ; Ω ⊢ U
+
+
+2 - Negative principal cut) 
+   If Γ ; · ⊢ A-
+   and Γ ; [ A- ] ⊢ U
+   then Γ ; · ⊢ U
+
+
+3 - Leftist substitution, Agda formulation) 
+   If Γ, Γ' ; Ω ⊢ A+
+   and Γ ; A+ ⊢ U (U stable)
+   then Γ, Γ' ; · ⊢ U
+
+
+3 - Leftist substitution, Clean/Twelf formulation) 
+   If Γ ; Ω ⊢ A+
+   and Γ ; A+ ⊢ U (U stable)
+   then Γ ; · ⊢ U
+
+
+4 - Rightist substitution, Agda formulation)
+   If Γ ; · ⊢ A-
+   and Γ, A- pers, Γ' ; Ω ⊢ U
+   then Γ, Γ' ; Ω ⊢ U
+
+
+4 - Rightist substitution, Clean/Twelf formulation)
+   If Γ ; · ⊢ A-
+   and Γ, A- pers ; Ω ⊢ U
+   then Γ ; Ω ⊢ U

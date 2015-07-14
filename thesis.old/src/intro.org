@@ -1,0 +1,66 @@
+
+What is IL?
+What is TP?
+Why?
+
+* Theorem proving
+
+Define
+Uses
+
+
+* Logic
+
+
+
+* Theorem proving
+
+
+* Intuitionistic logic
+
+** Verification
+
+** Automated theorem provers
+Vampire
+CASC
+
+
+** Proof assistants
+
+Boyer-Moore/ACL2
+Twelf
+
+HOL-Light
+ MESON occurs 13k times
+ third after rewrite and modus ponens.
+
+Coq
+ auto 10k times
+ rewrite 19k
+ apply 18k
+ intro 19k
+Agda
+Mizar
+
+
+Proofs as first-class objects
+
+PCA
+
+Platzer's work
+Pfenning
+Harper
+Avigad
+Miller
+
+* Complexity
+
+Software verification
+
+(bounded) model-checking
+abstract interpretation
+static analysis
+hoare logic
+separation logic
+
+* Focusing

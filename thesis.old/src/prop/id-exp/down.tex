@@ -1,0 +1,30 @@
+
+\renewcommand{\Qa}{\PBSeq{\Gamma, A^-}{A^-}}
+\renewcommand{\Ra}{\Infer[$Ident$^-]{\Qa}{}}
+
+\renewcommand{\Qb}{\PBSeq{\Gamma, A^-}{\Foc{\Down A^-}}}
+\renewcommand{\Rb}{\Infer[\Down$-R$]{\Qb}{\Ra}}
+
+\renewcommand{\Qc}{\PBSeq{\Gamma, \Susp{\Down A^-}}{\gamma}}
+\renewcommand{\Rc}{\deduce{\Qc}{\cD}}
+
+\renewcommand{\Qd}{\PBSeq{\Gamma, A^-}{\gamma}}
+\renewcommand{\Rd}{\Infer[$Subst$^+]{\Qc}{\Rb & \Rc}}
+
+\renewcommand{\Qe}{\PBSeq{\Gamma, \Down A^-}{\gamma}}
+\renewcommand{\Re}{\Infer[\Down$-L$]{\Qe}{\Rd}}
+
+\begin{array}{ccc}
+  \Infer[\Exp^+]{\Qe}{\Rc}
+  &
+  \hspace{1em}
+  \hookrightarrow
+  &
+  \hspace{-1em}
+  \Re
+\end{array}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../../thesis"
+%%% End:

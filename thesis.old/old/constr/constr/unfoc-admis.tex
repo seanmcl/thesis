@@ -1,0 +1,183 @@
+
+\begin{theorem}[Soundness of the focusing system]
+  If $\CCSeq{\Psi}{\Gamma}{\gamma}$ then
+  $\CSeq{\Psi}{\Erase{\Gamma}}{\Erase{\gamma}}$.
+\end{theorem}
+
+\begin{proof}
+  Easy induction.
+\end{proof}
+
+\begin{definition}[Stability]
+  TODO
+\end{definition}
+
+\begin{lemma}
+  If $\Gamma$ and $\gamma$ are stable, the following rules are derivable:
+  \[
+  \begin{array}{cc}
+    \Infer[$susp-R$]
+    {\CCSeq{\Psi}{\Gamma}{\Down A^-}}
+    {\CCSeq{\Psi}{\Gamma}{\Susp{A^-}}}
+    &
+    \hspace{2em}
+    \Infer[$susp-L$]
+    {\CCSeq{\Psi}{\Gamma,\Up A^+}{\gamma}}
+    {\CCSeq{\Psi}{\Gamma,\Susp{A^+}}{\gamma}}
+    \\[2em]
+    \Infer[\DU$-R$]
+    {\CCSeq{\Psi}{\Gamma}{\DU A^+}}
+    {\CCSeq{\Psi}{\Gamma}{A^+}}
+    &
+    \hspace{2em}
+    \Infer[\UD$-L$]
+    {\CCSeq{\Psi}{\Gamma,\UD A^-}{\gamma}}
+    {\CCSeq{\Psi}{\Gamma,A^-}{\gamma}}
+  \end{array}
+  \]
+\end{lemma}
+\begin{proof}
+  \[
+  \begin{array}{cc}
+    \infer
+    {\CCSeq{\Psi}{\Gamma}{\Down A^-}}
+    { \infer
+      {\CCSeq{\Psi}{\Gamma}{[\Down A^-]}}
+      { \infer
+        {\CCSeq{\Psi}{\Gamma}{A^-}}
+        {\CCSeq{\Psi}{\Gamma}{\Susp{A^-}}}
+      }
+    }
+    &
+    \hspace{2em}
+    \infer
+    {\CCSeq{\Psi}{\Gamma,\Up A^+}{\gamma}}
+    { \infer
+      {\CCSeq{\Psi}{\Gamma,[\Up A^+]}{\gamma}}
+      { \infer
+        {\CCSeq{\Psi}{\Gamma,A^+}{\gamma}}
+        {\CCSeq{\Psi}{\Gamma,\Susp{A^+}}{\gamma}}
+      }
+    }
+    \\[2em]
+    \infer
+    {\CCSeq{\Psi}{\Gamma}{\DU A^+}}
+    { \infer
+      {\CCSeq{\Psi}{\Gamma}{[\DU A^+]}}
+      { \infer
+        {\CCSeq{\Psi}{\Gamma}{\Down A^+}}
+        {\CCSeq{\Psi}{\Gamma}{A^+}}
+      }
+    }
+    &
+    \hspace{2em}
+    \infer
+    {\CCSeq{\Psi}{\Gamma,\UD A^-}{\gamma}}
+    { \infer
+      {\CCSeq{\Psi}{\Gamma,[\UD A^-]}{\gamma}}
+      { \infer
+        {\CCSeq{\Psi}{\Gamma,\Up A^-}{\gamma}}
+        {\CCSeq{\Psi}{\Gamma,A^-}{\gamma}}
+      }
+    }
+  \end{array}
+  \]
+\end{proof}
+
+\begin{theorem}[Completeness of the focusing system]
+  If $\CSeq{\Psi}{\Erase{\Gamma}}{\Erase{\gamma}}$ and
+  $\Gamma$ and $\gamma$ are stable then
+  $\CCSeq{\Psi}{\Gamma}{\gamma}$.
+\end{theorem}
+
+\begin{corollary}
+
+\end{corollary}
+
+\begin{proof}
+  \begin{description}
+  \item[Case:]
+    \[
+    \Infer[\And$-R$]
+    {\CSeq{\Psi}{\Erase{\Gamma}}{A_1\And A_2}}
+    { \CSeq{\Psi}{\Erase{\Gamma}}{A_1} & \CSeq{\Psi}{\Erase{\Gamma}}{A_2} }
+    \]
+
+    \noindent
+    Here there are two cases, depending on whether the pre-erased conjunction
+    is positive or negative.
+    \begin{description}
+    \item[Case:]
+      There exist $A_1^+$, $A_2^+$ such that
+      $\gamma^+=(\Down\Up)^n(A_1^+\AndP A_2^+)$ where $A_1=\Erase{A_1^+}$ and
+      $A_2=\Erase{A_2^+}$.  By IH, we have derivations
+      of $\CCSeq{\Psi}{\Gamma}{A_i^+}$.  Then
+
+      \renewcommand{\Sq}{\CCSeq{\Psi}{\Gamma}{A_2^+}}
+
+      \renewcommand{\Sp}{\CCSeq{\Psi}{\Gamma}{\Up A_2}}
+      \renewcommand{\Qp}{\Infer[\Up$-R$]{\Sp}{\Sq}}
+
+      \renewcommand{\So}{\CCSeq{\Psi}{\Gamma}{[\DU A_2]}}
+      \renewcommand{\Qo}{\Infer[\Down$-R$]{\So}{\Qp}}
+
+      \renewcommand{\Sn}{\CCSeq{\Psi}{\Gamma}{A_1^+}}
+
+      \renewcommand{\Sm}{\CCSeq{\Psi}{\Gamma}{\Up A_1}}
+      \renewcommand{\Qm}{\Infer[\Up$-R$]{\Sm}{\Sn}}
+
+      \renewcommand{\Sl}{\CCSeq{\Psi}{\Gamma}{[\DU A_1]}}
+      \renewcommand{\Ql}{\Infer[\Down$-R$]{\Sl}{\Qm}}
+
+      \renewcommand{\Sk}{\CCSeq{\Psi}{\Gamma}{[\DU A_1\AndP \DU A_2]}}
+      \renewcommand{\Qk}{\Infer[\AndP$-R$]{\Sk}{\Ql & \Qo}}
+
+      \renewcommand{\Sj}{\CCSeq{\Psi}{\Gamma}{\DU A_1\AndP \DU A_2}}
+      \renewcommand{\Qj}{\Infer[$foc-R$]{\Sj}{\Qk}}
+
+      \renewcommand{\Si}{\CCSeq{\Psi}{\Gamma,\Susp{\Up A_1}, \Susp{\Up A_2}}{[A_2^+]}}
+      \renewcommand{\Qi}{\Infer[$id$]{\Si}{}}
+
+      \renewcommand{\Sh}{\CCSeq{\Psi}{\Gamma,\Susp{\Up A_1}, \Susp{\Up A_2}}{[A_1^+]}}
+      \renewcommand{\Qh}{\Infer[$id$]{\Sh}{}}
+
+      \renewcommand{\Sg}{\CCSeq{\Psi}{\Gamma,\Susp{\Up A_1}, \Susp{\Up A_2}}{[A_1^+\AndP A_2^+]}}
+      \renewcommand{\Qg}{\Infer[\AndP$-R$]{\Sg}{\Qh & \Qi}}
+
+      \renewcommand{\Sf}{\CCSeq{\Psi}{\Gamma,\Susp{\Up A_1}, \Susp{\Up A_2}}{A_1^+\AndP A_2^+}}
+      \renewcommand{\Qf}{\Infer[$foc-R$]{\Sf}{\Qg}}
+
+      \renewcommand{\Se}{\CCSeq{\Psi}{\Gamma,\Up A_1, \Up A_2}{A_1^+\AndP A_2^+}}
+      \renewcommand{\Qe}{\Infere[$susp-L$]{\Se}{\Qf}}
+
+      \renewcommand{\Sd}{\CCSeq{\Psi}{\Gamma,\DU A_1, \DU A_2}{A_1^+\AndP A_2^+}}
+      \renewcommand{\Qd}{\Infere[\Down$-L$]{\Sd}{\Qe}}
+
+      \renewcommand{\Sc}{\CCSeq{\Psi}{\Gamma,\DU A_1\AndP \DU A_2}{A_1^+\AndP A_2^+}}
+      \renewcommand{\Qc}{\Infer[\AndP$-L$]{\Sc}{\Qd}}
+
+      \renewcommand{\Sb}{\CCSeq{\Psi}{\Gamma}{A_1^+\AndP A_2^+}}
+      \renewcommand{\Qb}{\Infer[$cut$]{\Sb}{\Qc & \Qk}}
+
+      \renewcommand{\Sa}{\CCSeq{\Psi}{\Gamma}{\DU^n(A_1^+\AndP A_2^+)}}
+      \renewcommand{\Qa}{\Infere[\DU$-L$]{\Sa}{\Qb}}
+
+      {\tiny
+        \[
+        \Qa
+        \]
+      }
+
+    \item[Case:]
+      There exist $A_1'^-$, $A_2'^-$ such that
+      $C^+=A_1\AndN A_2$ where $A_1=\Down\Up\ldots A_1'^-$,
+      $A_2=\Down\Up\ldots A_2'^-$.
+    \end{description}
+
+  \end{description}
+\end{proof}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

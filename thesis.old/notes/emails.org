@@ -1,0 +1,97 @@
+
+* Contraction
+Hi Frank,
+
+  While I think the prover is correct now (I added ! yesterday, and can test fairly complex examples),
+there are some serious problems with things like the change example.  Consider the input
+
+(d -o p * p * p * p * p * p * p * p * p * p) => (d -o p * p * p * p * p * p * p * p * p * p)
+
+which says that you can exchange a dime for 10 pennies.  The initial sequent for this is
+
+        p ⓦ α53, 
+        p ⓦ α54, 
+        p ⓦ α55, 
+        p ⓦ α56, 
+        p ⓦ α57, 
+        p ⓦ α58, 
+        p ⓦ α59, 
+        p ⓦ α60, 
+        p ⓦ α61, 
+        p ⓦ α62
+        ⊢ #c1 ◃ α53 ⋆ α54 ⋆ α55 ⋆ α56 ⋆ α57 ⋆ α58 ⋆ α59 ⋆ α60 ⋆ α61 ⋆ α62 ⋆ #c2
+
+There's nothing wrong with this sequent per se.   However, if we wish to maintain completeness, we
+need to contract it at some point.  This is an unmitigated disaster.  You need to take all partitions (the Bell number) of the antecedents, all of which in this case correctly unify.  For instance, Bell(10) = 115975.   
+I wonder if there is a clever way to do lazy contraction.  Here p ⓦ #c0 is a global antecedent, and
+contracting all of the variables to #c0 solves the problem in one step.  The other 115974 are useless.
+It's just not easy for me to see when/how to do contraction for things like this.
+
+
+Frank Pfenning <fp@cs.cmu.edu>
+10/30/09
+
+to me 
+Very interesting.  I guess this is why we do these experiments, because
+I would have never anticipated this as being a significant issue.
+
+Let's talk about it more at our next meeting!
+
+* Parameters
+
+Hi Frank,
+
+  I've been thinking that there is another way to treat parameters.
+You could really treat them as constants, that are only unifiable with
+themselves.  The only difference being that when you generate
+initial sequents that contained a parameter, e.g. by focusing on p(a)
+where a is a parameter, you'd
+need to generate p(a1) |- p(a1), ..., p(an) |- p(an).  Since all of
+these are subsumed by p(X) |- p(X) I think this would still work,
+unification would be simpler, and fewer inference rules would apply.
+The problem is that you may generate facts over and over again.  For
+instance, in the proof
+
+
+ p(a) |- A                     p(b) |- A
+--------------------------   -----------------------
+exists x. p(x) |- A    exists x. p(x) |- B
+---------------------------------------------------------
+exists x. p(x) |- A /\ A
+
+
+you would have to generate both of the top proofs, since one does not
+subsume the other in this view.
+It seems like an interesting option anyway, if you don't see an
+obvious flaw in it.
+
+
+Sean McLaughlin		12/9/09
+In retrospect, this isn't even a problem, since if p(a) is in focus, and we a...
+
+Frank Pfenning <fp@cs.cmu.edu>
+12/9/09
+
+to me 
+I don't think this is right.  For example, if you have assumptions
+such as nat(0) and forall x. nat(x) -> exists y. succ(x,y) /\ nat (y)
+then we can use this arbitrarily often, and each instance of y must be
+be fresh.
+
+The beauty of writing P(a) |- P(a)  (in the small step system,
+appropriately generalized) that it captures all parameter
+cases in a single clause.  In that way, it is consistent with the
+inverse methods philosophy, while having n distinct axioms
+really is not.
+
+By the way, the traditional way to handle this (see, e.g., the
+handbook article on the inverse method) is *not* to introduce
+any parameter variables, but just have axioms such as
+P(x) |- P(x) where x is an arbitrary term.  The parameter
+restriction is then only enforced at the forallR and existsL
+rules.  The issue with this prior solution is that it overgenerates,
+since it does not note that only P(a) is a subformula of
+|- forall x. P(x) rather than an arbitrary P(x).
+
+So I think these issues are handled correctly and almost optimally
+in the current implementation design.

@@ -1,0 +1,129 @@
+
+\newcommand{\PBInit}{\ensuremath{\mbox{Init}}}
+\newcommand{\PBInitRule}{\infer[$\RuleNameSize$ \PBInit]{\Seq{\Gamma, P}{P}}{}}
+
+\newcommand{\PBAndR}{\ensuremath{\And\mbox{-R}}}
+\newcommand{\PBAndRRule}{
+  \infer[$\RuleNameSize$ \PBAndR]
+  {\Seq{\Gamma}{A_1 \And A_2}}
+  {\Seq{\Gamma}{A_1} & \Seq{\Gamma}{A_2}}
+}
+
+\newcommand{\PBAndLL}{\ensuremath{\And\mbox{-L}_1}}
+\newcommand{\PBAndLLRule}{
+  \infer[$\RuleNameSize$ \PBAndLL]
+  {\Seq{\Gamma, A_1 \And A_2}{C}}
+  {\Seq{\Gamma, A_1}{C}}
+}
+
+\newcommand{\PBAndLR}{\ensuremath{\And\mbox{-L}_2}}
+\newcommand{\PBAndLRRule}{
+  \infer[$\RuleNameSize$ \PBAndLR]
+  {\Seq{\Gamma, A_1 \And A_2}{C}}
+  {\Seq{\Gamma, A_2}{C}}
+}
+
+\newcommand{\PBImpR}{\ensuremath{\Imp\mbox{-R}}}
+\newcommand{\PBImpRRule}{
+  \infer[$\RuleNameSize$ \PBImpR]
+  {\Seq{\Gamma}{A_1 \Imp A_2}}
+  {\Seq{\Gamma, A_1}{A_2}}
+}
+
+\newcommand{\PBImpL}{\ensuremath{\Imp\mbox{-L}}}
+\newcommand{\PBImpLRule}{
+  \infer[$\RuleNameSize$ \PBImpL]
+  {\Seq{\Gamma, A_1\Imp A_2}{C}}
+  {\Seq{\Gamma}{A_1} & \Seq{\Gamma, A_2}{C}}
+}
+
+\newcommand{\PBOrRL}{\ensuremath{\Or\mbox{-R}_1}}
+\newcommand{\PBOrRLRule}{
+  \infer[$\RuleNameSize$ \PBOrRL]
+  {\Seq{\Gamma}{A_1 \Or A_2}}
+  {\Seq{\Gamma}{A_1}}
+}
+
+\newcommand{\PBOrRR}{\ensuremath{\Or\mbox{-R}_2}}
+\newcommand{\PBOrRRRule}{
+  \infer[$\RuleNameSize$ \PBOrRR]
+  {\Seq{\Gamma}{A_1 \Or A_2}}
+  {\Seq{\Gamma}{A_2}}
+}
+
+\newcommand{\PBOrL}{\ensuremath{\Or\mbox{-L}}}
+\newcommand{\PBOrLRule}{
+  \infer[$\RuleNameSize$ \PBOrL]
+  {\Seq{\Gamma, A_1 \Or A_2}{C}}
+  {\Seq{\Gamma, A_1}{C} & \Seq{\Gamma, A_2}{C}}
+}
+
+\newcommand{\PBTopR}{\ensuremath{\Top\mbox{-R}}}
+\newcommand{\PBTopRRule}{
+  \infer[$\RuleNameSize$ \PBTopR]
+  {\Seq{\Gamma}{\Top}}
+  {}
+}
+
+\newcommand{\PBBotL}{\ensuremath{\Bot\mbox{-L}}}
+\newcommand{\PBBotLRule}{
+  \infer[$\RuleNameSize$ \PBBotL]
+  {\Seq{\Gamma, \Bot}{C}}
+  {}
+}
+
+\begin{figure}
+  \begin{center}
+    \fbox{
+      \begin{tabular}{cccccc}
+        \\\\
+        \PBInitRule
+        &
+        \PBAndRRule
+        &
+        \PBAndLLRule
+        \\\\
+        \PBAndLRRule
+        &
+        \PBImpRRule
+        &
+        \PBImpLRule
+        \\\\
+        \PBOrRLRule
+        &
+        \PBOrRRRule
+        &
+        \PBOrLRule
+        \\\\
+        \multicolumn{3}{c}{
+          \begin{tabular}{ccc}
+            \PBTopRRule
+            &
+            \hspace{1cm}
+            &
+            No rule for $\Top$-L
+          \end{tabular}
+        }
+        \\\\
+        \multicolumn{3}{c}{
+          \begin{tabular}{ccc}
+            \PBBotLRule
+            &
+            \hspace{1cm}
+            &
+            No rule for $\Bot$-R
+          \end{tabular}
+        }
+        \\\\
+      \end{tabular}
+    }
+  \end{center}
+  \caption{Gentzen's LJ}
+  \label{rules:lj}
+  \index{$\Seq{\Gamma}{A}$}
+\end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../../../main"
+%%% End:

@@ -1,0 +1,3 @@
+
+Do experiments with different unification algorithms, indexing strategies, hash
+ consing, and term representations.

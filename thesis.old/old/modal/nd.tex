@@ -1,0 +1,69 @@
+
+\newcommand{\MNBoxI}{
+  \Infer[\Box-$I$^a]
+  {\MNd{\Gamma}{\MLam l:\MLe{w}{a}.~M : \MAt{\Box A}{w}}}
+  {\MNd[\Delta,a:\MWorld]{\Gamma, l : \MLe{w}{a}}{M : \MAt{A}{a}}}
+}
+
+\newcommand{\MNBoxE}{
+  \Infer[\Box-$E$]
+  {\MNd{\Gamma}{M~[\MLe{w}{w'}]} : \MAt{A}{w'}}
+  {
+    \MNd{\Gamma}{M : \MAt{\Box A}{w}}
+    &
+    \Delta~;~\Gamma\Entails\MLe{w}{w'}
+  }
+}
+
+\newcommand{\MNDiaI}{
+  \Infer[\Dia-$I$]
+  {\MNd{\Gamma}{\ASet{\MLe{w}{w'}} M} : \MAt{\Dia A}{w}}
+  {
+    \MNd{\Gamma}{M : \MAt{A}{w'}}
+    &
+    \Delta~;~\Gamma\Entails\MLe{w}{w'}
+  }
+}
+
+\newcommand{\MNDiaE}{
+  \Infer[\Dia-$E$^a]
+  {\MNd{\Gamma}{\Let\ASet{l:\MLe{w'}{a}}x = M~\In~N : \MAt{C}{w}}}
+  {
+    \MNd{\Gamma}{M : \MAt{\Dia A}{w'}}
+    &
+    \MNd[\Delta,a:\MWorld]{\Gamma,l:\MLe{w'}{a},x:\MAt{A}{a}}{N : \MAt{C}{w}}
+  }
+}
+
+\begin{figure}[H]
+  \begin{center}
+    {\footnotesize
+      \fbox{
+        \begin{tabular}{c}
+          \begin{tabular}{cc}
+            \MNBoxI
+            &
+            \hspace{2em}
+            \MNBoxE
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{c}
+            \MNDiaI
+          \end{tabular}
+          \\[2em]
+          \begin{tabular}{c}
+            \MNDiaE
+          \end{tabular}
+        \end{tabular}
+      }
+    }
+  \end{center}
+  \caption{Natural deduction.}
+  \label{modal.nd}
+\end{figure}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

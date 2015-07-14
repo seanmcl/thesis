@@ -1,0 +1,59 @@
+
+\newcommand{\Bl}{\Left{B}}
+\newcommand{\Br}{\Right{B}}
+\newcommand{\Al}{\Left{A}}
+\newcommand{\Cl}{\Left{C}}
+\newcommand{\Cr}{\Right{C}}
+\newcommand{\Ab}{A \Imp B}
+\newcommand{\Abr}{\Right{\Ab}}
+\newcommand{\Ac}{A \Or C}
+\newcommand{\Acr}{\Right{\Ac}}
+\newcommand{\Abc}{(A\Imp B) \Imp C}
+\newcommand{\Abcl}{\Left{\Abc}}
+\newcommand{\Bb}{\Bot \Or B}
+\newcommand{\Bbl}{\Left{\Bb}}
+
+\renewcommand{\qa}{\NSeq{\Al, \Bl, \Br}}
+\renewcommand{\ra}{\Infer[$Init$]{\qa}{}}
+
+\renewcommand{\qb}{\NSeq{\Bl,\Abr}}
+\renewcommand{\rb}{\Infer[\Imp$-F$]{\qb}{\ra}}
+
+\renewcommand{\qc}{\NSeq{\Bl, \Cl, \Cr}}
+\renewcommand{\rc}{\Infer[$Init$]{\qc}{}}
+
+\renewcommand{\qd}{\NSeq{\Bl, \Cl, \Acr}}
+\renewcommand{\rd}{\Infer[\Or$-T$]{\qd}{\rc}}
+
+\renewcommand{\qe}{\NSeq{\Bl, \Abcl, \Acr}}
+\renewcommand{\re}{\Infer[\Imp$-T$]{\qe}{\rd & \rb}}
+
+\renewcommand{\qf}{\NSeq{\Left{\Bot}, \Abcl, \Acr}}
+\renewcommand{\rf}{\Infer[\Bot$-T$]{\qf}{}}
+
+\renewcommand{\qg}{\NSeq{\Bbl, \Abcl, \Acr}}
+\renewcommand{\rg}{\Infer[\Or$-T$]{\qg}{\rf & \re}}
+
+\renewcommand{\qh}{\NSeq{\Bbl, \Right{(\Abc) \Imp \Ac}}}
+\renewcommand{\rh}{\Infer[\Imp$-F$]{\qh}{\rg}}
+
+\renewcommand{\qj}{\NSeq{\Right{\Bb \Imp (\Abc) \Imp \Ac}}}
+\renewcommand{\rj}{\Infer[\Imp$-F$]{\qj}{\rh}}
+
+\begin{figure}
+  %\begin{sidewaysfigure}[angle=90]
+    \begin{center}
+      \[
+      \boxed{\rj}
+      \]
+    \end{center}
+    \caption{A derivation in $\LPB$}
+    \label{prop.backward-der}
+    %\end{sidewaysfigure}
+\end{figure}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:

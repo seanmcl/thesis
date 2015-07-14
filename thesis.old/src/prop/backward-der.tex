@@ -1,0 +1,50 @@
+
+\newcommand{\ab}{a \Imp b}
+\newcommand{\ac}{a \Or c}
+\newcommand{\abc}{(a\Imp b) \Imp c}
+\newcommand{\bb}{\Bot \Or b}
+
+\renewcommand{\Qa}{\PBSeq{a, b, \abc}{b}}
+\renewcommand{\Ra}{\Infer[$Init$]{\Qa}{}}
+
+\renewcommand{\Qb}{\PBSeq{b, \abc}{\ab}}
+\renewcommand{\Rb}{\Infer[\Imp$-R$]{\Qb}{\Ra}}
+
+\renewcommand{\Qc}{\PBSeq{b, c}{c}}
+\renewcommand{\Rc}{\Infer[$Init$]{\Qc}{}}
+
+\renewcommand{\Qd}{\PBSeq{b, c}{\ac}}
+\renewcommand{\Rd}{\Infer[\Or$-L$]{\Qd}{\Rc}}
+
+\renewcommand{\Qe}{\PBSeq{b, \abc}{\ac}}
+\renewcommand{\Re}{\Infer[\Imp$-L$]{\Qe}{\Rd & \Rb}}
+
+\renewcommand{\Qf}{\PBSeq{\Bot, \abc}{\ac}}
+\renewcommand{\Rf}{\Infer[\Bot$-L$]{\Qf}{}}
+
+\renewcommand{\Qg}{\PBSeq{\bb, \abc}{\ac}}
+\renewcommand{\Rg}{\Infer[\Or$-L$]{\Qg}{\Rf & \Re}}
+
+\renewcommand{\Qh}{\PBSeq{\bb}{(\abc) \Imp \ac}}
+\renewcommand{\Rh}{\Infer[\Imp$-R$]{\Qh}{\Rg}}
+
+\renewcommand{\Qj}{\PBSeq{\cdot}{\bb \Imp (\abc) \Imp \ac}}
+\renewcommand{\Rj}{\Infer[\Imp$-R$]{\Qj}{\Rh}}
+
+%\begin{sidewaysfigure}[angle=90]
+\begin{figure}
+  \begin{center}
+    \[
+    \boxed{\Rj}
+    \]
+  \end{center}
+\caption{A proof in $\LJ$}
+\label{prop.backward-der}
+%\end{sidewaysfigure}
+\end{figure}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:
