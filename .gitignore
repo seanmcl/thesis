@@ -19,3 +19,5 @@
 *~
 .cm
 _region_.tex
+*.fdb_latexmk
+*.fls

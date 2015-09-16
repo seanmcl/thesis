@@ -1,0 +1,126 @@
+i : type.
+atomic : type.
+constr : type.
+atom : atomic -> constr.
+≈ : i -> i -> constr.  %infix none 20 ≈.
+
+o : type.
+
+& : o -> o -> o.  %infix right 10 &.
+⊃ : o -> o -> o.  %infix right 9 ⊃.
+∀ : (i -> o) -> o.
+⊤ : o.
+e : atomic -> o.
+p : i -> o.
+
+asm : constr -> type.
+hyp : o -> type.
+conc : o -> type.
+
+init : asm (X ≈ Y) -> hyp (p X) -> conc (p Y).
+e-r : {E} asm (atom E) -> conc (e E).
+e-l : hyp (e E) -> (asm (atom E) -> conc C) -> conc C.
+t-r : conc ⊤.
+and-r : conc A -> conc B -> conc (A & B).
+and-l : hyp (A & B) -> (hyp A -> hyp B -> conc C) -> conc C.
+imp-r : (hyp A -> conc B) -> conc (A ⊃ B).
+imp-l : hyp (A ⊃ B) -> conc A -> (hyp B -> conc C) -> conc C.
+all-r : ({x} conc (A x)) -> conc (∀ A).
+all-l : {X:i} hyp (∀ A) -> (hyp (A X) -> conc C) -> conc C.
+
+refl : {X} asm (X ≈ X).
+sym : asm (X ≈ Y) -> asm (Y ≈ X).
+trans : asm (X ≈ Y) -> asm (Y ≈ Z) -> asm (X ≈ Z).
+
+% ----------------------------------------------------------
+
+ident : {A} (hyp A -> conc A) -> type.
+%mode ident +A -F.
+
+- : ident (A & B) ([h] and-l h [ha][hb] and-r (FA ha) (FB hb))
+   <- ident A FA
+   <- ident B FB.
+
+- : ident (A ⊃ B) ([h] imp-r [ha] imp-l h (FA ha) FB)
+   <- ident A FA
+   <- ident B FB.
+
+- : ident (∀ A) ([h∀] all-r [x] (all-l x h∀ [ha] (F x ha)))
+   <- ({x} ident (A x) (F x)).
+
+- : ident ⊤ ([_] t-r).
+
+- : ident (e E) ([h] e-l h [he] e-r E he).
+
+- : ident (p X) ([h] init (refl X) h).
+
+%block l1 : block {x:i}.
+%worlds (l1) (ident X F).
+%total {A} (ident A _).
+
+% ----------------------------------------------------------
+
+subst : conc (p X) -> asm (X ≈ Y) -> conc (p Y) -> type.
+%mode subst +D +E -F.
+
+- : subst (init (D:asm (Y ≈ X)) (E:hyp (p Y))) (D':asm (X ≈ Z)) (init (trans D D') E).
+
+%worlds () (subst D E F).
+%total {D} (subst D _ _).
+
+% ----------------------------------------------------------
+
+ca : {A} conc A -> (hyp A -> conc C) -> conc C -> type.
+
+- : ca (p X) (D:conc (p X)) ([h:hyp (p X)] init (D1:asm (X ≈ Y)) h) E
+   <- subst D D1 (E:conc (p Y)).
+
+%.
+
+- : ca (p X) (init (D:asm (Y ≈ X)) (E:hyp (p Y))) ([h:hyp (p X)] E' h).
+
+
+
+- : ca (e E) (e-r E (D:asm (atom E))) ([h:hyp (e E)] e-l h E') (E' D).
+
+- : ca (A & B) (and-r (D1: conc A) (D2: conc B))
+     ([hab: hyp (A & B)] and-l hab ((E1: hyp (A & B) -> hyp A -> hyp B -> conc C) hab)) (F : conc C)
+     <- ({ha:hyp A}{hb:hyp B} ca (A & B) (and-r D1 D2) ([hab:hyp (A & B)] E1 hab ha hb) (E1' ha hb))
+     <- ({hb:hyp B} ca A D1 ([ha:hyp A] E1' ha hb) ((E1'':hyp B -> conc C) hb))
+     <- ca B D2 E1'' F.
+
+- : ca (A1 ⊃ A2) (imp-r D2) ([h:hyp (A1 ⊃ A2)] imp-l h (E1 h) (E2 h)) F
+     <- ca (A1 ⊃ A2) (imp-r D2) E1 E1'
+     <- ({h2:hyp A2} ca (A1 ⊃ A2) (imp-r D2) ([h:hyp (A1 ⊃ A2)] E2 h h2) (E2' h2))
+     <- ca A1 E1' D2 D2'
+     <- ca A2 D2' E2' F.
+
+- : ca (∀ A1) (all-r D1) ([h:hyp (∀ A1)] all-l T h (E1 h)) F
+     <- ({h2:hyp (A1 T)} ca (∀ A1) (all-r D1) ([h:hyp (∀ A1)] E1 h h2) (E1' h2))
+     <- ca (A1 T) (D1 T) E1' F.
+
+
+
+%.
+
+   D1             D2
+φ | Γ ==> A   φ | Γ ==> B
+--------------------------
+    φ | Γ ==> A & B
+
+
+       E
+Φ | Γ, A, B ==> C
+------------------
+φ | Γ, A & B ==> C
+
+
+Φ | Γ, A, B ==> C
+-------------------
+Φ | Γ, A & B, A, B ==> C
+------------------------
+φ | Γ, A & B ==> C
+
+
+Have: E1:: Φ | Γ, B ==> C (ih with D1, E)
+Have: Φ | Γ, B ==> C (ih with D2 E1)

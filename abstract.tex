@@ -1,0 +1,48 @@
+
+\begin{abstract}
+Non-classical logics provide a flexible means for describing and
+reasoning about diverse computational phenomena.
+\emph{Intuitionistic logic} provides a foundation for constructive
+mathematics and is the
+basis of numerous logical frameworks and proof assistants which are
+used to reason about programs.  \emph{Modal logics} permit succinct
+reasoning about possible worlds, which has applications to
+authorization and distributed computing.  \emph{Linear logic} and
+\emph{ordered logic}, with their interpretation of hypotheses as
+resources, are used to study stateful and concurrent systems.
+
+Theorem proving in these logics is typically difficult. For example,
+while in classical logic the decision problem for the propositional
+fragment is NP-complete, intuitionisitic logic is PSPACE-complete,
+while even fragments of propositional linear logic are undecidable.
+Nevertheless, it is fundamental to the adoption of such expressive
+logics that we develop practical theorem proving tools.
+
+We describe a general method for building efficient theorem provers for
+non-classical logics called the \emph{polarized inverse method}.  The
+\emph{generality} of our approach comes from the use of the inverse method, a
+well-known proof search strategy for cut-free sequent calculi, and the use of
+\emph{constraints} for delaying the results of costly computations.
+\emph{Efficiency} comes from the relatively novel proof-theoretic methods of
+\emph{focusing} and \emph{polarization} as well as more standard techniques
+such as redundancy elimination.
+
+Throughout the thesis we will demonstrate by example that the inverse
+method, augmented with constraints, focusing, and polarization, forms
+a strong foundation for efficient theorem proving in non-classical
+logics.  We give support to our claims by describing an implementation of
+a theorem prover called \emph{Imogen} for propositional and first-order logic,
+first-order logic with equality, some first-order some standard
+intuitionistic modal logics (K, T, K4, S4, S5), lax logic,
+Pfenning and Davies' computational modal logic, linear and ordered
+logic).
+We find in empirical tests
+that Imogen compares favorably with existing implementations.  For
+first-order logic with equality, ordered logic and some modal logics,
+Imogen is the first and only existing implementations.
+\end{abstract}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "thesis"
+%%% End:

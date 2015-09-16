@@ -1,5 +1,285 @@
 \chapter{Prop}
 \label{chapter-prop}
 
+\newcommand{\Ps}{P(\vec{s}\,)}
+\newcommand{\Pt}{P(\vec{t}\;)}
+\newcommand{\Pu}{P(\vec{u}\,)}
+\newcommand{\Pv}{P(\vec{v}\,)}
 
-Prop!\cite{cervesato13substructural}
+\begin{figure}
+\footnotesize
+\[
+  \arraycolsep=15pt
+  \begin{array}{c}
+    \begin{array}{ccc}
+      \infer[\mbox{E-R}]{\CSeq{\Phi}{\Gamma}{E}}{\Phi \models E}
+      &
+      \infer[\mbox{E-L}]{\CSeq{\Phi}{\Gamma, E}{C}}{\CSeq{\Phi \And E}{\Gamma}{C}}
+      &
+      \infer[\mbox{E-init}]{\CSeq{\Phi}{\Gamma, \Ps)}{\Pt}}{\Phi \models \vec{s} \EEq \vec{t}}
+    \end{array}
+    \\[2em]
+
+    \begin{array}{cc}
+      \infer[\Top$-R$]{\CSeq{\Phi}{\Gamma}{\Top}}{}
+      &
+      \mbox{No rule for $\Top$-L}
+    \end{array}
+    \\[2em]
+
+    \begin{array}{cc}
+      \mbox{No rule for $\Bot$-R}
+      &
+      \infer[\Bot$-L$]{\CSeq{\Phi}{\Gamma, \Bot}{C}}{}
+    \end{array}
+    \\[2em]
+
+    \begin{array}{cc}
+      \infer[\And$-R$]{\CSeq{\Phi}{\Gamma}{A \And B}}{\CSeq{\Phi}{\Gamma}{A} & \CSeq{\Phi}{\Gamma}{B}}
+      &
+      \infer[\And$-L$]{\CSeq{\Phi}{\Gamma, A \And B}{C}}{\CSeq{\Phi}{\Gamma, A, B}{C}}
+    \end{array}
+    \\[2em]
+
+    \begin{array}{ccc}
+      \infer[\Or$-R$_1]{\CSeq{\Phi}{\Gamma}{A \Or B}}{\CSeq{\Phi}{\Gamma}{A}}
+      &
+      \infer[\Or$-R$_2]{\CSeq{\Phi}{\Gamma}{A \Or B}}{\CSeq{\Phi}{\Gamma}{B}}
+      &
+      \infer[\Or$-L$]{\CSeq{\Phi}{\Gamma, A \Or B}{C}}{\CSeq{\Phi}{\Gamma, A}{C} & \CSeq{\Phi}{\Gamma, B}{C}}
+    \end{array}
+    \\[2em]
+
+    \begin{array}{cc}
+      \infer[\Imp$-R$]{\CSeq{\Phi}{\Gamma}{A \Imp B}}{\CSeq{\Phi}{\Gamma, A}{B}}
+      &
+      \infer[\Imp$-L$]{\CSeq{\Phi}{\Gamma, A \Imp B}{C}}{\CSeq{\Phi}{\Gamma, B}{C} & \CSeq{\Phi}{\Gamma, A \Imp B}{A}}
+    \end{array}
+    \\[2em]
+
+    \begin{array}{cc}
+      \infer[\All$-R$]{\CSeq{\Phi}{\Gamma}{\All x.~A(x)}}{\CSeq{\Phi}{\Gamma}{A(a)} & a\not\in\Phi, \Gamma, A}
+      &
+      \infer[\All$-L$]{\CSeq{\Phi}{\Gamma, \All x.~A(x)}{C}}{\CSeq{\Phi}{\Gamma, \All x.~A(x), A(t)}{C}}
+    \end{array}
+    \\[2em]
+
+    \begin{array}{cc}
+      \infer[\Ex$-R$]{\CSeq{\Phi}{\Gamma}{\Ex x.~A(x)}}{\CSeq{\Phi}{\Gamma}{A(t)}}
+      &
+      \infer[\Ex$-L$]{\CSeq{\Phi}{\Gamma, \Ex x.~A(x)}{C}}{\CSeq{\Phi}{\Gamma, A(a)}{C} & a\not\in\Phi, \Gamma, A}
+    \end{array}
+    \\[2em]
+
+  \end{array}
+\]
+\caption{The backward constraint calculus, \C.}
+\label{fig:backward}
+\end{figure}
+
+\begin{figure}
+\[
+  \arraycolsep=15pt
+  \begin{array}{c}
+    \begin{array}{cc}
+      \infer[\mbox{id}]{\Phi \models \Phi}{}
+      &
+      \infer[\mbox{trans}]{\Phi_1 \models \Phi_3}{\Phi_1\models\Phi_2 & \Phi_2\models\Phi_3}
+    \end{array}
+    \\[2em]
+    \begin{array}{ccc}
+      \infer[\And_1]{\Phi_1 \And \Phi_2 \models \Phi_1}{}
+      &
+      \infer[\And_2]{\Phi_1 \And \Phi_2 \models \Phi_2}{}
+      &
+      \infer[\And]{\Phi \models \Phi_1 \And \Phi_2}{\Phi \models \Phi_1 & \Phi \models \Phi_2}
+    \end{array}
+    \\[2em]
+    \begin{array}{ccc}
+      \infer[$refl$]{\Phi \models t\EEq t}{}
+      &
+      \infer[$sym$]{\Phi \models s\EEq t}{\Phi\models t\EEq s}
+      &
+      \infer[$vec$]{\Phi \models \vec{s}\EEq \vec{t}}{|s| = |t| = n & \Phi\models s_1\EEq t_1 & \cdots & \Phi\models s_n\EEq t_n}
+    \end{array}
+    \\[2em]
+  \end{array}
+\]
+\caption{Properties of the entailment relation.}
+\label{fig:entailment}
+\end{figure}
+
+To verify the internal integrity (soundness and completeness) of $\C$, we prove the standard
+cut elimination and identity properties.
+
+\begin{theorem}[Identity] For any $\Phi, \Gamma, A$, \[\CSeq{\Phi}{\Gamma, A}{A}\].\end{theorem}
+\begin{proof}
+Induction on $A$.  Most cases are simple uses of the induction hypotheses.  We
+show some representative cases.
+\begin{description}
+\item[Case] $A = E$.  By entailment rules id and $\And_2$, we have $\Phi\And E\models E$.
+Therefore
+\[
+\infer[$E-L$]{\CSeq{\Phi}{\Gamma, E}{E}}{\infer[$E-R$]{\CSeq{\Phi\And E}{\Gamma}{E}}{\Phi\And E \models E}}
+\]
+
+\item[Case] $A = \Ps$.  By entailment rules refl and vec, we have $\Phi\models \vec{s}\EEq\vec{s}$.
+Therefore
+\[
+\infer[$init$]{\CSeq{\Phi}{\Gamma, \Ps}{\Ps}}{\Phi\models\vec{s}\EEq\vec{s}}
+\]
+
+\item[Case] $A = \All x.~B(x)$
+\[
+\infer[\All$-R$]{\CSeq{\Phi}{\Gamma, \All x.~B(x)}{\All x.~B(x)}}{\infer[\All$-L$]{\CSeq{\Phi}{\Gamma, \All x.~B(x)}{B(a)}}{\deduce{\CSeq{\Phi}{\Gamma, \All x.~B(x), B(a)}{B(a)}}{\D'}}}
+\]
+
+where $\D'$ exists by induction hypothesis.
+\end{description}
+\end{proof}
+
+\begin{theorem}[Admissibility of Cut]\label{thm:cut-admissible}
+The following rule is admissible:
+
+\[
+\infer-[cut]{\CSeq{\Phi}{\Gamma}{C}}{\CSeq{\Phi}{\Gamma}{A} & \CSeq{\Phi}{\Gamma, A}{C}}
+\]
+\end{theorem}
+
+Following Pfenning~\cite{pfenning95lics,pfenning00ic}, we use a structural cut elimination
+argument.  The proof requires the following lemmas describing some properties of the
+entailment relation\footnote{Indeed, the proof of cut elimination largely determined the
+minimal requirements of the entailment relation.}.
+
+\begin{lemma}[Constraint Weakening]\label{lem:e-weaken}
+For any $\Phi, \Phi', \Gamma, C$, if $\Phi'\models \Phi$ and $\CSeq{\Phi}{\Gamma}{C}$
+then $\CSeq{\Phi'}{\Gamma}{C}$.
+\end{lemma}
+\begin{proof}
+  By induction on the derivation $\CSeq{\Phi}{\Gamma}{C}$.  Some cases:
+  \begin{description}
+  \item[Case]
+    \[\infer[$E-R$]{\CSeq{\Phi}{\Gamma}{E}}{\Phi\models E}\]
+    By transitivity of entailment (rule trans) we have $\Phi'\models E$ so
+    $\CSeq{\Phi'}{\Gamma}{E}$ by rule E-R.
+  \item[Case]
+    \[\infer[$E-L$]{\CSeq{\Phi}{\Gamma, E}{C}}{\CSeq{\Phi\And E}{\Gamma}{C}}\]
+    By entailment reasoning, we have $\Phi'\And E\models\Phi\And E$.  By induction
+    hypothesis we have that $\CSeq{\Phi'\And E}{\Gamma}{C}$ so $\CSeq{\Phi'}{\Gamma, E}{C}$
+    by rule E-L.
+  \end{description}
+\end{proof}
+
+\begin{lemma}[Inversion]\label{lem:e-invert}
+For any $\Phi, \Gamma, E, C$ if $\CSeq{\Phi}{\Gamma, E}{C}$ then $\CSeq{\Phi\And E}{\Gamma}{C}$.
+\end{lemma}
+\begin{proof} Easy induction on the derivation. \end{proof}
+
+\begin{lemma}[Contraction]\label{lem:contract}
+  If $\CSeq{\Phi}{\Gamma, \Ps, \Pt}{C}$ and $\Phi\models\vec{s}\EEq\vec{t}$ then
+  $\CSeq{\Phi}{\Gamma, \Ps}{C}$.
+\end{lemma}
+
+\begin{proof}
+  Induction on the derivation $\D$ of $\CSeq{\Phi}{\Gamma, \Ps, \Pt}{C}$.
+  \begin{description}
+  \item[Case] $\D$ is
+    \[
+      \infer[\mbox{E-init}]{\CSeq{\Phi}{\Gamma', \Pu}{\Pv}}{\Phi \models \vec{u} \EEq \vec{v}}
+    \]
+    We have $C = \Pv$ and $\Gamma, \Ps, \Pt = \Gamma', \Pu$.
+    If $\vec{u} \neq \vec{t}$ then we already have
+    $\CSeq{\Phi}{(\Gamma'\setminus \Pt), \Pu}{\Pv}$ by rule E-init.  Otherwise
+    we have $\Gamma' = \Gamma, \Ps$ and $\Phi\models\vec{t} \EEq \vec{v}$ and $\Phi\models\vec{s} \EEq \vec{t}$ so
+    $\Phi\models\vec{s} \EEq \vec{v}$.  Then $\CSeq{\Phi}{\Gamma, \Ps}{\Pv}$
+    by rule E-init.
+  \item[Case] $\D$ is
+    \[
+      \infer[\mbox{E-L}]{\CSeq{\Phi}{\Gamma, \Ps, \Pt, E}{C}}{\CSeq{\Phi\And E}{\Gamma}{C}}
+    \]
+    Since $E$ can not be an atomic formula, $E\neq \Ps$ and, $E\neq \Pt$.
+    Since $\Phi\models \vec{s}\EEq\vec{t}$, $\Phi\And E\models \vec{s}\EEq\vec{t}$, so
+    the induction hypothesis applies and we have $\CSeq{\Phi\And E}{\Gamma, \Ps}{C}$.
+    The result follows from an application of rule E-L.
+  \end{description}
+\end{proof}
+
+\begin{lemma}[Constraint Substitution]\label{lem:subst}
+  If $\CSeq{\Phi}{\Gamma}{\Ps}$ and $\Phi\models\vec{s}\EEq\vec{t}$ then
+  $\CSeq{\Phi}{\Gamma}{\Pt}$.
+\end{lemma}
+
+\begin{proof}
+  Induction on the derivation $\D$ of $\CSeq{\Phi}{\Gamma}{\Ps}$.
+  \begin{description}
+  \item[Case] $\D$ is
+    \[
+      \infer[\mbox{E-init}]{\CSeq{\Phi}{\Gamma', \Pu}{\Pv}}{\Phi \models \vec{u} \EEq \vec{v}}
+    \]
+  \end{description}
+\end{proof}
+
+
+\begin{proof}[Proof of Theorem~\ref{thm:cut-admissible}]
+Let $\D :: \CSeq{\Phi}{\Gamma}{A}$ and $\E :: \CSeq{\Phi}{\Gamma, A}{C}$.
+We proceed by induction on $A, \D, \E$.  The majority of the cases don't modify
+the constraints in any way, and the cases are identical with Pfenning's proof.  We
+show the cases where constraints play a significant role.
+
+\begin{description}
+\item[Case]
+  Initial cuts.  These are cuts where one of the derivations is initial with A as
+  its principle formula.
+  \begin{description}
+  \item[Case]
+    $\D$ is \[\infer[$E-R$]{\CSeq{\Phi}{\Gamma}{E}}{\Phi\models E}\]
+    Since $A = E$ we have $\CSeq{\Phi}{\Gamma, E}{C}$.  By inversion (Lemma~\ref{lem:e-invert}) we
+    have a derivation of $\CSeq{\Phi\And E}{\Gamma}{C}$.
+    Then since $\Phi\models E$, we have $\Phi\models\Phi\And E$ (constraint rules id and $\And$) so by
+    constraint weakening (Lemma~\ref{lem:e-weaken}) we have $\CSeq{\Phi}{\Gamma}{C}$ as required.
+  \item[Case]
+    $\D$ is \[\infer[$E-init$]{\CSeq{\Phi}{\Gamma', \Ps}{\Pt}}{\Phi\models \vec{s}\EEq\vec{t}}\]
+    Then $\Gamma = \Gamma', \Ps$, $A = \Pt$.  By assumption we
+    have $\CSeq{\Phi}{\Gamma', \Ps, \Pt}{C}$.  By contraction (Lemma~\ref{lem:contract})
+    we have $\CSeq{\Phi}{\Gamma', \Ps}{C}$ as required.
+  \item[Case]
+    $\E$ is \[\infer[$E-init$]{\CSeq{\Phi}{\Gamma, \Ps}{\Pt}}{\Phi\models \vec{s}\EEq\vec{t}}\]
+    Then $A = \Ps, C = \Pt$.  By assumption we
+    have $\CSeq{\Phi}{\Gamma}{\Ps}$.  The result follows by constraint substitution (Lemma~\ref{lem:subst}).
+
+  \end{description}
+
+\item[Case]
+  Principal cuts.
+  \begin{description}
+  \item[Case] Foo
+  \item[Case] Bar
+  \end{description}
+
+\item[Case]
+  Left commutative cuts.
+  \begin{description}
+  \item[Case] Foo
+  \item[Case] Bar
+  \end{description}
+
+\item[Case]
+  Right commutative cuts.
+  \begin{description}
+  \item[Case] Foo
+  \item[Case] Bar
+  \end{description}
+
+\end{description}
+
+
+\end{proof}
+
+Simmons~\cite{simmons14tocl} considerably simplified the proofs of
+cut elimination and identity using a technique he calls
+\emph{structural focalization}.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "thesis"
+%%% End:

@@ -19,7 +19,7 @@ aws s3 cp thesis.pdf s3://www.seanmcl.com/content/thesis/thesis.pdf
 # Page count
 if ! grep $DATE pages.json; then
   echo "Publishing pages.json"
-  echo "{\"date\": \"$DATE\", \"pages\": \"$(pdf-pages thesis.pdf)\"}" >> pages.json
+  echo "{\"date\": \"$DATE\", \"pages\": $(pdf-pages thesis.pdf)}" >> pages.json
   aws s3 cp pages.json s3://www.seanmcl.com/content/thesis/pages.json
 fi
 

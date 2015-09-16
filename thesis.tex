@@ -1,108 +1,40 @@
 %for a more compact document, add the option openany to avoid
 %starting all chapters on odd numbered pages
-\documentclass[12pt]{cmuthesis}
-
-\definecolor{ValidRed}{rgb}{0.5,0,0}
-\definecolor{TrueRed}{rgb}{1,0.6,0.2}
-\definecolor{ValidBlue}{rgb}{0,0,0.5}
-\definecolor{TrueBlue}{rgb}{0.2,0.6,1}
-
+\documentclass[12pt,openany]{cmuthesis}
 \input{macros.tex}
-%\draftstamp{\rm \today}{\rm DRAFT}
+
+\newtoggle{dev}
+%\togglefalse{dev}
+\toggletrue{dev}
+
+\iftoggle{dev}{
+  \includeonly{chapter-prop}
+}
+
+\iftoggle{dev}{
+  \draftstamp{\rm \today}{\rm DRAFT}
+}
 
 \begin {document}
 \frontmatter
 
 \pagestyle{empty}
 
-\title{
-{\bf The Polarized Inverse Method}
-%{\it (First committee draft)}
-}
-\author{Sean McLaughlin}
-\date{\today}
-\Year{2015}
-\trnumber{revision 0.0.1}
-
-\committee{
-  Frank Pfenning, Chair \\
-  Jeremy Avigad \\
-  Robert Harper \\
-  Dale Miller, INRIA-Saclay \& LIX/Ecole Polytechnique \\
-  Andr\'e Platzer
-}
-
-\support{This research was supported by
-National Science Foundation grant NSF-0716469 (\emph{Manifest Security}) and
-Air Force Research Laboratory grant FA87500720028 (\emph{Accountable Information
-  Flow via Explicit Formal Proof})}
-
-\disclaimer{Any opinions, findings, conclusions or recommendations
-  expressed in this publication are those of the author and do not
-  necessarily reflect the views of any sponsoring institution or
-  government.}
-
-\keywords{automated theorem proving, intuitionistic logic, inverse
-  method, focusing, polarization, linear logic, ordered logic,
-  constraint programming}
-
-\maketitle
-
-\begin{dedication}
-  To my parents.
-\end{dedication}
+\include{titlepage}
+\include{dedication}
 
 \pagestyle{plain}
 
-\begin{abstract}
-Non-classical logics provide a flexible means for describing and reasoning about
-diverse computational phenomena.  \emph{Intuitionistic logic} provides a
-foundation for constructive mathematics and is the basis of many proof
-assistants which are used to prove program correctness.  \emph{Modal logic}
-permits succinct reasoning about possible worlds, which has applications to
-authorization and distributed computing.  \emph{Linear logic}, with its
-interpretation of hypotheses as resources, is used to study stateful systems,
-including protocol verification and concurrency.
+\include{abstract}
 
-Theorem proving in these logics is typically difficult. For example,
-intuitionisitic propositional logic is PSPACE-complete, while even fragments of
-linear propositional logic are undecidable.  Nevertheless, it is fundamental to
-the adoption of such expressive logics that we develop practical theorem proving
-tools.
-
-We describe a general method for building efficient theorem provers for
-non-classical logics called the \emph{polarized inverse method}.  The
-\emph{generality} of our approach comes from the use of the inverse method, a
-well-known proof search strategy for cut-free sequent calculi, and the use of
-\emph{constraints} for delaying the results of costly computations.
-\emph{Efficiency} comes from the relatively novel proof-theoretic techniques of
-\emph{focusing} and \emph{polarization} as well as more traditional techniques
-such as term indexing and redundancy elimination.
-
-Throughout the thesis we will demonstrate by example that the inverse method,
-augmented with constraints, focusing, and polarization, forms a strong
-foundation for efficient theorem proving in non-classical logics.  We give
-support to our claims by describing \emph{Imogen}, a theorem prover for
-propositional and first-order intuitionistic logic, the first-order
-intuitionistic modal logics K, T, K4, S4, and S5, and two substructural logics
-(linear logic and ordered logic).  We find in empirical tests that Imogen
-compares favorably with existing implementations.  For ordered logic and some
-intuitionistic modal logics, Imogen is the first and only implementation.
-\end{abstract}
-
-\begin{acknowledgments}
-  To my parents.
-\end{acknowledgments}
-
-\tableofcontents
+\iftoggle{dev}{}{\tableofcontents}
 
 \mainmatter
 
 %% Double space document for easy review:
 %\renewcommand{\baselinestretch}{1.66}\normalsize
-
-\input{chapter-introduction}
-\input{chapter-prop}
+\include{chapter-introduction}
+\include{chapter-prop}
 %\input{chapter-fol}
 %\input{chapter-modal}
 %\input{chapter-sub}
@@ -115,6 +47,11 @@ intuitionistic modal logics, Imogen is the first and only implementation.
 % up in the table of contents and pdf bookmarks.
 \renewcommand{\bibsection}{\chapter{\bibname}}
 \bibliographystyle{alphaurl}
-\bibliography{ref}
+\bibliography{refs}
 
 \end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
