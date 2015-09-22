@@ -6,6 +6,8 @@
 \newcommand{\Pu}{P(\vec{u}\,)}
 \newcommand{\Pv}{P(\vec{v}\,)}
 
+
+
 \begin{figure}
 \footnotesize
 \[
@@ -246,7 +248,6 @@ show the cases where constraints play a significant role.
     $\E$ is \[\infer[$E-init$]{\CSeq{\Phi}{\Gamma, \Ps}{\Pt}}{\Phi\models \vec{s}\EEq\vec{t}}\]
     Then $A = \Ps, C = \Pt$.  By assumption we
     have $\CSeq{\Phi}{\Gamma}{\Ps}$.  The result follows by constraint substitution (Lemma~\ref{lem:subst}).
-
   \end{description}
 
 \item[Case]
@@ -272,8 +273,20 @@ show the cases where constraints play a significant role.
 
 \end{description}
 
-
 \end{proof}
+
+x = y => y = z => p(x) => p(z)
+
+% []p => <> p @ w
+                    ⊧ W' ≥ w
+                   ==> W' ≥ w      p(W') ==> p(W')
+   ⊧ W' ≥ w         W' ≥ w ⊃ p(W') ==> p(W')
+(∀ w'. w' ≥ w ⊃ p(w')) ==> W' ≥ w   (∀ w'. w' ≥ w ⊃ p(w')) ==> p(W')
+(∀ w'. w' ≥ w ⊃ p(w')) ==> (W' ≥ w ∧ p(W'))
+(∀ w'. w' ≥ w ⊃ p(w')) ==> (∃ w'. w' ≥ w ∧ p(w'))
+(∀ w'. w' ≥ w ⊃ p(w')) ⊃ (∃ w'. w' ≥ w ∧ p(w'))
+
+
 
 Simmons~\cite{simmons14tocl} considerably simplified the proofs of
 cut elimination and identity using a technique he calls
