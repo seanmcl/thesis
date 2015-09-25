@@ -7,6 +7,24 @@ b: small -> big.
 
 %{ == Syntax == }%
 
+i: type. %name i T t.
+
+nat: type.
+zero: nat.
+succ: nat -> nat.
+
+atomic: type.
+y: nat -> atomic.  % nonempty universe
+
+constr: type.
+prim: atomic -> constr.
+≈ : i -> i -> constr.  %infix none 20 ≈.
+⊧: constr -> type. %name ⊧ E e.
+
+refl : {X} ⊧ (X ≈ X).
+sym : ⊧ (X ≈ Y) -> ⊧ (Y ≈ X).
+trans : ⊧ (X ≈ Y) -> ⊧ (Y ≈ Z) -> ⊧ (X ≈ Z).
+
 pol: type. %name pol P.
 ⁺: pol.
 ⁻: pol.
@@ -19,8 +37,7 @@ atom: pol -> type. %name atom Q q.
 typ: pol -> type. %name typ A.
 c: atom P -> typ P.
 
-i: type. %name i T t.
-
+e: atomic -> typ ⁺.
 ↓: typ ⁻ -> typ ⁺.
 ⊥: typ ⁺.
 ∨: typ ⁺ -> typ ⁺ -> typ ⁺. %infix none 5 ∨.
@@ -53,7 +70,6 @@ pos: type. %name pos _Ω.
 ·: pos.
 ,: typ ⁺ -> pos -> pos. %infix right 3 ,.
 
-
 %{ == Sequent calculus == }%
 
 %{ The judgments of the focused language (or, alternatively, syntax of
@@ -63,7 +79,8 @@ hyp: hjmt -> type. %name hyp X x.
 %abbrev hyp⁻ = [A⁻] hyp (h⁻ A⁻).
 %block x : some {A: hjmt} block {x: hyp A}.
 %block univ : block {t:i}.
-%block gamma = (atom⁺ | atom⁻ | x | univ). %% World for derivations, cut
+%block casm: some {E:constr} block {b: ⊧ E}.
+%block gamma = (atom⁺ | atom⁻ | x | univ | casm). %% World for derivations, cut
 
 rfoc: typ ⁺ -> type. %name rfoc V.
 conc: pos -> suc -> type. %name conc N.
@@ -73,6 +90,8 @@ lfoc: typ ⁻ -> suc -> type. %name lfoc Sp.
 %block aleph = (gamma | v | sp). %% Extended world for identity expansion
 
 %{ ``V ::= z ∣ {N}⁻ ∣ inl V ∣ inr V ∣ <> ∣ <V₁,V₂>'' }%
+
+eR: ⊧ (prim E) -> rfoc (e E).
 cR: hyp⁺ Q⁺ -> rfoc (c Q⁺).
 ↓R: conc · (A⁻ true) -> rfoc (↓ A⁻).
 ∨R₁: rfoc A⁺ -> rfoc (A⁺ ∨ B⁺).
@@ -83,6 +102,7 @@ cR: hyp⁺ Q⁺ -> rfoc (c Q⁺).
 
 %{ ``N ::= x • Sp ∣ z.p ∣ x.N ∣ abort ∣ [N₁,N₂] ∣ <>.N ∣ ∧⁺N ∣ {V}⁺ ∣ λN ∣ <> ∣ <N₁,N₂>'' }%
 foc: hyp⁻ A⁻ -> stable Suc -> lfoc A⁻ Suc -> conc · Suc.
+eL: (⊧ (prim E) -> conc _Ω Suc) -> conc (e E , _Ω) Suc.
 cL: (hyp⁺ Q⁺ -> conc _Ω Suc) -> conc (c Q⁺ , _Ω) Suc.
 ↓L: (hyp⁻ A⁻ -> conc _Ω Suc) -> conc (↓ A⁻ , _Ω) Suc.
 ⊥L: conc (⊥ , _Ω) Suc.
@@ -107,22 +127,6 @@ p⁻: lfoc (c Q⁻) (c Q⁻ true).
 
 %{ == Cut admissibility == }%
 
-%{ Cut admissibility has a lot of mutually inductive theorems, but no more
-than is absolutely necessary given the syntactic classes we're dealing
-with. Furthermore, the different theorems we use neatly sort out the
-informal division of cases that we are used to dealing with when proving
-cut admissibility theorems.
-
-The "principal" substitutions capture the principal cuts:
-* ``V • Ni'' - positive cut formula, and
-* ``M • Sp'' - negative cut formula.
-In this presentation, we have generalized what it means to be a "positive
-cut formula": instead of a single formula ``A⁺'', it is a context of positive
-formulas ``Ω''. Each inductive call within this group decreases the "size" of
-the cut formula by a multiset ordering where the positive conjunction ``∧⁺''
-counts for two and the conjunction of positive contexts ``,'' counts for one.
-To make Twelf happy, we turn this into a structural metric. }%
-
 subst⁺: {A⁺} small
   -> rfoc A⁺
   -> conc (A⁺ , _Ω) (C⁻ true)
@@ -135,14 +139,6 @@ subst⁻: {A⁻} small
 
 %mode subst⁺ +A +S +V +N -N'.
 %mode subst⁻ +A +S +N +Sp +St -N'.
-
-%{ The "rightist" substitutions capture the right commutative cuts:
-* ``[M/x]V'' - right rules for positive connectives,
-* ``[M/x]Ni'' - left rules for positive connectives,
-* ``[M/x]N'' - right rules for negative connectives,
-* ``[M/x]Sp'' - left rules for negative connectives, and
-Each inductive call within this group decreases the size of the formula that
-we are substituting into. }%
 
 rightV:  {A⁻} big
   -> conc · (A⁻ true)
@@ -161,13 +157,6 @@ rightSp: {A⁻} big
 %mode rightN  +A +S +M +N -N'.
 %mode rightSp +A +S +M +Sp -N'.
 
-%{ The "leftist" substitutions capture the left commutative cuts, and
-are only called when we bottom out of principal substitutions:
-* ``<<Mi>>Ni'' - left rules for positive connectives, and
-* ``<<Sp>>Ni'' - left rules for negative connectives.
-Each inductive call within this group decreases the size of the formula that
-we are substituting in, hence "leftist." }%
-
 leftN: {A⁺} big
   -> conc _Ω (↑ A⁺ true)
   -> conc (A⁺ , ·) (C⁻ true)
@@ -185,6 +174,8 @@ leftSp: {A⁺} big
 %{ === Principal substitution/cuts === }%
 
 %{ ``(V • N) = N' '' }%
+
+-: subst⁺ (e E) S (eR D) (eL F) (F D).
 
 -: subst⁺ (c Q⁺) S (cR Z) (cL ([z'] N z')) (N Z).
 
@@ -233,6 +224,8 @@ leftSp: {A⁺} big
 
 %{ ``[[M/x]]V = V' '' }%
 
+-: rightV A⁻ S M ([x] eR D) (eR D).
+
 -: rightV A⁻ S M ([x] cR Z) (cR Z).
 
 -: rightV A⁻ S M ([x] ↓R (N x)) (↓R N')
@@ -261,6 +254,9 @@ leftSp: {A⁺} big
 
 -: rightN A⁻ S M ([x] foc X' St (Sp x)) (foc X' St Sp')
   <- rightSp A⁻ S M ([x] Sp x) (Sp': lfoc B⁻ (C⁻ true)).
+
+-: rightN A⁻ S M ([x] eL [z] N x z) (eL [z] N' z)
+  <- ({z: ⊧ (prim E)} rightN A⁻ S M ([x] N x z) (N' z)).
 
 -: rightN A⁻ S M ([x] cL [z] N x z) (cL [z] N' z)
   <- ({z: hyp⁺ Q⁺} rightN A⁻ S M ([x] N x z) (N' z: conc _Ω (C⁻ true))).
@@ -325,6 +321,9 @@ leftSp: {A⁺} big
 
 -: leftN A⁺ S (foc X _ Sp) N St (foc X St Sp')
   <- leftSp A⁺ S Sp N St (Sp': lfoc B⁻ (C⁻ true)).
+
+-: leftN A⁺ S (eL M) N St (eL M')
+  <- ({z: ⊧ (prim E)} leftN A⁺ S (M z) N St (M' z: conc _Ω (C⁻ true))).
 
 -: leftN A⁺ S (cL [z] M z) N St (cL [z] M' z)
   <- ({z: hyp⁺ Q⁺} leftN A⁺ S (M z) N St (M' z: conc _Ω (C⁻ true))).
@@ -428,6 +427,8 @@ expand⁺: {A⁺} (rfoc A⁺ -> conc _Ω Suc)
 %mode expand⁺ +A⁺ +N -Ni.
 
 %{ ``η(v.N) = N' '' }%
+
+-: expand⁺ (e E) ([v: rfoc (e E)] N v) (eL [x] N (eR x)).
 
 -: expand⁺ (c Q⁺) ([v: rfoc (c Q⁺)] N v) (cL [x: hyp⁺ Q⁺] (N (cR x))).
 
@@ -597,6 +598,47 @@ adm-∨R₂: conc · (↑ B⁺ true)
 
 %worlds (gamma) (adm-∨R₂ _ _).
 %total [] (adm-∨R₂ _ _).
+
+
+adm-eR: ⊧ (prim E) -> conc · (↑ (e E) true) -> type.
+%mode adm-eR +D₁ -D₂.
+-: adm-eR (X: ⊧ (prim E)) (↑R (eR X)).
+%worlds (gamma) (adm-eR _ _).
+%total [] (adm-eR _ _).
+
+%{ Note that C⁻ is not stable in general,
+   so many invertible rules may apply to C before we can focus on
+   ↑ (e E).  If we had a proof that C is stable, then the proof term would be
+   adm-eL ([x: ⊧ (prim E)] D₁ x: conc · (C⁻ true)) ([h: hyp⁻ (↑ (e E))] foc h ? (↑L (eL D₁))).
+   The solution is to double-shift C, which is stable, then unshift it at the end.
+
+Have:
+  h                      :  hyp⁻ (↑ (e E))
+  D₁                     :  ⊧ (prim E) -> conc · (C⁻ true)
+  D₂ (using shift)       :  ⊧ (prim E) -> conc · (↑ (↓ C⁻) true)
+  eL D₁                  : conc (e E , ·) (C⁻ true)
+  eL D₂                  : conc (e E , ·) (↑ (↓ C⁻) true)
+  ↑L (eL D₁)             :  lfoc (↑ (e E)) (C⁻ true)
+  ↑L (eL D₂)             :  lfoc (↑ (e E)) (↑ (↓ C⁻) true)
+
+  ? : stable (C⁻ true)
+  s↑ : stable (↑ (↓ C⁻))
+
+  foc h s↑ (↑L (eL D₂))   :  conc · (↑ (↓ C⁻) true)
+  unshift (foc h s↑ (↑L (eL D₂)))  :  conc · (C⁻ true)
+}%
+adm-eL: (⊧ (prim E) -> conc · (C⁻ true))
+         -> (hyp⁻ (↑ (e E)) -> conc · (C⁻ true))
+         -> type.
+%mode adm-eL +D₁ -D₂.
+
+-: adm-eL (D₁: ⊧ (prim E) -> conc · (C⁻ true))
+          ([h: hyp⁻ (↑ (e E))] D h)
+    <- ({x: ⊧ (prim E)} shift (D₁ x) (D₂ x))
+    <- ({h: hyp⁻ (↑ (e E))} unshift (foc h s↑ (↑L (eL D₂))) (D h)).
+
+%worlds (gamma) (adm-eL _ _).
+%total [] (adm-eL _ _).
 
 adm-∨L: (hyp⁻ (↑ A⁺) -> conc · (C⁻ true))
       -> (hyp⁻ (↑ B⁺) -> conc · (C⁻ true))
@@ -875,6 +917,7 @@ shifthyp: (hyp⁻ A⁻ -> conc · (C⁻ true))
 %{ === Syntax === }%
 
 prop: type. %name prop P.
+ee: atomic -> prop.
 a: atom P -> prop.
 ff: prop.
 or: prop -> prop -> prop.
@@ -894,6 +937,7 @@ from polarized to unpolarized propositions. }%
 
 t: typ P -> prop -> type. %name t Trans.
 
+te: t (e E) (ee E).
 tc: t (c Q) (a Q).
 
 t↑: t A⁺ P -> t (↑ A⁺) P.
@@ -937,6 +981,10 @@ right: prop -> type. %name right D.
 right': props -> prop -> type. %name right' D.
 %block h: some {P} block {h: left P}.
 
+eeR: ⊧ (prim E) -> right (ee E).
+
+eeL: (⊧ (prim E) -> right Q) -> (left (ee E) -> right Q).
+
 init: left (a Q) -> right (a Q).
 
 ffL: left ff -> right P.
@@ -978,12 +1026,6 @@ nil: right P -> right' ○ P.
 
 cons: (left P -> right' _Ψ Q) -> right' (P ; _Ψ) Q.
 
-%{ Identity on derivations }%
-
-id: right P -> right P -> type.
-refl: id D D.
-
-
 %{ === Soundness === }%
 
 %{ Soundness is established in a context where each polarized
@@ -993,7 +1035,7 @@ soundhyp: hyp A -> th A P -> left P -> type.
 %block soundhyps: some {A}{P}{T: th A P}
   block {x: hyp A}{h: left P}{_: soundhyp x T h}.
 
-%block soundctx = (atom⁺ | atom⁻ | soundhyps | univ).
+%block soundctx = (atom⁺ | atom⁻ | soundhyps | univ | casm).
 
 %mode +{A} -{P} +{X} -{T: th A P} -{H} soundhyp X T H.
 %worlds (soundctx) (soundhyp _ _ _).
@@ -1015,6 +1057,8 @@ sound-lem: th (h⁺ Q) P -> left P -> left (a Q) -> type.
 %mode sound-lem +TH +H -H'.
 %worlds (soundctx) (sound-lem _ _ _).
 %total [] (sound-lem _ _ _).
+
+-: soundV (eR Z) te (eeR Z).
 
 -: soundV (cR Z) tc (init H')
   <- soundhyp Z TH H
@@ -1067,13 +1111,27 @@ sound-lem: th (h⁺ Q) P -> left P -> left (a Q) -> type.
        soundhyp x (t⁻ T) h ->
          soundN (N x) TΩ TCQ (D h: right' _Ψ Q)).
 
+sound-eeL: {_Ψ} left (ee E)
+           -> (⊧ (prim E) -> right' _Ψ Q)
+           -> right' _Ψ Q -> type.
+%mode sound-eeL +_Ψ +D1 +D2 -E.
+-: sound-eeL ○ (H: left (ee E)) ([x: ⊧ (prim E)] nil (D x)) (nil (eeL ([x] (D x)) H) : right' ○ Q).
+-: sound-eeL _ H ([x] cons [h] (D x h)) (cons D')
+  <- ({h} sound-eeL _ H ([x] D x h) (D' h)).
+%worlds (atom⁺ | atom⁻ | h | univ | casm) (sound-eeL _ _ _ _).
+%total _Ψ (sound-eeL _Ψ _ _ _).
+
+-: soundN (eL [x: ⊧ (prim E)] N x) (t, te TΩ) (TCQ : t C⁻ Q) (cons [h: left (ee E)] N'' h)
+  <- ({x: ⊧ (prim E)} soundN (N x) TΩ TCQ (N' x : right' _Ψ Q))
+  <- ({h: left (ee E)} sound-eeL _ h ([x: ⊧ (prim E)] N' x) (N'' h)).
+
 sound-ffL: {_Ψ} left ff
            -> right' _Ψ Q -> type.
 -: sound-ffL _ H (nil (ffL H)).
 -: sound-ffL _ H (cons D)
   <- {h} sound-ffL _ H (D h).
 %mode +{_Ψ} +{Q} +{H: left ff} -{D: right' _Ψ Q} sound-ffL _Ψ H D.
-%worlds (atom⁺ | atom⁻ | h | univ) (sound-ffL _ _ _).
+%worlds (atom⁺ | atom⁻ | h | univ | casm) (sound-ffL _ _ _).
 %total _Ψ (sound-ffL _Ψ _ _).
 
 -: soundN ⊥L TΩ TCQ (cons D)
@@ -1087,7 +1145,7 @@ sound-orL: {_Ψ} left (or P₁ P₂)
 -: sound-orL _ H ([h₁] cons (D₁ h₁)) ([h₂] cons (D₂ h₂)) (cons D)
   <- {h} sound-orL _ H ([h₁] D₁ h₁ h) ([h₂] D₂ h₂ h) (D h).
 %mode sound-orL +_Ψ +H +D₁ +D₂ -D.
-%worlds (atom⁺ | atom⁻ | h | univ) (sound-orL _ _ _ _ _).
+%worlds (atom⁺ | atom⁻ | h | univ | casm) (sound-orL _ _ _ _ _).
 %total _Ψ (sound-orL _Ψ _ _ _ _).
 
 -: soundN (∨L N₁ N₂) (t, (t∨ T₁ T₂) TΩ) TCQ (cons D)
@@ -1102,7 +1160,7 @@ sound-exL: {_Ψ} left (ex P)
 -: sound-exL _ H ([t][h₁] cons (D t h₁)) (cons D')
   <- ({h} sound-exL _ H ([t][h₁] D t h₁ h) (D' h)).
 %mode sound-exL +_Ψ +H +D -D'.
-%worlds (atom⁺ | atom⁻ | h | univ) (sound-exL _ _ _ _).
+%worlds (atom⁺ | atom⁻ | h | univ | casm) (sound-exL _ _ _ _).
 %total _Ψ (sound-exL _Ψ _ _ _).
 
 -: soundN (∃L N) (t, (t∃ T) TΩ) TCQ (cons D')
@@ -1120,7 +1178,7 @@ sound-andL: {_Ψ} left (and P₁ P₂)
 -: sound-andL _ H ([h₁] [h₂] cons (D₁ h₁ h₂)) (cons D)
   <- {h} sound-andL _ H ([h₁] [h₂] D₁ h₁ h₂ h) (D h).
 %mode sound-andL +_Ψ +H +D₁ -D.
-%worlds (atom⁺ | atom⁻ | h | univ) (sound-andL _ _ _ _).
+%worlds (atom⁺ | atom⁻ | h | univ | casm) (sound-andL _ _ _ _).
 %total _Ψ (sound-andL _Ψ _ _ _).
 
 -: soundN (∧⁺L N) (t, (t∧⁺ T₁ T₂) TΩ) TCQ (cons D)
@@ -1149,6 +1207,7 @@ sound-andL: {_Ψ} left (and P₁ P₂)
   (soundV _ _ _)
   (soundN _ _ _ _)
   (soundSp _ _ _ _).
+
 %total (V N Sp)
   (soundV V _ _)
   (soundN N _ _ _)
@@ -1161,10 +1220,15 @@ hypothesis is mapped to some polarization. This is the same, type-wise, as
 the context for soundness, but the computational interpretation runs the
 opposite way 'round. }%
 
+%{ Identity on derivations }%
+
+id: right P -> right P -> type.
+refl: id D D.
+
 completehyp: left P -> th A P -> hyp A -> type.
 %block completehyps1: some {A}{P}{T: th A P}
   block {x: hyp A}{h: left P}{_: completehyp h T x}.
-%block completehyps = (completehyps1 | univ).
+%block completehyps = (completehyps1 | univ | casm).
 %block completectx = (atom⁺ | atom⁻ | completehyps).
 
 %mode completehyp +H -T -X.
@@ -1177,8 +1241,32 @@ complete: big -> right P -> t A⁻ P -> conc · (A⁻ true) -> type.
 -: complete S D (t↑ (t↓ T)) (↑R (↓R M))
   <- complete S D T M.
 
-
 %{ ==== Initial rules ==== }%
+
+-: complete S (eeR D) (t↑ te) (↑R (eR D)).
+
+ceeL: small
+   -> t B⁻ (ee E)
+   -> {D: right Q} id D (eeL D₁ (H: left (ee E)))
+   -> t C⁻ Q
+   -> (hyp⁻ B⁻ -> conc · (C⁻ true))
+   -> type.
+%mode ceeL +S +TH +D +Id +T -M.
+
+-: ceeL S (t↑ (t↓ TH)) D Id T M
+  <- ceeL S TH D Id T (N: hyp⁻ B⁻ -> conc · (C⁻ true))
+  <- shifthyp N (M: hyp⁻ (↑ (↓ B⁻)) -> conc · (C⁻ true)).
+
+-: ceeL S (t↑ (te: t (e E) (ee E))) (eeL D₁ (H: left (ee E))) refl (T: t C⁻ Q) (N': hyp⁻ (↑ (e E)) -> conc · (C⁻ true))
+    <- ({x: ⊧ (prim E)} complete (b s) (D₁ x) T (N x))
+    <- adm-eL ([x: ⊧ (prim E)] N x) N'.
+
+-: complete (b S)
+    (eeL (D₁: ⊧ (prim E) -> right Q) (H: left (ee E)): right Q)
+    (T: t C⁻ Q)
+    (N X : conc · (C⁻ true))
+  <- completehyp H (t⁻ (TH: t A⁻ (ee E))) (X: hyp⁻ A⁻)
+  <- ceeL S TH (eeL D₁ H) refl T (N: hyp⁻ A⁻ -> conc · (C⁻ true)).
 
 cinit⁻: t B⁻ (a Q)
      -> {D: right (a Q)} id D (init (H: left (a Q)))
@@ -1460,6 +1548,7 @@ cimpL: small
   <- cimpL S TH (impL D₁ D₂ H) refl T N.
 
 %worlds (completehyps)
+  (ceeL _ _ _ _ _ _)
   (corL _ _ _ _ _ _)
   (cexL _ _ _ _ _ _)
   (candL₁ _ _ _ _ _ _)
@@ -1468,9 +1557,10 @@ cimpL: small
   (cimpL _ _ _ _ _ _)
   (complete _ _ _ _).
 
-%total {(D DorL DexL DandL₁ DandL₂ DallL DimpL)
-        (S SorL SexL SandL₁ SandL₂ SallL SimpL)
-        (T TorL TexL TandL₁ TandL₂ TallL TimpL)}
+%total {(D DeeL DorL DexL DandL₁ DandL₂ DallL DimpL)
+        (S SeeL SorL SexL SandL₁ SandL₂ SallL SimpL)
+        (T TeeL TorL TexL TandL₁ TandL₂ TallL TimpL)}
+  (ceeL SeeL TeeL DeeL _ _ _)
   (corL SorL TorL DorL _ _ _)
   (cexL SexL TexL DexL _ _ _)
   (candL₁ SandL₁ TandL₁ DandL₁ _ _ _)
@@ -1492,6 +1582,7 @@ semi-focused lax logic.. }%
 polarize: {P} t (A⁻: typ ⁻) P -> type.
 %mode polarize +P -T.
 
+-: polarize (ee E) (t↑ te).
 -: polarize (a Q) tc.
 -: polarize (a Q) (t↑ tc).
 -: polarize ff (t↑ t⊥).

@@ -9,7 +9,7 @@ atomic : type.
 y : nat -> atomic.  % Ensure atomic is nonempty.
 
 constr : type.
-atom : atomic -> constr.
+prim : atomic -> constr.
 
 ≈ : i -> i -> constr.  %infix none 20 ≈.
 
@@ -30,8 +30,8 @@ hyp : o -> type.
 conc : o -> type.
 
 init : asm (X ≈ Y) -> hyp (p X) -> conc (p Y).
-e-r : {E} asm (atom E) -> conc (e E).
-e-l : hyp (e E) -> (asm (atom E) -> conc C) -> conc C.
+e-r : {E} asm (prim E) -> conc (e E).
+e-l : hyp (e E) -> (asm (prim E) -> conc C) -> conc C.
 t-r : conc ⊤.
 and-r : conc A -> conc B -> conc (A & B).
 and-l : hyp (A & B) -> (hyp A -> hyp B -> conc C) -> conc C.
@@ -135,7 +135,7 @@ subst-hyp : asm (X ≈ Y) -> (hyp (p X) -> conc C) -> (hyp (p Y) -> conc C) -> t
 - : subst-hyp D ([h] e-r E E') ([h] e-r E E').
 
 - : subst-hyp D ([h] e-l D1 ([h1] D2 h h1)) ([h] e-l D1 (D2' h))
-     <- {H:asm (atom E)} subst-hyp D ([h] D2 h H) ([h] D2' h H).
+     <- {H:asm (prim E)} subst-hyp D ([h] D2 h H) ([h] D2' h H).
 
 - : subst-hyp _ ([h] t-r) ([h] t-r).
 
