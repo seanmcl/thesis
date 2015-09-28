@@ -1,22 +1,33 @@
-nat : type.
-z : nat.
-s : nat -> nat.
-
 i : type.
-x : nat -> i.  % Ensure universe is nonempty.
-
-atomic : type.
-y : nat -> atomic.  % Ensure atomic is nonempty.
-
-constr : type.
-prim : atomic -> constr.
-
-≈ : i -> i -> constr.  %infix none 20 ≈.
-
 o : type.
+ψ : type.
+atom: type.  %name atom A a.
+eatom : type.
 
-e : atomic -> o.
-p : i -> o.  % Not the best encoding.  Every predicate takes precisely one argument.
+args: type.
+● : args.
+, : i -> args -> args. %infix right 3 ,.
+
+prim : eatom -> args -> ψ.
+≈ : i -> i -> ψ.  %infix none 20 ≈.
+⊧ : ψ -> type.
+refl : {X} ⊧ (X ≈ X).
+sym : ⊧ (X ≈ Y) -> ⊧ (Y ≈ X).
+trans : ⊧ (X ≈ Y) -> ⊧ (Y ≈ Z) -> ⊧ (X ≈ Z).
+
+≋ : args -> args -> type.  %infix none 20 ≋.
+≋-● : ● ≋ ●.
+≋-, : ⊧ (X ≈ Y) -> Xs ≋ Ys -> (X , Xs) ≋ (Y , Ys).
+
+e : eatom -> args -> o.
+p : atom -> args -> o.
+
+% Without lists of arguments you need ...
+%   p0 : atom -> o.
+%   p1 : atom -> i -> o.
+%   p2 : atom -> i -> i -> o.
+%   p3, p4, ...
+
 ⊤ : o.
 & : o -> o -> o.  %infix right 10 &.
 ⊃ : o -> o -> o.  %infix right 9 ⊃.
@@ -25,13 +36,13 @@ p : i -> o.  % Not the best encoding.  Every predicate takes precisely one argum
 ⊥ : o.
 ∃ : (i -> o) -> o.
 
-asm : constr -> type.
+example = ∀ [x:i] ∀ [y:i] ∃ [z:i] p P (x , y , ●) ⊃ p P (z , ●) ⊃ e E (x , y , z , ●).
 hyp : o -> type.
 conc : o -> type.
 
-init : asm (X ≈ Y) -> hyp (p X) -> conc (p Y).
-e-r : {E} asm (prim E) -> conc (e E).
-e-l : hyp (e E) -> (asm (prim E) -> conc C) -> conc C.
+init : Xs ≋ Ys -> hyp (p P Xs) -> conc (p P Ys).
+e-r : {E}{Xs} ⊧ (prim E Xs) -> conc (e E Xs).
+e-l : hyp (e E Xs) -> (⊧ (prim E Xs) -> conc C) -> conc C.
 t-r : conc ⊤.
 and-r : conc A -> conc B -> conc (A & B).
 and-l : hyp (A & B) -> (hyp A -> hyp B -> conc C) -> conc C.
@@ -46,43 +57,66 @@ f-l : hyp ⊥ -> conc C.
 ex-r : {X:i} conc (A X) -> conc (∃ A).
 ex-l : hyp (∃ A) -> ({x} hyp (A x) -> conc C) -> conc C.
 
-refl : {X} asm (X ≈ X).
-sym : asm (X ≈ Y) -> asm (Y ≈ X).
-trans : asm (X ≈ Y) -> asm (Y ≈ Z) -> asm (X ≈ Z).
-
 %block l1 : block {x:i}.
 %block l2 : some {A:o} block {h:hyp A}.
-%block l3 : some {A:constr} block {h:asm A}.
+%block l3 : some {A:ψ} block {h:⊧ A}.
 
 % ----------------------------------------------------------
 
-ident : {A} (hyp A -> conc A) -> type.
+≋-refl: {Xs} Xs ≋ Xs -> type.
+%mode ≋-refl +Xs -D.
+-: ≋-refl ● ≋-●.
+-: ≋-refl (X , Xs) (≋-, (refl X) D) <- ≋-refl Xs D.
+%worlds (l1 | l2 | l3) (≋-refl Xs D).
+%total (Xs) (≋-refl Xs D).
+
+≋-sym: Xs ≋ Ys -> Ys ≋ Xs -> type.
+%mode ≋-sym +D1 -D2.
+-: ≋-sym ≋-● ≋-●.
+-: ≋-sym (≋-, D1 D2) (≋-, (sym D1) D2')
+    <- ≋-sym D2 D2'.
+
+%worlds (l1 | l2 | l3) (≋-sym D1 D2).
+%total (D1) (≋-sym D1 D2).
+
+≋-trans: Xs ≋ Ys -> Ys ≋ Zs -> Xs ≋ Zs -> type.
+%mode ≋-trans +D1 +D2 -D3.
+-: ≋-trans ≋-● ≋-● ≋-●.
+-: ≋-trans (≋-, DXY DXYS) (≋-, DYZ DYZS) (≋-, (trans DXY DYZ) DXZS)
+    <- ≋-trans DXYS DYZS DXZS.
+%worlds (l1 | l2 | l3) (≋-trans D1 D2 D3).
+%total (D1) (≋-trans D1 D2 D3).
+
+% ----------------------------------------------------------
+
+ident : {A:o} (hyp A -> conc A) -> type.
 %mode ident +A -F.
 
-- : ident (e E) ([h] e-l h [he] e-r E he).
+-: ident (e E Xs) ([h] e-l h [he] e-r E Xs he).
 
-- : ident (p X) ([h] init (refl X) h).
+-: ident (p P Xs) ([h] init D h : conc (p P Xs))
+    <- ≋-refl Xs D.
 
-- : ident ⊤ ([_] t-r).
+-: ident ⊤ ([_] t-r).
 
-- : ident (A & B) ([h] and-l h [ha][hb] and-r (FA ha) (FB hb))
+-: ident (A & B) ([h] and-l h [ha][hb] and-r (FA ha) (FB hb))
    <- ident A FA
    <- ident B FB.
 
-- : ident (A ⊃ B) ([h] imp-r [ha] imp-l h (FA ha) FB)
+-: ident (A ⊃ B) ([h] imp-r [ha] imp-l h (FA ha) FB)
    <- ident A FA
    <- ident B FB.
 
-- : ident (∀ A) ([h∀] all-r [x] (all-l x h∀ [ha] (F x ha)))
+-: ident (∀ A) ([h∀] all-r [x] (all-l x h∀ [ha] (F x ha)))
    <- ({x} ident (A x) (F x)).
 
-- : ident (A ∨ B) ([h] or-l h ([ha] or-r1 (FA ha)) ([hb] or-r2 (FB hb)))
+-: ident (A ∨ B) ([h] or-l h ([ha] or-r1 (FA ha)) ([hb] or-r2 (FB hb)))
      <- ident A FA
      <- ident B FB.
 
-- : ident ⊥ f-l.
+-: ident ⊥ f-l.
 
-- : ident (∃ A) ([h:hyp (∃ A)] ex-l h ([x][h1:hyp (A x)] ex-r x (D x h1)))
+-: ident (∃ A) ([h:hyp (∃ A)] ex-l h ([x][h1:hyp (A x)] ex-r x (D x h1)))
      <- ({x} ident (A x) [h:hyp (A x)] D x h).
 
 %worlds (l1 | l2 | l3) (ident X F).
@@ -90,30 +124,34 @@ ident : {A} (hyp A -> conc A) -> type.
 
 % ----------------------------------------------------------
 
-subst : asm (X ≈ Y) -> conc (p X) -> conc (p Y) -> type.
+subst : Xs ≋ Ys -> conc (p P Xs) -> conc (p P Ys) -> type.
 %mode subst +D +E -F.
 
-- : subst D (e-l D1 ([h] D2 h)) (e-l D1 ([h] D2' h))
+-: subst D (e-l D1 ([h] D2 h)) (e-l D1 ([h] D2' h))
      <- ({H} subst D (D2 H) (D2' H)).
 
-- : subst (D':asm (X ≈ Z)) (init (D:asm (Y ≈ X)) (E:hyp (p Y))) (init (trans D D') E).
+-: subst
+    (D: Xs ≋ Ys)
+    (init (D0: Zs ≋ Xs) (D1: hyp (p P Zs)): conc (p P Xs))
+    (init (D2: Zs ≋ Ys) D1: conc (p P Ys))
+    <- ≋-trans D0 D D2.
 
-- : subst D (and-l D1 ([ha][hb] D2 ha hb)) (and-l D1 D2')
+-: subst D (and-l D1 ([ha][hb] D2 ha hb)) (and-l D1 D2')
      <- ({HA}{HB} subst D (D2 HA HB) (D2' HA HB)).
 
-- : subst D (imp-l D1 D3 ([ha] D2 ha)) (imp-l D1 D3 D2')
+-: subst D (imp-l D1 D3 ([ha] D2 ha)) (imp-l D1 D3 D2')
      <- ({HA} subst D (D2 HA) (D2' HA)).
 
-- : subst D (all-l X D1 ([ha] D2 ha)) (all-l X D1 D2')
+-: subst D (all-l X D1 ([ha] D2 ha)) (all-l X D1 D2')
      <- ({H} subst D (D2 H) (D2' H)).
 
-- : subst D (or-l D1 D2 D3) (or-l D1 D2' D3')
+-: subst D (or-l D1 D2 D3) (or-l D1 D2' D3')
      <- ({h} subst D (D2 h) (D2' h))
      <- ({h} subst D (D3 h) (D3' h)).
 
-- : subst D (f-l D1) (f-l D1).
+-: subst D (f-l D1) (f-l D1).
 
-- : subst D (ex-l D1 D2) (ex-l D1 D2')
+-: subst D (ex-l D1 D2) (ex-l D1 D2')
      <- ({x}{h} subst D (D2 x h) (D2' x h)).
 
 %worlds (l1 | l2 | l3) (subst D E F).
@@ -121,60 +159,62 @@ subst : asm (X ≈ Y) -> conc (p X) -> conc (p Y) -> type.
 
 % ----------------------------------------------------------
 
-subst-hyp : asm (X ≈ Y) -> (hyp (p X) -> conc C) -> (hyp (p Y) -> conc C) -> type.
+subst-hyp : Xs ≋ Ys -> (hyp (p P Xs) -> conc C) -> (hyp (p P Ys) -> conc C) -> type.
 %mode subst-hyp +D +E -F.
 
-- : subst-hyp (D:asm (X ≈ Y))
-     ([h:hyp (p X)] init (D1:asm (X ≈ Z)) h)
-     ([h:hyp (p Y)] init (trans (sym D) D1) h).
+-: subst-hyp (D: Xs ≋ Ys)
+    ([h:hyp (p P Xs)] init (D1: Xs ≋ Zs) h)
+    ([h:hyp (p P Ys)] init D1' h)
+    <- ≋-sym D D'
+    <- ≋-trans D' D1 D1'.
 
-- : subst-hyp (D:asm (X ≈ Y))
-     ([h] init (D1:asm (U ≈ V)) (D2:hyp (p U)))
-     ([h] init D1 D2).
+-: subst-hyp (D: Xs ≋ Ys)
+    ([h] init D1 D2)
+    ([h] init D1 D2).
 
-- : subst-hyp D ([h] e-r E E') ([h] e-r E E').
+-: subst-hyp D ([h] e-r E Xs E') ([h] e-r E Xs E').
 
-- : subst-hyp D ([h] e-l D1 ([h1] D2 h h1)) ([h] e-l D1 (D2' h))
-     <- {H:asm (prim E)} subst-hyp D ([h] D2 h H) ([h] D2' h H).
+-: subst-hyp D ([h] e-l D1 ([h1] D2 h h1)) ([h] e-l D1 (D2' h))
+     <- {H:⊧ (prim E Xs)} subst-hyp D ([h] D2 h H) ([h] D2' h H).
 
-- : subst-hyp _ ([h] t-r) ([h] t-r).
+-: subst-hyp _ ([h] t-r) ([h] t-r).
 
-- : subst-hyp D ([h:hyp (p X)] and-r (D1 h) (D2 h)) ([h] and-r (D1' h) (D2' h))
+-: subst-hyp D ([h:hyp (p P Xs)] and-r (D1 h) (D2 h)) ([h] and-r (D1' h) (D2' h))
      <- subst-hyp D D1 D1'
      <- subst-hyp D D2 D2'.
 
-- : subst-hyp D ([h:hyp (p X)] and-l D1 ([ha][hb] D2 h ha hb)) ([h] and-l D1 (D3 h))
+-: subst-hyp D ([h:hyp (p P Xs)] and-l D1 ([ha][hb] D2 h ha hb)) ([h] and-l D1 (D3 h))
      <- {HA:hyp A}{HB:hyp B} subst-hyp D ([h] D2 h HA HB) ([h] D3 h HA HB).
 
-- : subst-hyp D ([h:hyp (p X)] imp-r (E h)) ([h] imp-r ([h'] E' h h'))
+-: subst-hyp D ([h:hyp (p P Xs)] imp-r (E h)) ([h] imp-r ([h'] E' h h'))
      <- {H:hyp A} subst-hyp D ([h] E h H) ([h] E' h H).
 
-- : subst-hyp D ([h] imp-l D1 (D2 h) ([h1] D3 h h1)) ([h] imp-l D1 (D2' h) (D3' h))
+-: subst-hyp D ([h] imp-l D1 (D2 h) ([h1] D3 h h1)) ([h] imp-l D1 (D2' h) (D3' h))
      <- subst-hyp D ([h] D2 h) ([h] D2' h)
      <- {H:hyp B} subst-hyp D ([h] D3 h H) ([h] D3' h H).
 
-- : subst-hyp D ([h] all-r (E h)) ([h] all-r (E' h))
+-: subst-hyp D ([h] all-r (E h)) ([h] all-r (E' h))
      <- ({x} subst-hyp D ([h] E h x) ([h] E' h x)).
 
-- : subst-hyp D ([h] all-l X D1 ([h1] D2 h h1)) ([h] all-l X D1 ([h1] D2' h h1))
+-: subst-hyp D ([h] all-l X D1 ([h1] D2 h h1)) ([h] all-l X D1 ([h1] D2' h h1))
      <- ({H} subst-hyp D ([h] D2 h H) ([h] D2' h H)).
 
-- : subst-hyp D ([h] or-r1 (D1 h)) ([h] or-r1 (D1' h))
+-: subst-hyp D ([h] or-r1 (D1 h)) ([h] or-r1 (D1' h))
      <- subst-hyp D D1 D1'.
 
-- : subst-hyp D ([h] or-r2 (D1 h)) ([h] or-r2 (D1' h))
+-: subst-hyp D ([h] or-r2 (D1 h)) ([h] or-r2 (D1' h))
      <- subst-hyp D D1 D1'.
 
-- : subst-hyp D ([h:hyp (p X)] or-l D1 ([h2:hyp A] D2 h h2) ([h3:hyp B] D3 h h3)) ([h:hyp (p Y)] or-l D1 (D2' h) (D3' h))
+-: subst-hyp D ([h] or-l D1 ([h2:hyp A] D2 h h2) ([h3:hyp B] D3 h h3)) ([h] or-l D1 (D2' h) (D3' h))
      <- ({h:hyp A} subst-hyp D ([h1] D2 h1 h)  ([h1] D2' h1 h))
      <- ({h:hyp B} subst-hyp D ([h1] D3 h1 h)  ([h1] D3' h1 h)).
 
-- : subst-hyp D ([h] f-l D1) ([h] f-l D1).
+-: subst-hyp D ([h] f-l D1) ([h] f-l D1).
 
-- : subst-hyp D ([h] ex-r X (D1 h)) ([h] ex-r X (D1' h))
+-: subst-hyp D ([h] ex-r X (D1 h)) ([h] ex-r X (D1' h))
      <- subst-hyp D D1 D1'.
 
-- : subst-hyp D ([h] ex-l D1 (D2 h)) ([h] ex-l D1 (D2' h))
+-: subst-hyp D ([h] ex-l D1 (D2 h)) ([h] ex-l D1 (D2' h))
      <- ({x}{h:hyp (A x)} subst-hyp D ([h1] D2 h1 x h) ([h1] D2' h1 x h)).
 
 %worlds (l1 | l2 | l3) (subst-hyp D E F).
@@ -187,115 +227,116 @@ ca : {A} conc A -> (hyp A -> conc C) -> conc C -> type.
 
 %%% axiom conversions
 
-- : ca (p X) D ([h:hyp (p X)] init (D1:asm (X ≈ Y)) h) E
-   <- subst D1 D (E:conc (p Y)).
+-: ca (p P Xs) D ([h] init D1 h) E
+   <- subst D1 D E.
 
-- : ca (p X) (init (D:asm (Y ≈ X)) (E:hyp (p Y))) ([h:hyp (p X)] E1 h) (E2 E)
-     <- subst-hyp (sym D) E1 E2.
+-: ca (p P Xs) (init D E) ([h] E1 h) (E2 E)
+    <- ≋-sym D D'
+    <- subst-hyp D' E1 E2.
 
 %%% principle conversions
 
-- : ca (e E) (e-r E D) ([h] e-l h (E' h)) (E'' D)
-     <- {h} ca (e E) (e-r E D) ([h1] E' h1 h) (E'' h).
+-: ca (e E Xs) (e-r E Xs D) ([h] e-l h (E' h)) (E'' D)
+     <- {h} ca (e E Xs) (e-r E Xs D) ([h1] E' h1 h) (E'' h).
 
-- : ca (A & B) (and-r (D1: conc A) (D2: conc B))
+-: ca (A & B) (and-r (D1: conc A) (D2: conc B))
      ([hab: hyp (A & B)] and-l hab ((E1: hyp (A & B) -> hyp A -> hyp B -> conc C) hab)) (F : conc C)
      <- ({ha:hyp A}{hb:hyp B} ca (A & B) (and-r D1 D2) ([hab:hyp (A & B)] E1 hab ha hb) (E1' ha hb))
      <- ({hb:hyp B} ca A D1 ([ha:hyp A] E1' ha hb) ((E1'':hyp B -> conc C) hb))
      <- ca B D2 E1'' F.
 
-- : ca (A1 ⊃ A2) (imp-r D2) ([h:hyp (A1 ⊃ A2)] imp-l h (E1 h) (E2 h)) F
+-: ca (A1 ⊃ A2) (imp-r D2) ([h:hyp (A1 ⊃ A2)] imp-l h (E1 h) (E2 h)) F
      <- ca (A1 ⊃ A2) (imp-r D2) E1 E1'
      <- ({h2:hyp A2} ca (A1 ⊃ A2) (imp-r D2) ([h:hyp (A1 ⊃ A2)] E2 h h2) (E2' h2))
      <- ca A1 E1' D2 D2'
      <- ca A2 D2' E2' F.
 
-- : ca (∀ A1) (all-r D1) ([h:hyp (∀ A1)] all-l T h (E1 h)) F
+-: ca (∀ A1) (all-r D1) ([h:hyp (∀ A1)] all-l T h (E1 h)) F
      <- ({h2:hyp (A1 T)} ca (∀ A1) (all-r D1) ([h:hyp (∀ A1)] E1 h h2) (E1' h2))
      <- ca (A1 T) (D1 T) E1' F.
 
-- : ca (A ∨ B) (or-r1 D1) ([h:hyp (A ∨ B)] or-l h (D2 h) (D3 h)) F
+-: ca (A ∨ B) (or-r1 D1) ([h:hyp (A ∨ B)] or-l h (D2 h) (D3 h)) F
      <- ({h:hyp A} ca (A ∨ B) (or-r1 D1) ([h1:hyp (A ∨ B)] D2 h1 h) (D2' h))
      <- ca A D1 D2' F.
 
-- : ca (A ∨ B) (or-r2 D1) ([h:hyp (A ∨ B)] or-l h (D2 h) (D3 h)) F
+-: ca (A ∨ B) (or-r2 D1) ([h:hyp (A ∨ B)] or-l h (D2 h) (D3 h)) F
      <- ({h:hyp B} ca (A ∨ B) (or-r2 D1) ([h1:hyp (A ∨ B)] D3 h1 h) (D3' h))
      <- ca B D1 D3' F.
 
-- : ca (∃ A) (ex-r X D1) ([h:hyp (∃ A)] ex-l h (D2 h)) F
+-: ca (∃ A) (ex-r X D1) ([h:hyp (∃ A)] ex-l h (D2 h)) F
      <- ({x}{h:hyp (A x)} ca (∃ A) (ex-r X D1) ([h1:hyp (∃ A)] D2 h1 x h) (D2' x h))
      <- ca (A X) D1 (D2' X) F.
 
 %%% left commutative conversions
 
-- : ca A (e-l D1 D2) E (e-l D1 D2')
+-: ca A (e-l D1 D2) E (e-l D1 D2')
      <- ({ha} ca A (D2 ha) E (D2' ha)).
 
-- : ca A (and-l D1 D2) E (and-l D1 D2')
+-: ca A (and-l D1 D2) E (and-l D1 D2')
      <- ({ha}{hb} ca A (D2 ha hb) E (D2' ha hb)).
 
-- : ca A (imp-l D1 D2 D3) E (imp-l D1 D2 D3')
+-: ca A (imp-l D1 D2 D3) E (imp-l D1 D2 D3')
      <- ({ha} ca A (D3 ha) E (D3' ha)).
 
-- : ca A (all-l X D1 D2) E (all-l X D1 D2')
+-: ca A (all-l X D1 D2) E (all-l X D1 D2')
      <- ({ha} ca A (D2 ha) E (D2' ha)).
 
-- : ca A (or-l D1 D2 D3) E (or-l D1 D2' D3')
+-: ca A (or-l D1 D2 D3) E (or-l D1 D2' D3')
      <- ({ha} ca A (D2 ha) E (D2' ha))
      <- ({ha} ca A (D3 ha) E (D3' ha)).
 
-- : ca A (f-l D) E (f-l D).
+-: ca A (f-l D) E (f-l D).
 
-- : ca A (ex-l D1 D2) E (ex-l D1 D2')
+-: ca A (ex-l D1 D2) E (ex-l D1 D2')
      <- ({x}{h} ca A (D2 x h) E (D2' x h)).
 
 %%% right commutative conversions
 
-- : ca A D ([h] init D1 D2) (init D1 D2).
+-: ca A D ([h] init D1 D2) (init D1 D2).
 
-- : ca A D ([h] e-r E D1) (e-r E D1).
+-: ca A D ([h] e-r E Xs D1) (e-r E Xs D1).
 
-- : ca A D ([h] e-l D1 (D2 h)) (e-l D1 D2')
+-: ca A D ([h] e-l D1 (D2 h)) (e-l D1 D2')
      <- {ha} ca A D ([h] D2 h ha) (D2' ha).
 
-- : ca A D ([h] t-r) t-r.
+-: ca A D ([h] t-r) t-r.
 
-- : ca A D ([h] and-r (D1 h) (D2 h)) (and-r D1' D2')
+-: ca A D ([h] and-r (D1 h) (D2 h)) (and-r D1' D2')
      <- ca A D D1 D1'
      <- ca A D D2 D2'.
 
-- : ca A D ([h] and-l D1 (D2 h)) (and-l D1 D2')
+-: ca A D ([h] and-l D1 (D2 h)) (and-l D1 D2')
      <- {ha}{hb} ca A D ([h] D2 h ha hb) (D2' ha hb).
 
-- : ca A D ([h] imp-r (D1 h)) (imp-r D1')
+-: ca A D ([h] imp-r (D1 h)) (imp-r D1')
      <- {ha} ca A D ([h] D1 h ha) (D1' ha).
 
-- : ca A D ([h] imp-l D1 (D2 h) (D3 h)) (imp-l D1 D2' D3')
+-: ca A D ([h] imp-l D1 (D2 h) (D3 h)) (imp-l D1 D2' D3')
      <- ca A D D2 D2'
      <- {hb} ca A D ([h] D3 h hb) (D3' hb).
 
-- : ca A D ([h] all-r (D1 h)) (all-r D1')
+-: ca A D ([h] all-r (D1 h)) (all-r D1')
      <- {x} ca A D ([h] D1 h x) (D1' x).
 
-- : ca A D ([h] all-l X D1 (D2 h)) (all-l X D1 D2')
+-: ca A D ([h] all-l X D1 (D2 h)) (all-l X D1 D2')
      <- {ha} ca A D ([h] D2 h ha) (D2' ha).
 
-- : ca A D ([h] or-r1 (D1 h)) (or-r1 D1')
+-: ca A D ([h] or-r1 (D1 h)) (or-r1 D1')
      <- ca A D D1 D1'.
 
-- : ca A D ([h] or-r2 (D1 h)) (or-r2 D1')
+-: ca A D ([h] or-r2 (D1 h)) (or-r2 D1')
      <- ca A D D1 D1'.
 
-- : ca A D ([h] or-l (D1:hyp (B ∨ C)) (D2 h) (D3 h)) (or-l D1 D2' D3')
+-: ca A D ([h] or-l (D1:hyp (B ∨ C)) (D2 h) (D3 h)) (or-l D1 D2' D3')
      <- ({h:hyp B} ca A D ([h1] D2 h1 h) (D2' h))
      <- ({h:hyp C} ca A D ([h1] D3 h1 h) (D3' h)).
 
-- : ca A D ([h] f-l D1) (f-l D1).
+-: ca A D ([h] f-l D1) (f-l D1).
 
-- : ca A D ([h] ex-r X (D1 h)) (ex-r X D1')
+-: ca A D ([h] ex-r X (D1 h)) (ex-r X D1')
      <- ca A D D1 D1'.
 
-- : ca A D ([h] ex-l D1 (D2 h)) (ex-l D1 D2')
+-: ca A D ([h] ex-l D1 (D2 h)) (ex-l D1 D2')
      <- ({x}{h} ca A D ([h1] D2 h1 x h) (D2' x h)).
 
 %worlds (l1 | l2 | l3) (ca D E F G).
