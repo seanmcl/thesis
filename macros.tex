@@ -12,6 +12,7 @@
 \usetikzlibrary{arrows,decorations.pathmorphing,backgrounds,fit}
 \usepackage{amsthm}
 \usepackage{amsmath}
+\usepackage{mathtools} % for \coloneqq
 \usepackage{latexsym}
 \usepackage{amssymb}            % for \multimap (-o)
 \usepackage{stmaryrd}           % for \binampersand (&), \bindnasrepma (\paar)
@@ -35,31 +36,35 @@
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}{Example}[section]
+\newtheorem*{example*}{Example}
 
-% Entailment
-\newcommand{\EEq}{\approx}
+\newcommand{\declarecommand}[1]{\providecommand{#1}{}\renewcommand{#1}}
 
-% Formulae
-\newcommand{\Top}{\top}
-\newcommand{\Bot}{\bot}
-\newcommand{\Or}{\vee}
-\renewcommand{\And}{\wedge}
-\newcommand{\Imp}{\supset}
-\newcommand{\All}{\forall}
-\newcommand{\Ex}{\exists}
-
-% Sequents
-\newcommand{\CSeq}[3]{{#1}~|~{#2} \Longrightarrow {#3} \mathstrut}
-
-% Derivations
-\newcommand{\C}{\ensuremath{\mathcal{C}}}
-\newcommand{\D}{\ensuremath{\mathcal{D}}}
-\newcommand{\E}{\ensuremath{\mathcal{E}}}
-
-% Brackets
-\newcommand{\Set}[1]{\left\{#1\right\}}
-\newcommand{\ASet}[1]{\left<#1\right>}
-\newcommand{\BSet}[1]{\left[#1\right]}
+\declarecommand{\ASet}[1]{\left<#1\right>}
+\declarecommand{\All}{\forall}
+\declarecommand{\And}{\wedge}
+\declarecommand{\Base}{\mathsf{Base}}
+\declarecommand{\BSet}[1]{\left[#1\right]}
+\declarecommand{\BV}{\mathsf{BV}}
+\declarecommand{\Bot}{\bot}
+\declarecommand{\BvAnd}{\,\&\,}
+\declarecommand{\CSeq}[3]{{#1}~|~{#2} \Longrightarrow {#3} \mathstrut}
+\declarecommand{\C}{\ensuremath{\mathcal{C}}}
+\declarecommand{\D}{\ensuremath{\mathcal{D}}}
+\declarecommand{\EEq}{\approx}
+\declarecommand{\Eqdef}{\coloneqq}
+\declarecommand{\Ex}{\exists}
+\declarecommand{\E}{\ensuremath{\mathcal{E}}}
+\declarecommand{\Iff}{\iff}
+\declarecommand{\Imp}{\supset}
+\declarecommand{\Ip}{\mathsf{Ip}}
+\declarecommand{\Mask}{\mathsf{Mask}}
+\declarecommand{\Matches}{\mathsf{matches}}
+\declarecommand{\Not}{\neg}
+\declarecommand{\Or}{\vee}
+\declarecommand{\Set}[1]{\left\{#1\right\}}
+\declarecommand{\Top}{\top}
 
 
 %%% Local Variables:

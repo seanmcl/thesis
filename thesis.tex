@@ -8,7 +8,7 @@
 \toggletrue{dev}
 
 \iftoggle{dev}{
-  \includeonly{chapter-prop}
+  \includeonly{chapter-introduction, chapter-prop}
 }
 
 \iftoggle{dev}{
@@ -25,7 +25,7 @@
 
 \pagestyle{plain}
 
-\include{abstract}
+%\include{abstract}
 
 \iftoggle{dev}{}{\tableofcontents}
 
@@ -35,7 +35,8 @@
 %\renewcommand{\baselinestretch}{1.66}\normalsize
 \include{chapter-introduction}
 \include{chapter-prop}
-%\input{chapter-fol}
+\include{chapter-fol}
+\include{chapter-aws}
 %\input{chapter-modal}
 %\input{chapter-sub}
 

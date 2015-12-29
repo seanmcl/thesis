@@ -1,3 +1,5 @@
+* Idempotent algebra for lax logic
+
 * Dedication
 % COMMITTEE: Frank Robert Andr\`e Dale
 % MENTORS (who aren't also committee):

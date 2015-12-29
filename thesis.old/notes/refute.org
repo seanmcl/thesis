@@ -128,3 +128,122 @@ p, p ⊃ q ⊣ r
 ----------------  ----------------
 p ⊃ q, q ⊃ r ⊣ p  p ⊃ q, q ⊃ r ⊣ q
 ----------------------------------
+
+
+* Rules
+
+----------
+ {p} ⊣ p
+
+
+   Γ ⊣ Aᵢ
+----------------
+ Γ ⊣ A₁ ∧ A₂
+
+
+ Γ, A₁, A₂ ⊣ C
+----------------
+ Γ, A₁ ∧ A₂ ⊣ C
+
+
+ Γ ⊣ A₁   Γ ⊣ A₂
+----------------
+ Γ ⊣ A₁ ∨ A₂
+
+
+ Γ, Aᵢ ⊣ C
+----------------
+ Γ, A₁ ∨ A₂ ⊣ C
+
+
+ Γ, ⊤ ⊣ C
+----------------
+    Γ ⊣ C
+
+
+ Γ, A₁ ⊣ A₂
+----------------
+ Γ ⊣ A₁ ⊃ A₂
+
+
+ Γ, A₂ ⊣ C
+----------------
+ Γ, A₁ ⊃ A₂ ⊣ C
+
+
+no rule for ⊥-L
+
+
+ Γ, A₂ ⊣ C
+----------------
+ Γ, A₁ ⊃ A₂ ⊣ C
+
+
+# Not a sound rule
+
+ Γ, A₁ ⊃ A₂ ⊣ A₁   Γ ⊣ C
+-------------------------
+    Γ, A₁ ⊃ A₂ ⊣ C
+
+# Counterexample
+
+--------------      -------------
+  p ⊃ q ⊣ p            ⊣ p ⊃ q
+----------------------------
+    p ⊃ q ⊣ p ⊃ q
+
+# Instead, use
+
+ Γ, A₁ ⊃ A₂ ⊣ A₁   Γ ⊣ p
+-------------------------
+    Γ, A₁ ⊃ A₂ ⊣ p
+
+
+* Soundness
+
+Note: ⊣ is defined with respect to an input formula A
+
+If Γ ⊣ C then not Γ ⊢ C
+
+Case: {p} ⊣ p
+There are no connectives, so the only possible final rule application is
+Γ, p ⊢ p.
+
+Case:
+
+ Γ, A₁, A₂ ⊣ C
+----------------
+ Γ, A₁ ∧ A₂ ⊣ C
+
+By induction, not Γ, A₁, A₂ ⊢ C
+If Γ, A₁ ∧ A₂ ⊢ C then
+
+Γ, A₁, A₂ ⊢ A₁ ∧ A₂   Γ, A₁ ∧ A₂ ⊢ C
+---------------------------------------
+         Γ, A₁, A₂ ⊢ C
+
+...
+
+* Completeness
+
+For any Γ, C, either Γ ⊢ C or Γ ⊣ C but not both.
+
+Case: Γ, C are atomic.  Trivial.
+
+Case: C = A ∧ B
+
+  Case: Γ ⊢ A, Γ ⊢ B
+  Case: Γ ⊣ B
+  Case: Γ ⊣ A,
+
+Case: C = A ∨ B
+
+  Case: Γ ⊢ A
+  Case: Γ ⊢ B
+  Case: Γ ⊣ A, Γ ⊣ B
+
+Case: C = A ∨ B
+
+  Case: Γ ⊢ A
+  Case: Γ ⊢ B
+  Case: Γ ⊣ A, Γ ⊣ B

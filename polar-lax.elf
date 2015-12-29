@@ -1,5 +1,3 @@
-%{ Focusing for polarized logic. (Unicode variant) }%
-
 small: type.
 big: type.
 s: small.
@@ -14,8 +12,11 @@ eatom: type.
 ≈ : i -> i -> ψ.  %infix none 20 ≈.
 ⊧: ψ -> type. %name ⊧ E e.
 
+any : i.
+lax : i.
+any-lax : ⊧ (any ≈ lax).
+
 refl : {X} ⊧ (X ≈ X).
-sym : ⊧ (X ≈ Y) -> ⊧ (Y ≈ X).
 trans : ⊧ (X ≈ Y) -> ⊧ (Y ≈ Z) -> ⊧ (X ≈ Z).
 
 args: type.
@@ -34,6 +35,7 @@ pol: type. %name pol P.
 atom: pol -> type. %name atom Q q.
 %block atom⁺: block {Q⁺: atom ⁺}.
 %block atom⁻: block {Q⁻: atom ⁻}.
+
 
 typ: pol -> type. %name typ A.
 c: atom P -> args -> typ P.
@@ -135,15 +137,6 @@ p⁻: Xs ≋ Ys -> lfoc (c Q⁻ Xs) (c Q⁻ Ys true).
 %worlds (gamma) (≋-refl Xs D).
 %total (Xs) (≋-refl Xs D).
 
-≋-sym: Xs ≋ Ys -> Ys ≋ Xs -> type.
-%mode ≋-sym +D1 -D2.
--: ≋-sym ≋-● ≋-●.
--: ≋-sym (≋-⋆ D1 D2) (≋-⋆ (sym D1) D2')
-    <- ≋-sym D2 D2'.
-
-%worlds (gamma) (≋-sym D1 D2).
-%total (D1) (≋-sym D1 D2).
-
 ≋-trans: Xs ≋ Ys -> Ys ≋ Zs -> Xs ≋ Zs -> type.
 %mode ≋-trans +D1 +D2 -D3.
 -: ≋-trans ≋-● ≋-● ≋-●.
@@ -212,9 +205,9 @@ swap-lfoc : Xs ≋ Ys -> lfoc A⁻ (c Q⁻ Xs true) -> lfoc A⁻ (c Q⁻ Ys true
   (swap-rfoc E1 E2 E3)
   (swap-lfoc F1 F2 F3).
 
-swap-hyp : Xs ≋ Ys -> (hyp⁺ Q Xs -> conc _Ω Suc) -> (hyp⁺ Q Ys -> conc _Ω Suc) -> type.
-swap-hyp-rfoc : Xs ≋ Ys -> (hyp⁺ Q Xs -> rfoc A⁺) -> (hyp⁺ Q Ys -> rfoc A⁺) -> type.
-swap-hyp-lfoc : Xs ≋ Ys -> (hyp⁺ Q Xs -> lfoc A⁻ Suc) -> (hyp⁺ Q Ys -> lfoc A⁻ Suc) -> type.
+swap-hyp : Xs ≋ Ys -> (hyp⁺ Q Ys -> conc _Ω Suc) -> (hyp⁺ Q Xs -> conc _Ω Suc) -> type.
+swap-hyp-rfoc : Xs ≋ Ys -> (hyp⁺ Q Ys -> rfoc A⁺) -> (hyp⁺ Q Xs -> rfoc A⁺) -> type.
+swap-hyp-lfoc : Xs ≋ Ys -> (hyp⁺ Q Ys -> lfoc A⁻ Suc) -> (hyp⁺ Q Xs -> lfoc A⁻ Suc) -> type.
 %mode swap-hyp +D +E -F.
 %mode swap-hyp-rfoc +D +E -F.
 %mode swap-hyp-lfoc +D +E -F.
@@ -222,14 +215,13 @@ swap-hyp-lfoc : Xs ≋ Ys -> (hyp⁺ Q Xs -> lfoc A⁻ Suc) -> (hyp⁺ Q Ys -> l
 -: swap-hyp-rfoc _ ([xs] eR D) ([ys] eR D).
 -: swap-hyp-rfoc
     (D: Xs ≋ Ys)
-    ([xs: hyp⁺ Q Xs] cR (D₁: Us ≋ Vs) (D₂: hyp⁺ Q⁺ Us) : rfoc (c Q⁺ Vs))
-    ([ys: hyp⁺ Q Ys] cR D₁ D₂).
+    ([xs: hyp⁺ Q Ys] cR (D₁: Us ≋ Vs) (D₂: hyp⁺ Q⁺ Us) : rfoc (c Q⁺ Vs))
+    ([ys: hyp⁺ Q Xs] cR D₁ D₂).
 -: swap-hyp-rfoc
     (D: Xs ≋ Ys)
-    ([xs: hyp⁺ Q⁺ Xs] cR (D₁: Xs ≋ Zs) xs : rfoc (c Q⁺ Zs))
-    ([ys: hyp⁺ Q⁺ Ys] cR D₂ ys: rfoc (c Q⁺ Zs))
-    <- ≋-sym D D'
-    <- ≋-trans D' D₁ D₂.
+    ([xs: hyp⁺ Q⁺ Ys] cR (D₁: Ys ≋ Zs) xs : rfoc (c Q⁺ Zs))
+    ([ys: hyp⁺ Q⁺ Xs] cR D₂ ys: rfoc (c Q⁺ Zs))
+    <- ≋-trans D D₁ D₂.
 -: swap-hyp-rfoc D ([xs] ↓R (D₁ xs)) ([ys] ↓R (D₁' ys))
     <- swap-hyp D D₁ D₁'.
 -: swap-hyp-rfoc D ([xs] ∨R₁ (D₁ xs)) ([ys] ∨R₁ (D₁' ys))
@@ -245,11 +237,11 @@ swap-hyp-lfoc : Xs ≋ Ys -> (hyp⁺ Q Xs -> lfoc A⁻ Suc) -> (hyp⁺ Q Ys -> l
 -: swap-hyp D ([xs] foc D₁ D₂ (D₃ xs)) ([ys] foc D₁ D₂ (D₃' ys))
     <- swap-hyp-lfoc D D₃ D₃'.
 -: swap-hyp (D: Xs ≋ Ys)
-    ([xs: hyp⁺ Q Xs] eL [d: ⊧ (prim E Zs)] D₁ d)
-    ([ys: hyp⁺ Q Ys] eL [d: ⊧ (prim E Zs)] D₁ d).
+    ([xs: hyp⁺ Q Ys] eL [d: ⊧ (prim E Zs)] D₁ d)
+    ([ys: hyp⁺ Q Xs] eL [d: ⊧ (prim E Zs)] D₁ d).
 -: swap-hyp (D: Xs ≋ Ys)
-    ([xs: hyp⁺ Q Xs] cL [d: hyp⁺ Q₁ Xs₁] D₁ d xs)
-    ([ys: hyp⁺ Q Ys] cL [d: hyp⁺ Q₁ Xs₁] D₁' d ys)
+    ([xs: hyp⁺ Q Ys] cL [d: hyp⁺ Q₁ Xs₁] D₁ d xs)
+    ([ys: hyp⁺ Q Xs] cL [d: hyp⁺ Q₁ Xs₁] D₁' d ys)
     <- ({d} swap-hyp D (D₁ d) (D₁' d)).
 -: swap-hyp D ([xs] ↓L ([d] D₁ d xs)) ([ys] ↓L ([d] D₁' d ys))
     <- ({d: hyp⁻ A⁻} swap-hyp D (D₁ d) (D₁' d)).
@@ -349,11 +341,10 @@ leftSp: {A⁺} big
 -: subst⁺ (e E Xs) S (eR D) (eL F) (F D).
 
 -: subst⁺ (c Q⁺ Xs) S
-    (cR (D: Ys ≋ Xs) (Z: hyp⁺ Q⁺ Ys): rfoc (c Q⁺ Xs))
+    (cR (D: Ws ≋ Xs) (Z: hyp⁺ Q⁺ Ws): rfoc (c Q⁺ Xs))
     (cL ([z': hyp⁺ Q⁺ Xs] N z': conc _Ω (C⁻ true)): conc (c Q⁺ Xs , _Ω) (C⁻ true))
     (N' Z: conc _Ω (C⁻ true))
-    <- ≋-sym D D'
-    <- swap-hyp D' N N'.
+    <- swap-hyp D N N'.
 
 -: subst⁺ (↓ A⁻) s (↓R M) (↓L N) N'
   <- rightN A⁻ (b s) M N (N': conc _Ω (C⁻ true)).
@@ -1101,6 +1092,7 @@ shifthyp: (hyp⁻ A⁻ -> conc · (C⁻ true))
 %{ === Syntax === }%
 
 prop: type. %name prop P.
+uatom: type.
 ee: eatom -> args -> prop.
 a: atom P -> args -> prop.
 ff: prop.
@@ -1110,6 +1102,8 @@ and: prop -> prop -> prop.
 imp: prop -> prop -> prop.
 all: (i -> prop) -> prop.
 ex: (i -> prop) -> prop.
+
+@ : atom P -> i -> prop = [p][x] a p (x ⋆ ●). %infix none 21 @.
 
 props: type. %name props _Ψ.
 ○: props.
@@ -1807,19 +1801,18 @@ unfocused-cut: right P -> (left P -> right Q) -> right Q -> type.
 %worlds (translate) (unfocused-cut _ _ _).
 %total [] (unfocused-cut _ _ _).
 
-unfocused-identity: (left P -> right P) -> type.
-%mode +{P} -{D: left P -> right P} unfocused-identity D.
+unfocused-identity: {P} (left P -> right P) -> type.
+%mode unfocused-identity +P -D.
 
--: unfocused-identity D
+-: unfocused-identity P D
   <- polarize P (TP: t A⁻ P)
   <- identity (N: hyp⁻ A⁻ -> conc · (A⁻ true))
   <- ({x: hyp⁻ A⁻}{h: left P}
        soundhyp x (t⁻ TP) h ->
          soundN (N x) t· TP (nil (D h: right P))).
 
-%worlds (translate) (unfocused-identity _).
-%total [] (unfocused-identity _).
-
+%worlds (translate) (unfocused-identity _ _).
+%total [] (unfocused-identity _ _).
 
 %{ == Running the theorems == }%
 
@@ -1904,3 +1897,255 @@ refl: id D D.
 %query 1 * {a⁺}{b⁺}{c⁻} id (focused a⁺ b⁺ c⁻)   (focused a⁺ b⁺ c⁻).
 %query 1 * {a⁺}{b⁺}{c⁻} id (refocused a⁺ b⁺ c⁻) (refocused a⁺ b⁺ c⁻).
 %query 0 * {a⁺}{b⁺}{c⁻} id (focused a⁺ b⁺ c⁻)   (refocused a⁺ b⁺ c⁻).
+
+%{ Lax Logic }%
+
+prop': type.                           %name prop' M.
+
+atom': atom P -> prop'.
+/\     : prop' -> prop' -> prop'.       %infix right 9 /\.
+tt'    : prop'.
+\/     : prop' -> prop' -> prop'.       %infix right 8 \/.
+ff'    : prop'.
+=>     : prop' -> prop' -> prop'.       %infix right 7 =>.
+circ'  : prop' -> prop'.
+
+hyp' : prop' -> type.
+true' : prop' -> type.
+
+init' : hyp' (atom' P) -> true' (atom' P).
+/\R' : true' M -> true' N -> true' (M /\ N).
+/\L'  : (hyp' M -> hyp' N -> true' D) -> (hyp' (M /\ N) -> true' D).
+ttR' : true' tt'.
+
+\/R1' : true' M -> true' (M \/ N).
+\/R2' : true' N -> true' (M \/ N).
+\/L' : (hyp' M -> true' D) -> (hyp' N -> true' D) -> (hyp' (M \/ N) -> true' D).
+ffL' : hyp' ff' -> true' D.
+
+=>R' : (hyp' M -> true' N) -> true' (M => N).
+=>L' : true' M -> (hyp' N -> true' D) -> (hyp' (M => N) -> true' D).
+
+circR' : true' M -> true' (circ' M).
+circL' : (hyp' M -> true' (circ' N)) -> hyp' (circ' M) -> true' (circ' N).
+
+%block laxhyp : some {M: prop'} block {v: hyp' M}.
+
+tl: prop' -> i -> prop -> type.  %name tl TLax.
+tlc: tl (atom' P) W (P @ W).
+tl/\: tl P W A -> tl Q W B -> tl (P /\ Q) W (and A B).
+tltt: tl tt' W tt.
+tl\/: tl P W A -> tl Q W B -> tl (P \/ Q) W (or A B).
+tlff: tl ff' W ff.
+tl=>: tl P lax A -> tl Q W B -> tl (P => Q) W (imp A B).
+tlcirc: tl P lax A -> tl (circ' P) W A.
+
+%mode tl +A +W -P.
+%worlds (laxhyp) (tl _ _ _).
+%unique tl +P +W -1A.
+%total A (tl A _ _).
+
+lax-weak: tl P W A -> tl P lax A' -> (left A -> right A') -> type.
+%mode lax-weak +T1 +T2 -T3.
+
+-: lax-weak
+    (tlc: tl (atom' P) lax (P @ lax))
+    (tlc: tl (atom' P) lax (P @ lax))
+    D
+    <- unfocused-identity (P @ lax) D.
+
+-: lax-weak
+    (tlc:tl (atom' P) any (P @ any))
+    (tlc:tl (atom' P) lax (P @ lax))
+    ([d] init (≋-⋆ any-lax ≋-●) d).
+
+-: lax-weak
+    (tl=> (T1: tl P lax A) (T2: tl Q any B): tl (P => Q) any (imp A B))
+    (tl=> (T1': tl P lax A) (T2': tl Q lax B'): tl (P => Q) lax (imp A B'))
+    ([h: left (imp A B)] impR [ha: left A] impL (FA ha) FB h : right B')
+    <- lax-weak T1 T1' FA
+    <- lax-weak T2 T2' FB.
+
+-: lax-weak
+    (tl=> (T1: tl P lax A) (T2: tl Q lax B): tl (P => Q) lax (imp A B))
+    (tl=> (T1': tl P lax A) (T2': tl Q lax B): tl (P => Q) lax (imp A B))
+    D
+    <- unfocused-identity (imp A B) D.
+
+-: lax-weak
+    (tl/\ (D1: tl P1 W A1) (D2: tl P2 W B1))
+    (tl/\ (E1: tl P1 lax A1') (E2: tl P2 lax B1'))
+    ([d: left (and A1 B1)] andR (andL₁ F1 d) (andL₂ F2 d))
+   <- lax-weak D1 E1 (F1: left A1 -> right A1')
+   <- lax-weak D2 E2 (F2: left B1 -> right B1').
+
+-: lax-weak tltt tltt ([_] ttR).
+
+-: lax-weak
+    (tl\/ D1 D2)
+    (tl\/ E1 E2)
+    ([d: left (or A B)] orL ([d1] orR₁ (F1 d1)) ([d2] orR₂ (F2 d2)) d)
+    <- lax-weak D1 E1 F1
+    <- lax-weak D2 E2 F2.
+
+-: lax-weak _ _ ffL.
+
+-: lax-weak
+    (tlcirc (T1: tl P lax A): tl (circ' P) W A)
+    (tlcirc (T2: tl P lax A): tl (circ' P) lax A)
+    D
+    <- unfocused-identity A D.
+
+%worlds () (lax-weak _ _ _).
+%total T1 (lax-weak T1 _ _).
+
+lax-weak':     tl P W A
+            -> tl P lax AL
+            -> tl (circ' Q) W C
+            -> (left A -> right C)
+            -> (left AL -> right C)
+            -> type.
+%mode lax-weak' +T1 +T2 +T3 +D1 -D2.
+
+-: lax-weak'
+
+
+%.
+complete-hyp': hyp' P -> tl P W A -> left A -> type.
+%block complete-hyps1': some {P}{W}{A}{T: tl P W A} block {x:left A}{h: hyp' P}{_: complete-hyp' h T x}.
+%block complete-hyps' = (complete-hyps1' | univ | casm).
+%block completectx' = (atom⁺ | atom⁻ | complete-hyps').
+
+%mode complete-hyp' +H -T -X.
+%worlds (completectx') (complete-hyp' _ _ _).
+%total [] (complete-hyp' _ _ _).
+
+lax-lem0: tl P W1 AP
+           -> tl (circ P) W2 ACP
+           -> tl (circ' Q) lax C
+           -> (left AP -> right C)
+           -> (left ACP -> right C)
+           -> type.
+
+%.
+
+complete-lax: true' P -> tl P W A -> right A -> type.
+%mode complete-lax +D +T -E.
+
+-: complete-lax
+    (init' (D: hyp' (atom' P)))
+    (tlc: tl (atom' P) W (P @ W))
+    (init F E)
+    <- complete-hyp' D _ E
+    <- ≋-refl (W ⋆ ●) F.
+
+-: complete-lax
+    (=>R' (D: hyp' P -> true' Q))
+    (tl=> (E1: tl P W A) (E2: tl Q W B))
+    (impR (F: left A -> right B))
+    <- ({x:left A}{d: hyp' P} complete-hyp' d E1 x -> complete-lax (D d) E2 (F x)).
+
+-: complete-lax
+    (circR' (D: true' P))
+    (tlcirc (T: tl P lax A))
+    E
+    <- complete-lax D T E.
+
+-: complete-lax
+    (circL
+       (D: hyp' P -> true' (circ' Q))
+       (E: hyp' (circ' P))
+       : true' (circ' Q))
+    (tlcirc
+       (T1: tl (circ' Q) lax C)
+       : tl (circ' Q) W C)
+    (_
+       : right C)
+    <- complete-hyp' E
+       (T2: tl (circ' P) A)
+       (D1: left A)
+    <- ({d: hyp' P} complete-hyp' d (T3: tl P A') (D2: left A')
+          -> complete-lax (D d) T1 (D2: right C))
+    <- lax-lem0 T2
+
+%.
+ident': prop -> prop -> type.
+refl': ident' A A.
+
+tl-uniq: tl P I A -> tl P I B -> ident' A B -> type.
+-: tl-uniq _ _ refl'.
+%mode tl-uniq +T1 +T2 -Id.
+%worlds () (tl-uniq _ _ _).
+%total {} (tl-uniq _ _ _).
+
+lax_lem0: tl (circ P) I A -> tl (circ P) lax A' -> (left A -> right A') -> type.
+%mode lax_lem0 +T1 +T2 -D.
+
+-: lax_lem0 tlc tlc D'
+    <- unfocused-identity _ D'.
+
+-: lax_lem0
+    (tlc: tl (atom' P) any (P @ any))
+    (tlc: tl (atom' P) lax (P @ lax))
+    ([d: left (P @ any)] init (≋-⋆ any-lax ≋-●) d: right (P @ lax)).
+
+-: lax_lem0
+    (tl/\ (D1: tl P1 W A1) (D2: tl P2 W B1))
+    (tl/\ (E1: tl P1 lax A1') (E2: tl P2 lax B1'))
+    ([d: left (and A1 B1)] andR (andL₁ F1 d) (andL₂ F2 d))
+   <- lax_lem0 D1 E1 (F1: left A1 -> right A1')
+   <- lax_lem0 D2 E2 (F2: left B1 -> right B1').
+
+-: lax_lem0 tltt tltt ([_] ttR).
+
+-: lax_lem0
+    (tl\/ D1 D2)
+    (tl\/ E1 E2)
+    ([d: left (or A B)] orL ([d1] orR₁ (F1 d1)) ([d2] orR₂ (F2 d2)) d)
+    <- lax_lem0 D1 E1 F1
+    <- lax_lem0 D2 E2 F2.
+
+-: lax_lem0 _ _ ffL.
+
+-: lax_lem0
+    (tl=> (D1: tl P any A) (D2: tl Q W B) : tl (P => Q) W (imp A B))
+    (tl=> (E1: tl P any A) (E2: tl Q lax B') : tl (P => Q) lax (imp A B'))
+    ([d: left (imp A B)] impR [d1: left A] impL (F1 d1) ([d2: left B] (F2 d2)) d: right B')
+%    <- tl-uniq D1 E1 _
+    <- lax_lem0 D1 E1 (F1: left A -> right A)
+    <- lax_lem0 D2 E2 (F2: left B -> right B').
+
+%.
+-: ident (A ⊃ B) ([h] imp-r [ha] imp-l h (FA ha) FB)
+   <- ident A FA
+   <- ident B FB.
+
+%.
+
+-: lax_lem0
+    (tlcirc (T1: tl P lax A): tl (circ' P) W A)
+    (tlcirc: (T2: tl (atom' P) lax (P @ lax))
+    ([d: left ] init (≋-⋆ any-lax ≋-●) d: right (P @ lax)).
+
+
+%.
+lax_lem1: tl P W A -> right A -> tl P lax A' -> right A' -> type.
+%mode lax_lem1 +T1 +D1 +T2 -D2.
+
+-: lax_lem1
+    (tlc: tl (atom' P) I (P @ I))
+    (init C (D1: left (a Q Xs)) (D2: right (a Q Ys)))
+    (tlc: tl (atom' P) lax (P @ lax))
+
+
+
+%.
+%worlds (laxhyp) (tl _ _ _).
+%total A (tl A _ _).
+
+sound_lax: right A -> tl P I A -> true' P -> type.
+%mode sound_lax +D +T -E.
+
+
+lax_lem1: right A -> tl P I A -> tl P any A' -> right A' -> type.
+%mode lax_lem1 +D1 +T1 +T2 -D2.

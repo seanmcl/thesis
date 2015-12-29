@@ -1,4 +1,168 @@
 \chapter{Introduction}
 \label{chapter-introduction}
 
-Intro!
+This thesis describes advances in theorem proving in first-order intuitionistic
+logic.  The fundamental advance is in the use of \emph{constraint domains}.  A
+constraint domain (or simply \emph{domain}) is a sort or family of sorts
+together with predicate and function symbols defined on the sorts.  Examples of
+domains are finite domains, linear real and integer arithmetic, arrays,
+semigroups, monoids, and tree-like data structures such as linked lists and
+binary trees.  A \emph{constraint} is an atomic formula belonging to a domain.
+
+An example of a domain that is useful in applications to computer networks is
+bit-vector arithmetic.  For example, given three 32-bit vectors, the first
+($\Ip$) representing an IP address, the second two representing the two
+components of a CIDR range ($\Base$, $\Mask$), the following formula defines the
+predicate $\Matches$, indicating that the IP belongs to the CIDR range:
+
+\[
+\All\Ip, \Base,\ \Mask: \BV_{32}.\
+  \Matches(\Ip, \Base, \Mask) \Iff \Ip \BvAnd \Mask = \Base\BvAnd\Mask
+\]
+
+\noindent
+Here the domain consists of the sort $\BV_{32}$ of bit-vectors of length 32,
+the bitwise ``and'' operator (\&), and equality on bit-vectors.  An IP address
+$\Ip_1$ matches a CIDR range if the bitwise ``and'' of $\Ip_1$ with the subnet
+mask $\Mask$ is identical to the CIDR start address $\Ip$ ``and''-ed with
+$\Mask$.  We would expect, for example,
+$\Matches(10.0.10.10, 10.0.0.0, 255.255.0.0)$ and
+$\Not\Matches(10.1.10.10, 10.0.0.0, 255.255.0.0)$ to be
+provable.  We could express the fact that a mask of 32 1's matches only the base address
+can be expressed as
+
+\[
+\All\Ip, \Base: \BV_{32}.\
+  \Matches(\Ip, \Base, 255.255.255.255) \Imp \Ip = \Base
+\]
+
+\noindent
+We will use bit-vector and finite constraint domains extensively in our case
+study where we analyze AWS cloud networking in Chapter~\ref{chapter-aws}.
+
+Now that we have at least a foggy idea of what constraint domains are, why do we
+care?  Constraints do not change what is expressible in first-order logic.
+Any formula expressible with constraints is expressible without them.
+Continuing with the bit-vector example, we can first encode bit-vectors of
+length 32 as functions $\Set{0, \ldots, 31} \to \Set{0, 1}$.  Then we can define
+$f\,\&\,g$ as $(f\,\&\,g)(N) \Eqdef f(N)\,\&\,g(N)$ where the second $\&$ is
+the boolean ``and''.  Equality would be defined extensionally on bit-vectors;
+$f = g \Iff \All n\in\Set{0,\ldots, 31}.\ f(n) = g(n)$ where the second $=$
+is equality on the set $\Set{0,1}$.  While this kind of encoding and
+axiomitization is straightforward, it is tedious.  More importantly, it is
+inefficient in a general purpose theorem prover.  In this thesis we will
+demonstrate just how inefficient it for one general-purpose proof search
+strategy, \emph{the inverse method}.
+
+Constraints are of course nothing new in the literature.  Two entire fields,
+constraint logic programming, and satisfiability modulo theories (SMT) are
+devoted to the study of the interplay between general logical reasoning and
+reasoning in constraint domains.  This research differs from existing work in a
+couple of ways.  First, we are considering full first-order intuitionistic logic
+as our base logic.  Constraint logic programming remains, for all its
+improvements over Prolog's simple operational semantics, a search and
+optimization procedure.  It can not be used for general theorem-proving.  SMT
+comes closer, in that it combines solvers for various constraint domains with
+classical first-order logic, though support for arbitrary quantifier nesting is
+scant.  Vampire~\cite{Riazanov.1999.Vampire} is the best existing first-order
+classical theorem prover at the time of writing.  It supports constraints by
+automatically adding (incomplete) axiomitizations of the domains to input
+formulas.  Besides the obvious difference that Vampire is based on classical
+logic, while our work deals with intuitionistic logic, we build constraints into
+the core reasoning mechanism.
+
+\section{Overview of the Thesis}
+
+\begin{quote}
+\textbf{Thesis Statement:} The polarized inverse method, augmented with
+general constraint domains, is an effective and practical method of
+automated reasoning in intuitionistic logics.
+\end{quote}
+
+To begin, in Chapter~\ref{chapter-prop} we will describe the polarized inverse
+method in detail for intuitionistic propositional logic.  While the
+propositional fragment lacks both constraints and quantifiers, it demonstrates
+the primary theorem proving algorithm in its simplest form.  Besides showing the
+calculus and proving soundness and completeness, we show a number of
+optimizations that make our implementation competitive with the best existing
+solvers.  Foremost among the optimizations are a series of ``polarity
+disciplines'' that we call \emph{logical optimizations}.  The defining feature
+of logical optimizations is that they operate only on the input formula, and are
+independent of a given inverse method implementation.
+
+In Chapter~\ref{chapter-fol} we extend the propositional prover with first-order
+quantifiers.  The completeness theorem is more complicated, but similar in
+spirit.  We demonstrate the effectiveness of our base method on problems from
+the TPTP library.  Our implementation solves more first-order problems than any
+existing prover for intuitionistic logic.
+
+Chapter~\ref{chapter-constraints} is the main theoretical contribution of the
+thesis.  We describe how to add constraints to the polarized inverse method and
+prove soundness and completeness results.  The proofs are parameterized on a
+given constraint domain.  We show that the domain needs only a small number of
+reasonable properties (transitivity of entailment, for example) for the theorems
+to work.  To finish the chapter we add bitvector and finite domain constraints
+to the first-order prover from Chapter~\ref{chapter-fol}.
+
+Chapter~\ref{chapter-aws} is a case study in using our method on a real-world
+problem encountered by the author in industry: verifying properties of
+cloud networking on Amazon Web Services (AWS).
+
+Chatper~\ref{chapter-modal} shows how to apply constraints to obtain theorem
+provers for some intuitionistic modal logics.
+
+Chatper~\ref{chapter-linear}, joint work with Jason Reed, shows how to apply
+constraints to obtain theorem provers for linear and ordered logic.
+
+\section{Background}
+
+
+
+
+% There are a number of published algorithms for deciding bit-vector arithmetic, e.g.~\cite{}.
+% The domains of
+% practical interest are usually decidable, with well-known decision procedures.
+
+% There are various ways we could express this simple IP arithmetic statement in first-order logic.  In this case, we could define the sort of bitvectors, say as partial functions from natural numbers to the set $\Set{0, 1}$.  Then we could define ``\&'' using that encoding, and possibly prove various properties of the encoding and related definitions.
+
+% Alternatively, we could say that bitvectors belong to a \emph{constraint domain} (or simply ``domain''), with its own axiomatic theory, set apart from the generic machinery of first-order logic.  Atomic formulas built from predicate and function symbols of the domain are called \emph{constraints}.  Then the theorem proving process involves interleaving steps of generic deduction in first-order logic with deduction in the constraint domain.
+
+
+
+% We follow this second methodology in this thesis, showing how to incorporate constraint domains into generic reasoning of the \emph{inverse method}.
+
+
+% While
+% Practically, they are essential for implementing a
+% wide variety of interesting domains efficiently.  Moreover,
+% while constraints can be used to straightforwardly implement
+% reasoning in domains like bitvector arithmetic, integer arithmetic,
+% and finite domains, used more
+% creatively we can use constraints to generate theorem provers for a
+% wide variety of interesting non-classical logics.  These include
+% first-order modal logic, first-order linear logic, and
+% first-order ordered logic.
+
+% We xxxxxxxxxxxxxxxxxxxx
+
+
+
+% Amazon Web Services is a computing infrastructure service provided
+% by Amazon, Inc.  For example, you can create virtual networks, including
+% IP subnetting, routing tables, NAT, and security mechanisms such as
+% firewalls.  Inside these networks, you can create virtual machines,
+% databases, and other computing services.
+
+
+% First-order logic is a powerful and expressive language for system
+% specifications.
+
+
+% This thesis describes theorem proving in nonclassical logics.  In particular,
+% we describe an extension of the inverse method for intuitionistic first order
+% logic that handles \emph{constraints}.  We will describe
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "thesis"
+%%% End:
