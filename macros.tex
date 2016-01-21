@@ -1,12 +1,14 @@
+\usepackage{xcolor}
 \usepackage{etoolbox}
 \usepackage{fancyvrb}
 \usepackage{times}
 \usepackage{dashrule}
 \usepackage{proof-dashed}
 \usepackage[show]{ed}
+\usepackage{framed}
 \usepackage{fullpage}
+\usepackage{float} % for the H in "\begin{figure}[H]"
 \usepackage{graphicx}
-\usepackage{xcolor}
 \usepackage{tikz}
 \usepackage{rotating}
 \usetikzlibrary{arrows,decorations.pathmorphing,backgrounds,fit}
@@ -39,18 +41,25 @@
 \newtheorem{example}{Example}[section]
 \newtheorem*{example*}{Example}
 
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+
 \newcommand{\declarecommand}[1]{\providecommand{#1}{}\renewcommand{#1}}
 
 \declarecommand{\ASet}[1]{\left<#1\right>}
 \declarecommand{\All}{\forall}
+\declarecommand{\AndN}{\wedge^-}
+\declarecommand{\AndP}{\wedge^+}
 \declarecommand{\And}{\wedge}
-\declarecommand{\Base}{\mathsf{Base}}
+\declarecommand{\BSet}[1]{\left[#1\right]}
 \declarecommand{\BSet}[1]{\left[#1\right]}
 \declarecommand{\BV}{\mathsf{BV}}
+\declarecommand{\Base}{\mathsf{Base}}
 \declarecommand{\Bot}{\bot}
 \declarecommand{\BvAnd}{\,\&\,}
 \declarecommand{\CSeq}[3]{{#1}~|~{#2} \Longrightarrow {#3} \mathstrut}
 \declarecommand{\C}{\ensuremath{\mathcal{C}}}
+\declarecommand{\Down}{\downarrow}
 \declarecommand{\D}{\ensuremath{\mathcal{D}}}
 \declarecommand{\EEq}{\approx}
 \declarecommand{\Eqdef}{\coloneqq}
@@ -58,14 +67,200 @@
 \declarecommand{\E}{\ensuremath{\mathcal{E}}}
 \declarecommand{\Iff}{\iff}
 \declarecommand{\Imp}{\supset}
+\declarecommand{\Inferd}[3][]{\infer-[$\scriptsize$ #1]{#2}{#3}}
+\declarecommand{\Infere}[3][]{\infer=[$\scriptsize$ #1]{#2}{#3}}
+\declarecommand{\Infers}[3][]{\infer*[$\scriptsize$ #1]{#2}{#3}}
+\declarecommand{\Infer}[3][]{\infer[$\scriptsize$ #1]{#2}{#3}}
+\declarecommand{\Inv}[1]{#1_{\mbox{\scriptsize Inv}}}
 \declarecommand{\Ip}{\mathsf{Ip}}
+\declarecommand{\LJF}{\Inv{\LJ}}
+\declarecommand{\LJ}{\mathbf{G3i}}
+\declarecommand{\LPF}{\mathbf{F}}
+\declarecommand{\LP}{\mathbf{P}}
 \declarecommand{\Mask}{\mathsf{Mask}}
 \declarecommand{\Matches}{\mathsf{matches}}
+\declarecommand{\Nat}{\mathbb{N}}
 \declarecommand{\Not}{\neg}
 \declarecommand{\Or}{\vee}
+\declarecommand{\Sep}{\ |\ }
+\declarecommand{\Seq}[2]{{#1} \Longrightarrow {#2}}
 \declarecommand{\Set}[1]{\left\{#1\right\}}
+\declarecommand{\Size}[1]{\left|#1\right|}
+\declarecommand{\Subsumes}{\leq}
 \declarecommand{\Top}{\top}
+\declarecommand{\Up}{\uparrow}
+\declarecommand{\figline}{\\[2em]}
+\declarecommand{\Nat}{\mathbb{N}}
+\declarecommand{\Set}[1]{\left\{#1\right\}}
+\declarecommand{\ASet}[1]{\left<#1\right>}
+\declarecommand{\BSet}[1]{\left[#1\right]}
+\declarecommand{\Union}{\cup}
+\declarecommand{\MultiUnion}{\uplus}
+\declarecommand{\Inter}{\cap}
+\declarecommand{\Diff}{\setminus}
+\declarecommand{\Card}[1]{\left|#1\right|}
+%declarewcommand{\Eqdef}{\stackrel{\mathrm{def}}{=}}
+\declarecommand{\EqDef}{\mathrel{\mathop:}=}
+\declarecommand{\Ueq}{\doteq}
+\declarecommand{\sst}{\ |\ } % "set such that", e.g. \Set{x\sst x>5}
+\declarecommand{\Atoms}{\cA}
+\declarecommand{\SeqSeqs}{\SSet{\Seqs}}
+\declarecommand{\SetSeqs}{\PSet{\Seqs}}
+\declarecommand{\BMatch}{\mbox{bmatch}}
+\declarecommand{\FMatch}{\mbox{fmatch}}
+\declarecommand{\PSet}[1]{\cP(#1)}
+\declarecommand{\SSet}[1]{\cS(#1)}
+\declarecommand{\Subf}{\mbox{subf}}
+\declarecommand{\Sgn}{\mbox{sgn}}
+\declarecommand{\Subfs}{\mbox{subfs}}
+\declarecommand{\Contracts}{\mbox{contracts}}
+\declarecommand{\Paths}{\mbox{paths}}
+\declarecommand{\LB}{\left[}
+\declarecommand{\RB}{\right]}
 
+% ------------------------------------------------------------------------------
+%  Calligraphic
+% ------------------------------------------------------------------------------
+
+\declarecommand{\cA}{\mathcal{A}}
+\declarecommand{\cB}{\mathcal{B}}
+\declarecommand{\cC}{\mathcal{C}}
+\declarecommand{\cD}{\mathcal{D}}
+\declarecommand{\cE}{\mathcal{E}}
+\declarecommand{\cF}{\mathcal{F}}
+\declarecommand{\cG}{\mathcal{G}}
+\declarecommand{\cH}{\mathcal{H}}
+\declarecommand{\cI}{\mathcal{I}}
+\declarecommand{\cJ}{\mathcal{J}}
+\declarecommand{\cK}{\mathcal{K}}
+\declarecommand{\cL}{\mathcal{L}}
+\declarecommand{\cM}{\mathcal{M}}
+\declarecommand{\cN}{\mathcal{N}}
+\declarecommand{\cO}{\mathcal{O}}
+\declarecommand{\cP}{\mathcal{P}}
+\declarecommand{\cQ}{\mathcal{Q}}
+\declarecommand{\cR}{\mathcal{R}}
+\declarecommand{\cS}{\mathcal{S}}
+\declarecommand{\cT}{\mathcal{T}}
+\declarecommand{\cU}{\mathcal{U}}
+\declarecommand{\cV}{\mathcal{V}}
+\declarecommand{\cW}{\mathcal{W}}
+\declarecommand{\cX}{\mathcal{X}}
+\declarecommand{\cY}{\mathcal{Y}}
+\declarecommand{\cZ}{\mathcal{Z}}
+
+\declarecommand{\bA}{\mathbb{A}}
+\declarecommand{\bB}{\mathbb{B}}
+\declarecommand{\bC}{\mathbb{C}}
+\declarecommand{\bD}{\mathbb{D}}
+\declarecommand{\bE}{\mathbb{E}}
+\declarecommand{\bF}{\mathbb{F}}
+\declarecommand{\bG}{\mathbb{G}}
+\declarecommand{\bH}{\mathbb{H}}
+\declarecommand{\bI}{\mathbb{I}}
+\declarecommand{\bJ}{\mathbb{J}}
+\declarecommand{\bK}{\mathbb{K}}
+\declarecommand{\bL}{\mathbb{L}}
+\declarecommand{\bM}{\mathbb{M}}
+\declarecommand{\bN}{\mathbb{N}}
+\declarecommand{\bO}{\mathbb{O}}
+\declarecommand{\bP}{\mathbb{P}}
+\declarecommand{\bQ}{\mathbb{Q}}
+\declarecommand{\bR}{\mathbb{R}}
+\declarecommand{\bS}{\mathbb{S}}
+\declarecommand{\bT}{\mathbb{T}}
+\declarecommand{\bU}{\mathbb{U}}
+\declarecommand{\bV}{\mathbb{V}}
+\declarecommand{\bW}{\mathbb{W}}
+\declarecommand{\bX}{\mathbb{X}}
+\declarecommand{\bY}{\mathbb{Y}}
+\declarecommand{\bZ}{\mathbb{Z}}
+
+% ------------------------------------------------------------------------------
+%  Proofs
+% ------------------------------------------------------------------------------
+
+% These definitions allow you to always use \redeclarecommand
+\declarecommand{\Qa}{}
+\declarecommand{\Qb}{}
+\declarecommand{\Qc}{}
+\declarecommand{\Qd}{}
+\declarecommand{\Qe}{}
+\declarecommand{\Qf}{}
+\declarecommand{\Qg}{}
+\declarecommand{\Qh}{}
+\declarecommand{\Qi}{}
+\declarecommand{\Qj}{}
+\declarecommand{\Qk}{}
+\declarecommand{\Ql}{}
+\declarecommand{\Qm}{}
+\declarecommand{\Qn}{}
+\declarecommand{\Qo}{}
+\declarecommand{\Qp}{}
+\declarecommand{\Qq}{}
+\declarecommand{\Qr}{}
+\declarecommand{\Qs}{}
+\declarecommand{\Qt}{}
+\declarecommand{\Qu}{}
+\declarecommand{\Qv}{}
+\declarecommand{\Qw}{}
+\declarecommand{\Qx}{}
+\declarecommand{\Qy}{}
+\declarecommand{\Qz}{}
+
+\declarecommand{\Ra}{}
+\declarecommand{\Rb}{}
+\declarecommand{\Rc}{}
+\declarecommand{\Rd}{}
+\declarecommand{\Re}{}
+\declarecommand{\Rf}{}
+\declarecommand{\Rg}{}
+\declarecommand{\Rh}{}
+\declarecommand{\Ri}{}
+\declarecommand{\Rj}{}
+\declarecommand{\Rk}{}
+\declarecommand{\Rl}{}
+\declarecommand{\Rm}{}
+\declarecommand{\Rn}{}
+\declarecommand{\Ro}{}
+\declarecommand{\Rp}{}
+\declarecommand{\Rq}{}
+\declarecommand{\Rr}{}
+\declarecommand{\Rs}{}
+\declarecommand{\Rt}{}
+\declarecommand{\Ru}{}
+\declarecommand{\Rv}{}
+\declarecommand{\Rw}{}
+\declarecommand{\Rx}{}
+\declarecommand{\Ry}{}
+\declarecommand{\Rz}{}
+
+\declarecommand{\Sa}{}
+\declarecommand{\Sb}{}
+\declarecommand{\Sc}{}
+\declarecommand{\Sd}{}
+\declarecommand{\Se}{}
+\declarecommand{\Sf}{}
+\declarecommand{\Sg}{}
+\declarecommand{\Sh}{}
+\declarecommand{\Si}{}
+\declarecommand{\Sj}{}
+\declarecommand{\Sk}{}
+\declarecommand{\Sl}{}
+\declarecommand{\Sm}{}
+\declarecommand{\Sn}{}
+\declarecommand{\So}{}
+\declarecommand{\Sp}{}
+\declarecommand{\Sq}{}
+\declarecommand{\Sr}{}
+\declarecommand{\Ss}{}
+\declarecommand{\St}{}
+\declarecommand{\Su}{}
+\declarecommand{\Sv}{}
+\declarecommand{\Sw}{}
+\declarecommand{\Sx}{}
+\declarecommand{\Sy}{}
+\declarecommand{\Sz}{}
 
 %%% Local Variables:
 %%% mode: latex

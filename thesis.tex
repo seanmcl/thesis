@@ -1,6 +1,6 @@
 %for a more compact document, add the option openany to avoid
 %starting all chapters on odd numbered pages
-\documentclass[12pt,openany]{cmuthesis}
+\documentclass[12pt,openany,dvipsnames]{cmuthesis}
 \input{macros.tex}
 
 \newtoggle{dev}
@@ -8,7 +8,7 @@
 \toggletrue{dev}
 
 \iftoggle{dev}{
-  \includeonly{chapter-introduction, chapter-prop}
+  \includeonly{chapter-intro}
 }
 
 \iftoggle{dev}{
@@ -20,8 +20,8 @@
 
 \pagestyle{empty}
 
-\include{titlepage}
-\include{dedication}
+\include{titlepage}             %
+%\include{dedication}
 
 \pagestyle{plain}
 
@@ -33,23 +33,26 @@
 
 %% Double space document for easy review:
 %\renewcommand{\baselinestretch}{1.66}\normalsize
-\include{chapter-introduction}
+\include{chapter-intro}
 \include{chapter-prop}
 \include{chapter-fol}
+\include{chapter-constr}
 \include{chapter-aws}
-%\input{chapter-modal}
-%\input{chapter-sub}
+\include{chapter-modal}
+\include{chapter-sub}
 
 \appendix
 
 \backmatter
 
-% By default \bibsection is \chapter*, but we really want this to show
-% up in the table of contents and pdf bookmarks.
-\renewcommand{\bibsection}{\chapter{\bibname}}
-\bibliographystyle{alphaurl}
-\bibliography{refs}
-
+%% Only show the bibliography in non-dev mode.
+\iftoggle{dev}{}{
+  % By default \bibsection is \chapter*, but we really want this to show
+  % up in the table of contents and pdf bookmarks.
+  \renewcommand{\bibsection}{\chapter{\bibname}}
+  \bibliographystyle{alphaurl}
+  \bibliography{refs}
+}
 \end{document}
 
 %%% Local Variables:

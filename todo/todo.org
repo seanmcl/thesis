@@ -1,5 +1,7 @@
 * Idempotent algebra for lax logic
 
+* Does IM find proofs in relevance logic?
+
 * Dedication
 % COMMITTEE: Frank Robert Andr\`e Dale
 % MENTORS (who aren't also committee):

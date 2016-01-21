@@ -1,115 +1,85 @@
-\chapter{Prop}
+\chapter{Propositional Logic}
 \label{chapter-prop}
+
+Intuitionistic propositional logic (IPL) is the starting point for our
+investigations into a uniform proof procedure for intuitionistic logics, and is
+a sub-logic of all logics in later chapters.  As it involves neither quantifiers
+nor constraints, it is the simplest logic we will consider.
+Even so, it poses some interesting challenges, and motivates our choice of the
+polarized inverse method as a proof search strategy.
+
+\section{Preliminaries}
+
+In this section we quickly review some background material and notations.
+
+\paragraph{Multisets.}
+
+Let $\cU$ be a set. A \emph{(finite) multiset} of $\cU$
+is a function $f$ from
+$\cU$ to $\Nat$ where $f(x)=0$ for all but a finite number of elements of
+$\cU$.  The empty multiset, written $\cdot$ or $\emptyset$ is the
+function $\lambda x.\ 0$. If $f$ is a multiset then $f, x$ is a multiset
+where $(f, x) (x) = f(x)+1$ and $(f, x) (y)=f (y)$ when $x\neq y$.
+If $f$ and $g$ are multisets, then $f\Union g$ is a multiset where
+$(f\Union g) (x) = f(x)+g(x)$.  When we are writing both set and multiset union
+in the same part of the text, we will use $X \uplus Y$ for multiset union.
+The number of elements in a set or multiset $\Gamma$ is written $\Card{\Gamma}$.
+
+\paragraph{Ordered sequences.}
+
+If $\cU$ is a set, a \emph{sequence} of $\cU$ is either empty (written $[]$)
+or has the form $x:S$ where $x\in \cU$ and $S$ is a sequence of $\cU$.
+We abbreviate $x_1 : x_2 : \cdots : x_n : []$ as $[x_1,\ldots,x_n]$.
+
+\paragraph{Notations.}
+
+If $\cU$ is a set, let $\PSet{\cU}$ be the powerset of $\cU$ and $\SSet{\cU}$ be
+the set of ordered sequences of elements of $\cU$.  $\SSet{\cU}_n$ is the
+set of sequences of $X$ with length $n$.
+
+\section{Sequent calculus}
+
+% \begin{quote}
+%   \textit{We define the backward calculus $\LJ$ for
+%     IPL, and remind the reader of some important properties.}
+% \end{quote}
+
+% \noindent
+
+\begin{definition}[Formulas]
+  Let $\Atoms$ be an infinite set of symbols, called \emph{atoms}.
+  Formulas of IPL are
+  \[
+  \mbox{Formulas } A ::= p \Sep A \And A \Sep \Top \Sep A \Or A
+  \Sep \Bot \Sep A \Imp A
+  \]
+  where $p\in\Atoms$ and $\And$, $\Or$, $\Imp$, $\Top$, $\Bot$
+  signify conjunction, disjunction, implication, truth, and falsehood
+  respectively.
+  Formulas of the first kind are called \emph{atomic}.
+  Derived connectives for negation and bi-implication are
+  \[
+  \begin{array}{rl}
+    \Not A &:= A \Imp \Bot \\
+    A \Iff B &:= (A \Imp B) \And (B \Imp A).
+  \end{array}
+  \]
+\end{definition}
+
+
+
+\subsection{Rule generation}
+
+\subsection{Polarization strategies}
+
+Given an un-polarized input formula, the minimal polarization will sometimes
+yield bad operational behavior in the inverse method.  For a simple example,
+consider the trivial formula $(A \Or A) \Imp (A \Or A) ⊃ \ldots \Imp A$.
 
 \newcommand{\Ps}{P(\vec{s}\,)}
 \newcommand{\Pt}{P(\vec{t}\;)}
 \newcommand{\Pu}{P(\vec{u}\,)}
 \newcommand{\Pv}{P(\vec{v}\,)}
-
-
-
-\begin{figure}
-\footnotesize
-\[
-  \arraycolsep=15pt
-  \begin{array}{c}
-    \begin{array}{ccc}
-      \infer[\mbox{E-R}]{\CSeq{\Phi}{\Gamma}{E}}{\Phi \models E}
-      &
-      \infer[\mbox{E-L}]{\CSeq{\Phi}{\Gamma, E}{C}}{\CSeq{\Phi \And E}{\Gamma}{C}}
-      &
-      \infer[\mbox{E-init}]{\CSeq{\Phi}{\Gamma, \Ps)}{\Pt}}{\Phi \models \vec{s} \EEq \vec{t}}
-    \end{array}
-    \\[2em]
-
-    \begin{array}{cc}
-      \infer[\Top$-R$]{\CSeq{\Phi}{\Gamma}{\Top}}{}
-      &
-      \mbox{No rule for $\Top$-L}
-    \end{array}
-    \\[2em]
-
-    \begin{array}{cc}
-      \mbox{No rule for $\Bot$-R}
-      &
-      \infer[\Bot$-L$]{\CSeq{\Phi}{\Gamma, \Bot}{C}}{}
-    \end{array}
-    \\[2em]
-
-    \begin{array}{cc}
-      \infer[\And$-R$]{\CSeq{\Phi}{\Gamma}{A \And B}}{\CSeq{\Phi}{\Gamma}{A} & \CSeq{\Phi}{\Gamma}{B}}
-      &
-      \infer[\And$-L$]{\CSeq{\Phi}{\Gamma, A \And B}{C}}{\CSeq{\Phi}{\Gamma, A, B}{C}}
-    \end{array}
-    \\[2em]
-
-    \begin{array}{ccc}
-      \infer[\Or$-R$_1]{\CSeq{\Phi}{\Gamma}{A \Or B}}{\CSeq{\Phi}{\Gamma}{A}}
-      &
-      \infer[\Or$-R$_2]{\CSeq{\Phi}{\Gamma}{A \Or B}}{\CSeq{\Phi}{\Gamma}{B}}
-      &
-      \infer[\Or$-L$]{\CSeq{\Phi}{\Gamma, A \Or B}{C}}{\CSeq{\Phi}{\Gamma, A}{C} & \CSeq{\Phi}{\Gamma, B}{C}}
-    \end{array}
-    \\[2em]
-
-    \begin{array}{cc}
-      \infer[\Imp$-R$]{\CSeq{\Phi}{\Gamma}{A \Imp B}}{\CSeq{\Phi}{\Gamma, A}{B}}
-      &
-      \infer[\Imp$-L$]{\CSeq{\Phi}{\Gamma, A \Imp B}{C}}{\CSeq{\Phi}{\Gamma, B}{C} & \CSeq{\Phi}{\Gamma, A \Imp B}{A}}
-    \end{array}
-    \\[2em]
-
-    \begin{array}{cc}
-      \infer[\All$-R$]{\CSeq{\Phi}{\Gamma}{\All x.~A(x)}}{\CSeq{\Phi}{\Gamma}{A(a)} & a\not\in\Phi, \Gamma, A}
-      &
-      \infer[\All$-L$]{\CSeq{\Phi}{\Gamma, \All x.~A(x)}{C}}{\CSeq{\Phi}{\Gamma, \All x.~A(x), A(t)}{C}}
-    \end{array}
-    \\[2em]
-
-    \begin{array}{cc}
-      \infer[\Ex$-R$]{\CSeq{\Phi}{\Gamma}{\Ex x.~A(x)}}{\CSeq{\Phi}{\Gamma}{A(t)}}
-      &
-      \infer[\Ex$-L$]{\CSeq{\Phi}{\Gamma, \Ex x.~A(x)}{C}}{\CSeq{\Phi}{\Gamma, A(a)}{C} & a\not\in\Phi, \Gamma, A}
-    \end{array}
-    \\[2em]
-
-  \end{array}
-\]
-\caption{The backward constraint calculus, \C.}
-\label{fig:backward}
-\end{figure}
-
-\begin{figure}
-\[
-  \arraycolsep=15pt
-  \begin{array}{c}
-    \begin{array}{cc}
-      \infer[\mbox{id}]{\Phi \models \Phi}{}
-      &
-      \infer[\mbox{trans}]{\Phi_1 \models \Phi_3}{\Phi_1\models\Phi_2 & \Phi_2\models\Phi_3}
-    \end{array}
-    \\[2em]
-    \begin{array}{ccc}
-      \infer[\And_1]{\Phi_1 \And \Phi_2 \models \Phi_1}{}
-      &
-      \infer[\And_2]{\Phi_1 \And \Phi_2 \models \Phi_2}{}
-      &
-      \infer[\And]{\Phi \models \Phi_1 \And \Phi_2}{\Phi \models \Phi_1 & \Phi \models \Phi_2}
-    \end{array}
-    \\[2em]
-    \begin{array}{ccc}
-      \infer[$refl$]{\Phi \models t\EEq t}{}
-      &
-      \infer[$sym$]{\Phi \models s\EEq t}{\Phi\models t\EEq s}
-      &
-      \infer[$vec$]{\Phi \models \vec{s}\EEq \vec{t}}{|s| = |t| = n & \Phi\models s_1\EEq t_1 & \cdots & \Phi\models s_n\EEq t_n}
-    \end{array}
-    \\[2em]
-  \end{array}
-\]
-\caption{Properties of the entailment relation.}
-\label{fig:entailment}
-\end{figure}
 
 To verify the internal integrity (soundness and completeness) of $\C$, we prove the standard
 cut elimination and identity properties.
@@ -148,133 +118,12 @@ The following rule is admissible:
 \]
 \end{theorem}
 
-Following Pfenning~\cite{pfenning95lics,pfenning00ic}, we use a structural cut elimination
+Following Pfenning~\cite{Pfenning.1995.LICS,Pfenning.2000.IC}, we use a structural cut elimination
 argument.  The proof requires the following lemmas describing some properties of the
 entailment relation\footnote{Indeed, the proof of cut elimination largely determined the
 minimal requirements of the entailment relation.}.
 
-\begin{lemma}[Constraint Weakening]\label{lem:e-weaken}
-For any $\Phi, \Phi', \Gamma, C$, if $\Phi'\models \Phi$ and $\CSeq{\Phi}{\Gamma}{C}$
-then $\CSeq{\Phi'}{\Gamma}{C}$.
-\end{lemma}
-\begin{proof}
-  By induction on the derivation $\CSeq{\Phi}{\Gamma}{C}$.  Some cases:
-  \begin{description}
-  \item[Case]
-    \[\infer[$E-R$]{\CSeq{\Phi}{\Gamma}{E}}{\Phi\models E}\]
-    By transitivity of entailment (rule trans) we have $\Phi'\models E$ so
-    $\CSeq{\Phi'}{\Gamma}{E}$ by rule E-R.
-  \item[Case]
-    \[\infer[$E-L$]{\CSeq{\Phi}{\Gamma, E}{C}}{\CSeq{\Phi\And E}{\Gamma}{C}}\]
-    By entailment reasoning, we have $\Phi'\And E\models\Phi\And E$.  By induction
-    hypothesis we have that $\CSeq{\Phi'\And E}{\Gamma}{C}$ so $\CSeq{\Phi'}{\Gamma, E}{C}$
-    by rule E-L.
-  \end{description}
-\end{proof}
-
-\begin{lemma}[Inversion]\label{lem:e-invert}
-For any $\Phi, \Gamma, E, C$ if $\CSeq{\Phi}{\Gamma, E}{C}$ then $\CSeq{\Phi\And E}{\Gamma}{C}$.
-\end{lemma}
-\begin{proof} Easy induction on the derivation. \end{proof}
-
-\begin{lemma}[Contraction]\label{lem:contract}
-  If $\CSeq{\Phi}{\Gamma, \Ps, \Pt}{C}$ and $\Phi\models\vec{s}\EEq\vec{t}$ then
-  $\CSeq{\Phi}{\Gamma, \Ps}{C}$.
-\end{lemma}
-
-\begin{proof}
-  Induction on the derivation $\D$ of $\CSeq{\Phi}{\Gamma, \Ps, \Pt}{C}$.
-  \begin{description}
-  \item[Case] $\D$ is
-    \[
-      \infer[\mbox{E-init}]{\CSeq{\Phi}{\Gamma', \Pu}{\Pv}}{\Phi \models \vec{u} \EEq \vec{v}}
-    \]
-    We have $C = \Pv$ and $\Gamma, \Ps, \Pt = \Gamma', \Pu$.
-    If $\vec{u} \neq \vec{t}$ then we already have
-    $\CSeq{\Phi}{(\Gamma'\setminus \Pt), \Pu}{\Pv}$ by rule E-init.  Otherwise
-    we have $\Gamma' = \Gamma, \Ps$ and $\Phi\models\vec{t} \EEq \vec{v}$ and $\Phi\models\vec{s} \EEq \vec{t}$ so
-    $\Phi\models\vec{s} \EEq \vec{v}$.  Then $\CSeq{\Phi}{\Gamma, \Ps}{\Pv}$
-    by rule E-init.
-  \item[Case] $\D$ is
-    \[
-      \infer[\mbox{E-L}]{\CSeq{\Phi}{\Gamma, \Ps, \Pt, E}{C}}{\CSeq{\Phi\And E}{\Gamma}{C}}
-    \]
-    Since $E$ can not be an atomic formula, $E\neq \Ps$ and, $E\neq \Pt$.
-    Since $\Phi\models \vec{s}\EEq\vec{t}$, $\Phi\And E\models \vec{s}\EEq\vec{t}$, so
-    the induction hypothesis applies and we have $\CSeq{\Phi\And E}{\Gamma, \Ps}{C}$.
-    The result follows from an application of rule E-L.
-  \end{description}
-\end{proof}
-
-\begin{lemma}[Constraint Substitution]\label{lem:subst}
-  If $\CSeq{\Phi}{\Gamma}{\Ps}$ and $\Phi\models\vec{s}\EEq\vec{t}$ then
-  $\CSeq{\Phi}{\Gamma}{\Pt}$.
-\end{lemma}
-
-\begin{proof}
-  Induction on the derivation $\D$ of $\CSeq{\Phi}{\Gamma}{\Ps}$.
-  \begin{description}
-  \item[Case] $\D$ is
-    \[
-      \infer[\mbox{E-init}]{\CSeq{\Phi}{\Gamma', \Pu}{\Pv}}{\Phi \models \vec{u} \EEq \vec{v}}
-    \]
-  \end{description}
-\end{proof}
-
-
-\begin{proof}[Proof of Theorem~\ref{thm:cut-admissible}]
-Let $\D :: \CSeq{\Phi}{\Gamma}{A}$ and $\E :: \CSeq{\Phi}{\Gamma, A}{C}$.
-We proceed by induction on $A, \D, \E$.  The majority of the cases don't modify
-the constraints in any way, and the cases are identical with Pfenning's proof.  We
-show the cases where constraints play a significant role.
-
-\begin{description}
-\item[Case]
-  Initial cuts.  These are cuts where one of the derivations is initial with A as
-  its principle formula.
-  \begin{description}
-  \item[Case]
-    $\D$ is \[\infer[$E-R$]{\CSeq{\Phi}{\Gamma}{E}}{\Phi\models E}\]
-    Since $A = E$ we have $\CSeq{\Phi}{\Gamma, E}{C}$.  By inversion (Lemma~\ref{lem:e-invert}) we
-    have a derivation of $\CSeq{\Phi\And E}{\Gamma}{C}$.
-    Then since $\Phi\models E$, we have $\Phi\models\Phi\And E$ (constraint rules id and $\And$) so by
-    constraint weakening (Lemma~\ref{lem:e-weaken}) we have $\CSeq{\Phi}{\Gamma}{C}$ as required.
-  \item[Case]
-    $\D$ is \[\infer[$E-init$]{\CSeq{\Phi}{\Gamma', \Ps}{\Pt}}{\Phi\models \vec{s}\EEq\vec{t}}\]
-    Then $\Gamma = \Gamma', \Ps$, $A = \Pt$.  By assumption we
-    have $\CSeq{\Phi}{\Gamma', \Ps, \Pt}{C}$.  By contraction (Lemma~\ref{lem:contract})
-    we have $\CSeq{\Phi}{\Gamma', \Ps}{C}$ as required.
-  \item[Case]
-    $\E$ is \[\infer[$E-init$]{\CSeq{\Phi}{\Gamma, \Ps}{\Pt}}{\Phi\models \vec{s}\EEq\vec{t}}\]
-    Then $A = \Ps, C = \Pt$.  By assumption we
-    have $\CSeq{\Phi}{\Gamma}{\Ps}$.  The result follows by constraint substitution (Lemma~\ref{lem:subst}).
-  \end{description}
-
-\item[Case]
-  Principal cuts.
-  \begin{description}
-  \item[Case] Foo
-  \item[Case] Bar
-  \end{description}
-
-\item[Case]
-  Left commutative cuts.
-  \begin{description}
-  \item[Case] Foo
-  \item[Case] Bar
-  \end{description}
-
-\item[Case]
-  Right commutative cuts.
-  \begin{description}
-  \item[Case] Foo
-  \item[Case] Bar
-  \end{description}
-
-\end{description}
-
-\end{proof}
-
+\iffalse
 x = y => y = z => p(x) => p(z)
 
 % []p => <> p @ w
@@ -285,14 +134,399 @@ x = y => y = z => p(x) => p(z)
 (∀ w'. w' ≥ w ⊃ p(w')) ==> (W' ≥ w ∧ p(W'))
 (∀ w'. w' ≥ w ⊃ p(w')) ==> (∃ w'. w' ≥ w ∧ p(w'))
 (∀ w'. w' ≥ w ⊃ p(w')) ⊃ (∃ w'. w' ≥ w ∧ p(w'))
+\fi
 
 
-
-Simmons~\cite{simmons14tocl} considerably simplified the proofs of
+Simmons~\cite{Simmons.2014.TOCL} considerably simplified the proofs of
 cut elimination and identity using a technique he calls
 \emph{structural focalization}.
 
+\section{The Inverse Method}
+\cite{Mints.1994.CP}
+
+\section{Applications}
+
+Intuitionistic logic evidently holds compelling intellectual interest.  But the
+theorem proving problem is inherently a practical one; why should we care about
+theorem proving in intuitionistic logic?  One answer is that many problems of
+practical interest can be encoded as logical formulas, and that we are
+interested in the solutions to those problems.  But that doesn't answer why we
+would choose to search for proofs in intuitionistic logic, as opposed to
+classical logic, where the tools are more developed and the problem is
+technically easier.  We think that the primary advantage of intuitionistic logic
+over classical logic is in the content of the proofs produced by the search
+process.  The fastest classical theorem provers use resolution, which is a
+refutation procedure that requires its input to be in clausal form.  We will see
+in later chapters that the proof terms generated in intuitionistic logic,
+expressions in a simple functional programming language, are simply more
+intelligible and useful to people than the traces of resolution steps (leading
+to the empty set), generated by classical theorem provers.  Indeed, it is
+exactly this property of intuitionistic logic that makes Imogen an excellent
+debugging tool for AWS developers, as we will see in Chapter~\ref{chapter-aws}.
+
+In propositional logic, it's not easy to find compelling real-world
+applications.  The many standard examples of encoding problems in classical propositional
+logic, for example model checking, circuit equivalence, mathematical encodings,
+gain nothing from intuitionism, since the propositional variables tend to range
+not over some abstract notion of ``Proposition'' but rather real \emph{Boolean}
+true/false values.  Indeed, a satisfying assignment is usually enough of a
+certificate to verify the answer.
+
+and the encoded problems tend to be so large
+A toy application, reifying the Curry-Howard isomorphism, is the
+Djinn library for Haskell~\cite{Djinn}.  It generates Haskell expressions with a
+given first-order type.  This is exactly the theorem proving problem for IPL.  A
+more interesting application is in the (admittedly incestuous) support of proof
+assistants based on intuitionistic type theory (e.g. Coq~\cite{Coq} and
+Agda~\cite{Agda}).  In proof assistants, users are frequently faced with proving
+conclusions from sets of hypotheses.  When the hypotheses and conclusion are
+propositional, we can use Imogen to decide whether the conclusion follows from
+the hypotheses without user effort.  Since atomic terms in proof assistants are
+almost never technically propositional, simple tricks like treating first-order
+terms as propositional constants can make this technique more generally usable.
+Coq has the built-in \texttt{tauto} tactic, based on Dyckhoff's LJT (described
+below), for this purpose.  Imogen would be a more powerful engine for this
+tactic.
+
+\section{Complexity}
+
+IPL is PSPACE-complete~\cite{Statman.1979.TCS}.  The first decision procedure in
+PSPACE was $O(N^4)$ space~\cite{Ladner.1977.SJC}.  Currently the best known
+procedure uses $O(N\log(N))$ space~\cite{Hudelmaier.1993.JLC}.
+Even with forward and backward subsumption, the inverse method uses exponential
+space in the worst case.  Recall that
+$\Seq{\Gamma_1}{\gamma_1}\Subsumes\Seq{\Gamma_2}{\gamma_2}$ iff
+$\Gamma_1\subseteq\Gamma_2$ and $\gamma_1\subseteq\gamma_2$.  A formula of
+size $N$ has at most $N$ labels, so for each sequent $\Seq{\Gamma}{\gamma}$ we
+have $\Size{\Gamma} \leq N$.  By Sperner's theorem~\cite{Sperner.1928.MZ},
+there are at most $\binom{N}{\floor{\frac{N}{2}}}$ subsets of a set
+of size $N$ none of which is a subset of another.  The database size is
+therefore bonded above by $N \binom{N}{\floor{\frac{N}{2}}}$ assuming any label
+could appear as a consequent. (This is an over-approximation, since it is not
+the case that every label can occur as a consequent.)
+
+For a concrete formula that generates an exponential database, we can
+choose a set of derived rules that makes $k$ consecutive choices that add
+one of a pair of labels $p^0, p^1$ to the antecedents.  This construction enumerates
+all subsets of the set $\Set{1, \ldots, k}$ as antecedents in the database.
+One such set of rules is
+
+\[
+  \begin{array}{c}
+    \begin{array}{c@{\hskip 5em}c}
+      \infer{\Seq{p^0_1}{r_1}}{\Seq{}{r_0}}
+      &
+      \infer{\Seq{p^1_1}{r_1}}{\Seq{}{r_0}}
+    \end{array}
+    \\[5pt]
+    \vdots
+    \\[5pt]
+    \begin{array}{c@{\hskip 5em}c}
+      \infer{\Seq{p^0_k}{r_k}}{\Seq{}{r_{k-1}}}
+      &
+      \infer{\Seq{p^1_k}{r_k}}{\Seq{}{r_{k-1}}}
+    \end{array}
+  \end{array}
+\]
+
+\noindent After $k$ steps, we are left with sequents of the form
+$\Seq{p_1^{i_1}, \ldots, p_k^{i_k}}{r_k}$ where $i_j\in\Set{0,1}$.  None of these sequents subsume
+each other, and there are $2^k$ such sequents.
+Working backwards we can construct the formulas that generate these
+rules.  Below the $p_i^j$ and $r_0$ are atomic with positive polarity and the
+$r_i$ for $i > 0$ have positive polarity as well and are defined as
+
+\[r_i\,=\, \Down\Up r_{i-1} \AndP (p_i^0 \Or p_i^1)\]
+
+\[
+  \begin{array}{c}
+    \begin{array}{c@{\hskip 5em}c}
+      \infer
+      {\Seq{p_i^0}{\BSet{\Down\Up r_i \AndP (p_i^0\Or p_i^1)}}}
+      {
+        \infer
+        {\Seq{}{\BSet{\Down\Up r_{i-1}}}}
+        {
+          \infer
+          {\Seq{}{\Up r_{i-1}}}
+          {\Seq{}{r_{i-1}}}
+        }
+        &
+        \infer
+        {\Seq{p_i^0}{\BSet{p_i^0\Or p_i^1}}}
+        {
+          \infer
+          {\Seq{p_i^0}{\BSet{p_i^0}}}
+          {}
+        }
+      }
+      &
+      \infer
+      {\Seq{p_i^1}{\BSet{\Down\Up r_{i-1} \AndP (p_i^0\Or p_i^1)}}}
+      {
+        \infer
+        {\Seq{}{\BSet{\Down\Up r_{i-1}}}}
+        {
+          \infer
+          {\Seq{}{\Up r_{i-1}}}
+          {\Seq{}{r_{i-1}}}
+        }
+        &
+        \infer
+        {\Seq{p_i^1}{\BSet{p_i^0\Or p_i^1}}}
+        {
+          \infer
+          {\Seq{p_i^1}{\BSet{p_i^1}}}
+          {}
+        }
+      }
+    \end{array}
+  \end{array}
+\]
+
+\noindent Dyckhoff calls this behavior, in the context of Mints' (unfocused)
+resolution calculus~\cite{Mints.1988.CCL}
+``regrettable''~\cite{Dyckhoff.2008.Oasis}.  We maintain that focusing
+attenuates this issue to some extent.  For example, this exponential example,
+when the shifts are removed, focuses into exponentially many sub-problems.
+Operationally, this is essentially identical to how Hudelmaier's procedure would
+decide the problem; namely exploring exponentially many linear paths,
+using $O(N \log(N))$ space ($\log(N)$ to represent the labels).
+
+Admittedly, even with focusing it is always possible to create a formula that
+will behave badly with respect to space in the inverse method.  For example, by
+double-negating subformulas we get no benefit from the initial focusing phase;
+recall that focusing on a double-negation $(\Down (A^+\Imp \Bot) \Imp \Bot$ on
+the left immediately loses focus:
+
+\iffalse
+                A⁺ ⊢ ⊥
+              -----------
+               ⊢ A⁺ ⊃ ⊥
+----------  ---------------
+ [⊥] ⊢ C     ⊢ [↓ (A⁺ ⊃ ⊥)]
+-----------------------
+ [↓ (A⁺ ⊃ ⊥) ⊃ ⊥] ⊢ C
+\fi
+
+\[
+  \infer
+  {\Seq{\BSet{\Down (A^+\Imp \Bot) \Imp \Bot}}{C}}
+  {
+    \infer{\Seq{\BSet{\Bot}}{C}}{}
+    &
+    \infer
+    {\Seq{}{\BSet{\Down(A^+ \Imp \Bot)}}}
+    {\infer
+      {\Seq{}{A^+ \Imp \Bot}}
+      {\Seq{A^+}{\Bot}}
+    }
+  }
+\]
+
+\noindent By double-negating the subformulas of the exponential formula above,
+the initial focusing phase will not help, and we will still have a minimally
+exponential space execution.  As a practical matter, though, we don't find such
+examples compelling.  We haven't found any applications of
+IPL, but while encoding problems in first-order intuitionistic logic,
+we find negations are relatively rare, and double-negations are, well,
+doubly-rare.
+
+As we have seen, deciding random formulas is one place where negations occur
+frequently, and the formulas are nearly always unprovable.  Thus, we can still
+use substitutions and other tricks to help Imogen compete with model-building
+solvers.  Unlike the logically motivated optimizations in polarity choice,
+strategies like this are not logically very interesting, but ultimately
+important in building a practically usable tool.
+
+
+\section{History and Related Work}
+
+\subsection{Intuitionistic Logic}
+
+The study of intuitionistic logic began with
+Brouwer~\cite{Brouwer.1907.Thesis} who was dissatisfied with the philosophical
+foundations of (classical) mathematics.  The formal proof theory was invented by
+Gentzen~\cite{Gentzen.1935.MZ}.  While classical and intuitionistic
+logic are equi-consistent~\cite{Goedel.1933.EMK}, intuitionistic logic
+is more expressive than classical logic, in the sense that classical logic can
+be embedded in intuitionic logic~\cite{Glivenko.1929.BCS}.  This
+expressivity comes at a cost; deciding classical propositional logic is
+NP-complete~\cite{Cook.1971.TOC}, while deciding intuitionistic propositional
+logic is PSPACE-complete~\cite{Statman.1979.TCS}.
+
+\subsection{Related Work}
+
+There are numerous methods besides the inverse method for deciding
+IPL\footnote{In this survey we do not mention any work in Hilbert systems or
+natural deduction, since they tend to be unsuitable for proof search.}
+The simplest, and the basis of many later methods is Dyckhoff's
+LJT~\cite{Dyckhoff.1992.JSL} (the T stands for ``terminating''), discovered
+independently by Vorobev~\cite{Vorobev.1958.AMST} and
+Hudelmaier~\cite{Hudelmaier.1989.Thesis, Hudelmaier.1992.AML}.
+In G3, the $\Imp$-L rule is the only problematic
+rule with respect to backward search.
+
+\[
+\infer{\Seq{\Gamma, A\Imp B}{C}}{\Seq{\Gamma, A\Imp B}{A} & \Seq{\Gamma, B}{C}}
+\]
+
+\noindent
+The first premise in general does not decrease in any obvious measure of size.
+Thus, goal-directed search must account for infinite loops.  Typically this is
+done using loop-detection mechanisms, also called ``histories''.  While it is
+possible to implement loop-detection
+efficiently~\cite{Gabbay.2000.GoalDirectedProofTheory, Howe.1997.Tableaux,
+Heuerding.1996.Tableaux}, loop detection complicates both the theory and
+implementation of deduction.  The approach of LJT is to replace instances of
+$A\Imp B$ on the left with simpler, but logically equivalent formulas, where an
+inductive termination measure can be defined relatively easily.  This has the
+benefit of dropping the requirement for loop detection, at the expense of
+maintaining the subformula property.  In particular he replaces the $\Imp$-L
+rule with four new rules:
+
+\[
+\begin{array}{cc}
+  \Infer[\Imp$-L$_1]
+  {\Seq{\Gamma,p\Imp A, p}{C}}
+  {\Seq{\Gamma, A, p}{C}}
+  &
+  \hspace{2em}
+  \Infer[\Imp$-L$_2]
+  {\Seq{\Gamma,(A_1\And A_2)\Imp A}{C}}
+  {\Seq{\Gamma, A_1\Imp (A_2\Imp A)}{C}}
+  \figline
+  \Infer[\Imp$-L$_3]
+  {\Seq{\Gamma,(A_1\Or A_2)\Imp A}{C}}
+  {\Seq{\Gamma, A_1\Imp A, A_2\Imp A}{C}}
+  &
+  \hspace{2em}
+  \Infer[\Imp$-L$_4]
+  {\Seq{\Gamma,(A_1\Imp A_2)\Imp A}{C}}
+  {\Seq{\Gamma, A_2\Imp A}{A_1\Imp A_2} & \Seq{\Gamma, A}{C}}
+\end{array}
+\]
+
+\noindent
+He shows that this ``contraction-free'' calculus is terminating, and does not
+require loop checking.  (Note that it does not satisfy the subformula property,
+and is thus not naievly amenable to implementation via the inverse method.)
+Implementations of the calculus LJT are~\cite{Dyckhoff.1997.LJT} and
+\emph{Porgi}~\cite{Stoughton.1996.CADE}.
+
+The main inefficiency of LJT is the duplication of subformulas in the new
+rules.  Even though there's no danger of looping, the procedure can still use
+exponential space.  Hudelmaier and others improved on LJT by using familiar
+tricks to avoid duplicating formulae.  For example, the $\Imp$-L$_3$ is replaced
+with
+
+\[
+  \Infer[\Imp$-L$_3']
+  {\Seq{\Gamma,(A_1\Or A_2)\Imp A}{C}}
+  {\Seq{\Gamma, A_1\Imp p, A_2\Imp p, p\Imp A}{C}}
+\]
+\noindent for a new atomic proposition $p$.
+
+
+
+
+Why do we use formula occurrances?  Proofs can be exponentially shorter
+if we solve subformulas that occur multiple times only once.  This should
+be made clear.
+
+\subsection{Focusing in IPL}
+Following Andreoli's seminal paper on focusing in linear
+logic~\cite{Andreoli.1992.JLC} there was a flurry of work in the area.
+Herbelin~\cite{Herbelin.1994.CSL} defined the first focused calculus for
+the implication fragment of LJ, also unfortunately named LJT.
+
+\cite{Nigam.2008.IJCAR}
+
+\subsection{Optimizations}
+
+Simplification rules~\cite{Ferrari.2012.TCL, Franzen.1987.TR, Franzen.1989.TR}
+
+\section{Future Work}
+
+\subsection{Certificates of Unprovability}
+
+\cite{Pinto.1995.SG}
+
+
+
+
+\subsection{Multi-succedent calculus}
+
+A multi-succedent calculus, now called G3ipm, was discovered by
+Maehara~\cite{Maehara.1954.NMJ}.  This more closely mimics Gentzen's classical
+sequent calculus LK.  Given the menagerie of equivalent calculi for
+intuitionistic logic, we wouldn't bother to mention yet another one. However,
+G3ipm has the interesting property that there exist theorems of IPL with
+polynomial size proofs in G3ipm that are at best exponential in the
+single-succedent calculi presented above~\cite{Egly.1999.FI}.  G3ipm
+additionally has the nice property that all rules except $\Imp-R$ are
+invertible.
+
+It would be interesting to see how an implementation of G3ipm compares with
+Imogen's polarized inverse method.  Besides the simplicity of a single
+non-invertible rule, and a pleasing symmetry almost as pure as that of classical
+logic, the implementation of a multi-succedent calculus would be much closer to
+a classical implementation, and one could imagine a general theorem prover that
+could handle both classical and intuitionistic logic with little change.  We
+conjecture that a naive implementation would still have more non-determinism
+than the inverse method, though an interesting line of research would be to try
+augment the G3ipm calculus with some non-determinism elimination strategy like
+focusing.
+
+\subsubsection{Optimizations}
+
+\subsection*{Analytic cut and non-atomic initial sequents}
+
+In the proof-theory literature, ``analytic'' tends to refer to the subformula
+property.  While the unrestricted cut rule makes proof search impracticable, the
+use of a cut formula that is a subformula of the goal sequent may improve proof
+search and proof size without substantially increasing complexity. This is
+called the ``analytic cut''~\cite{Smullyan.1968.JSL}.
+
+Both of these would be interesting to experiment with.  However, since
+our implementation is currently based on subformula occurrences, it is not
+obvious how to incorporate analytic cuts or non-atomic initial sequents without
+negative consequences for proof search.
+
+For example, a formula may occur, say $2N$ times as a subformula as a goal
+sequent.  These occurrences have labels $l_1, \ldots, l_{2N}$.  Now, what are
+the non-atomic initial sequents corresponding to these labels?  We would first
+separate the labels that occur in right and left positions, say $l_1, \ldots,
+l_N$ are left subformulas and $l_{N+1}, \ldots, l_{2N}$ are right subformulas.
+Do we make all $N^2$ pairings initial sequents?  And if not, how do we choose
+which ones to use?  A similar issue occurs in the case of analytic cut.  Since
+the cut formula must occur in both left and right positions in the goal formula,
+there are again $N^2$ rule instances for each subformula.
+
+We hypothesize that analytic cut and non-atomic initial sequents of ``small''
+subformulas would make proof search worse, but that ``large'' subformulas
+would possibly improve search.  For example, in a random formula there are
+generally
+many occurrences of $\Not p$ for any atom $p$.  This is probably not a good
+candidate, since it will generate many initial sequents.  Large subformulas,
+though, would always have few occurrences, and would likely save many
+deductions.  An empirical analysis should be made.
+
+\subsection*{Substitution and symmetry}
+
+\section{TODO}
+Using disproofs to prune search space, similar to Weich
+
+
+% We begin in Section~\ref{prop.sec.def} by defining two related sequent calculi
+% for IPL, $\LJ$ and $\LJF$.  $\LJ$ is standard, equivalent to Gentzen's original
+% LJ.  $\LJF$ is related to $\LJ$, but is more suitable to forward reasoning in
+% the inverse method.  We conclude the section with a proof of soundness and
+% completeness of $\LJF$ with respect to $\LJ$.  Section~\ref{prop.sec.inverse}
+% shows how to use the inverse method to turn $\LJF$ into a complete proof-search
+% procedure.  In the process, we will observe a number of inefficiences.
+% Section~\ref{prop.sec.focus} defines focused calculi that correspond to $\LJ$.
+
 %%% Local Variables:
-%%% mode: latex
 %%% TeX-master: "thesis"
 %%% End:
